@@ -1,9 +1,40 @@
 import { store } from "./store.js";
 
 /* =========================
+   SETUP FLOW (OBRIGATÓRIO)
+========================= */
+document.addEventListener("click", (e) => {
+  if (e.target.id !== "setup-submit") return;
+
+  const project = {
+    name: document.getElementById("setup-name")?.value.trim() || "",
+    type: document.getElementById("setup-type")?.value || "",
+    goal: document.getElementById("setup-goal")?.value || "",
+    features: {
+      login: document.getElementById("feature-login")?.checked || false,
+      backend: document.getElementById("feature-backend")?.checked || false,
+      pwa: document.getElementById("feature-pwa")?.checked || false,
+    },
+  };
+
+  store.setProjectConfig(project);
+
+  if (!store.isSetupComplete()) {
+    alert("Preenche nome, tipo e objetivo do projeto.");
+    return;
+  }
+
+  store.completeSetup();
+  store.generateProcessesFromProject();
+
+  // 🔴 SEM ISTO O USER FICA PRESO NO SETUP
+  location.hash = "#/process-builder";
+});
+
+/* =========================
    WIZARD STATE
 ========================= */
-let activeProcessIndex = 0;
+let activeProcessIndex = null;
 let activeTaskIndex = null;
 
 /* =========================
@@ -19,18 +50,18 @@ const taskDescEl = () => document.getElementById("pb-task-description");
    PLAN VIEW
 ========================= */
 function renderPlan() {
+  if (!processListEl()) return;
+
   processListEl().innerHTML = "";
 
   store.processes.forEach((process, pIndex) => {
     const li = document.createElement("li");
     li.innerHTML = `<strong>${process.name}</strong>`;
 
-    // Expand tasks
     const ul = document.createElement("ul");
 
     process.tasks.forEach((task, tIndex) => {
       const taskLi = document.createElement("li");
-
       taskLi.textContent = task.name;
       taskLi.style.cursor = "pointer";
       taskLi.style.opacity = task.done ? "0.5" : "1";
@@ -70,10 +101,8 @@ document.addEventListener("click", (e) => {
       store.processes[activeProcessIndex].tasks[activeTaskIndex];
 
     task.done = true;
-
     store.updateGlobalProgress();
     store.save();
-
     backToPlan();
   }
 
@@ -85,7 +114,6 @@ document.addEventListener("click", (e) => {
 function backToPlan() {
   taskViewEl().style.display = "none";
   planViewEl().style.display = "block";
-
   activeTaskIndex = null;
   renderPlan();
 }
@@ -98,5 +126,19 @@ window.processBuilder = {
     renderPlan();
   },
 };
+
+/* =========================
+   EXPORT
+========================= */
+document.addEventListener("click", (e) => {
+  if (e.target.id !== "export-btn") return;
+
+  if (store.state.progress.global < 100) {
+    alert("Conclui todas as tarefas antes de exportar.");
+    return;
+  }
+
+  alert("Projeto exportado com sucesso (simulação).");
+});
 
 window.store = store;
