@@ -1,0 +1,88 @@
+@layer variaveis {
+    :root {
+        --clr-1: white;
+        --clr-2: black;
+        --clr-3: lightgrey; /*-- signature 1 --*/
+        --clr-4: grey; /*-- signature 2 --*/
+
+        /* ACTIONS --------------------------------- */
+        --clr-bg-lght-drk: light-dark(var(--clr-3), var(--clr-4));
+        --clr-btn-bg-prim: var(--clr-3);
+        --clr-btn-txt-prim: var(--clr-2);
+        --clr-btn-bg-prim-hover: color-mix(
+            in oklab,
+            var(--clr-3) 70%,
+            var(--clr-1)
+        );
+        --clr-btn-txt-prim-hover: var(--clr-2);
+        --clr-btn-txt-prim-active: var(--clr-btn-txt-prim);
+
+        --clr-btn-bg-sec: transparent;
+        --clr-btn-txt-sec: light-dark(var(--clr-2), var(--clr-3));
+        --clr-btn-bg-sec-hover: color-mix(
+            in oklab,
+            var(--clr-3) 80%,
+            var(--clr-2)
+        );
+        --clr-btn-txt-sec-hover: var(--clr-btn-txt-sec);
+        --clr-btn-txt-sec-active: var(--clr-btn-txt-sec);
+
+        --clr-ham-bg-prim: var(--clr-btn-bg-prim);
+        --clr-ham-line-prim: var(--clr-btn-txt-sec);
+
+        --icon-size-logo: 3rem;
+        --icon-logo-hamb-size: 2.5rem;
+        --size-user-avatar: 1.625rem;
+
+        --icon-size: 2rem;
+        --icon-font-size: 1.5rem;
+        --icon-padding: 0.5rem 1rem;
+        --icon-font-size-small: 1rem;
+
+        --fnt-sign: "Saira", sans-serif;
+        --fnt-body: "Jost", sans-serif;
+
+        --fs-h1: clamp(2rem, calc(4vw + 0.2rem), 3.44rem);
+        --fs-h1-big: clamp(2.5rem, calc(5vw + 0.2rem), 5rem);
+        --fs-h2: calc(var(--fs-h1) - 0.5rem);
+        --fs-h2-big: var(--fs-h1);
+        --fs-h3: calc(var(--fs-h2) - 0.25rem);
+        --fs-h4: calc(var(--fs-h3) - 0.25rem);
+        --fs-h5: calc(var(--fs-h4) - 0.125rem);
+        --fs-h6: calc(var(--fs-h5) - 0.125rem);
+        --fs-li-a: 1rem;
+
+        /*
+        --margin-hmf: 1.25rem 0;
+        --margin-nav: 0.625rem 0;
+        --margin-section: 1.25rem 1.25rem;
+        --margin-aras: 0.9375rem 0.625rem;
+        --margin-h1: 2.5rem 0;
+        --margin-h2: 1.875rem 0;
+        --margin-h3: 1.5625rem 0;
+        --margin-p-ul: 0.9375rem 0;
+        --margin-cel: 1.25rem 0;
+        --padding-hf-nav-aras: 0.625rem;
+        --padding-m-sec: 0.9375rem;
+        --padding-p-ul: 0.3125rem;
+        --padding-cel: 0.625rem;
+        --gap-items: 1.2rem;
+        */
+        --container-max: 1900px;
+        --container-mid: 1440px;
+        --container-min: 1024px;
+        --container-height: 100svh;
+
+        --br-rds: 16px 16px 16px 16px;
+        --border-size: 2px solid;
+        --bx-sdw:
+            inset 0 0 15px 5px var(--clr-3), 0 0px 1px var(--clr-2),
+            0 0px 50px var(--clr-2);
+
+        --tempo: 300ms;
+        --section-anim-in: 5%;
+        --section-anim-full: 40%;
+
+        interpolate-size: allow-keywords;
+    }
+}

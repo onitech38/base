@@ -1,0 +1,53 @@
+<section class="page page-setup" data-page="setup">
+    <header class="page-header">
+        <h1>Setup do Projeto</h1>
+        <p>Define as bases do teu projeto.</p>
+    </header>
+
+    <div class="page-content">
+        <label>
+            Nome do projeto
+            <input id="setup-name" placeholder="Ex: Website Pessoal" />
+        </label>
+
+        <label>
+            Tipo de projeto
+            <select id="setup-type">
+                <option value="">Seleciona</option>
+                <option value="website">Website</option>
+                <option value="app">Web App</option>
+            </select>
+        </label>
+
+        <label>
+            Objetivo principal
+            <select id="setup-goal">
+                <option value="">Seleciona</option>
+                <option value="portfolio">Portfólio</option>
+                <option value="institucional">Institucional</option>
+                <option value="produto">Produto</option>
+            </select>
+        </label>
+
+        <fieldset>
+            <legend>Funcionalidades</legend>
+
+            <label>
+                <input type="checkbox" id="feature-login" />
+                Login / Autenticação
+            </label>
+
+            <label>
+                <input type="checkbox" id="feature-backend" />
+                Backend / Base de dados
+            </label>
+
+            <label>
+                <input type="checkbox" id="feature-pwa" />
+                PWA / Offline
+            </label>
+        </fieldset>
+
+        <button id="setup-submit">Continuar para Planeamento</button>
+    </div>
+</section>

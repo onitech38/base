@@ -1,0 +1,171 @@
+@layer global {
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    .title {
+        color: var(--clr-btn-txt-sec);
+    }
+    body,
+    ul,
+    li,
+    p,
+    a {
+        color: var(--clr-2);
+    }
+    body,
+    ul,
+    li,
+    a,
+    .title {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        text-decoration: none;
+    }
+    body,
+    p,
+    .eyebrow {
+        font-family: var(--fnt-body);
+    }
+    h1,
+    .h1-big,
+    h2,
+    h3,
+    .title {
+        text-wrap: balance;
+        font-family: var(--fnt-sign);
+    }
+    h1,
+    h2,
+    h3,
+    ul,
+    li,
+    .title {
+        font-weight: 500;
+        text-transform: uppercase;
+    }
+    body {
+        font-size: clamp(0.75rem, 0.3361vw + 0.6975rem, 1rem);
+    }
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    .title {
+        line-height: 1.2;
+        text-align: center;
+        letter-spacing: 0.1em;
+    }
+    h1 {
+        font-size: var(--fs-h1);
+    }
+    .h1-big {
+        font-size: var(--fs-h1-big);
+        font-weight: 600;
+        line-height: 1.04em;
+        text-align: left;
+        letter-spacing: -0.01em;
+    }
+    h2 {
+        font-size: var(--fs-h2);
+    }
+    .h2-big {
+        font-size: var(--fs-h2-big);
+        font-weight: 600;
+    }
+    h3 {
+        font-size: var(--fs-h3);
+    }
+    h4 {
+        font-size: var(--fs-h4);
+        font-weight: 400;
+    }
+    h5 {
+        font-size: var(--fs-h5);
+        font-weight: 300;
+    }
+    h6,
+    .eyebrow-small {
+        font-size: var(--fs-h6);
+        font-weight: 200;
+    }
+    .title {
+        font-size: clamp(1.5rem, 3vw, 4rem);
+        font-weight: 600;
+    }
+    p,
+    .p-small,
+    .p-large {
+        line-height: 1.5;
+        text-align: center;
+        letter-spacing: 0.1em;
+    }
+    p {
+        margin-bottom: 0.7em;
+        font-size: 1rem;
+        font-weight: 500;
+        text-wrap: balance;
+    }
+    .p-small {
+        font-size: 0.6rem;
+        font-weight: 300;
+    }
+    .p-large {
+        font-size: 1.2rem;
+        font-weight: 600;
+    }
+    .eyebrow {
+        margin-bottom: 1.25rem;
+        font-size: 0.9rem;
+        font-weight: 400;
+        line-height: 1.3;
+        text-align: center;
+        letter-spacing: 0.01em;
+        text-transform: uppercase;
+        color: var(--clr-current_mix);
+    }
+    .eyebrow-small {
+        margin-bottom: 1.25rem;
+        font-size: 0.6rem;
+        font-weight: 300;
+        line-height: 1.3;
+        text-align: center;
+        letter-spacing: 0.01em;
+        text-transform: uppercase;
+        color: var(--clr-current_mix);
+    }
+    li,
+    a {
+        font-size: var(--fs-li-a);
+        font-weight: 400;
+        font-family: var(--fnt-body);
+        cursor: pointer;
+        color: var(--clr-2);
+    }
+
+    /* ===============================
+       Estrutura base das páginas SPA
+    =============================== */
+
+    .page {
+        padding: var(--space-lg);
+    }
+
+    .page-header {
+        margin-bottom: var(--space-md);
+    }
+
+    .page-header h1 {
+        font-size: var(--text-xl);
+        line-height: 1.2;
+    }
+
+    .page-content {
+        max-width: 960px;
+    }
+}

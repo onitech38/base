@@ -1,0 +1,30 @@
+/projeto-base
+  /assets
+    /css
+      actions.css
+      app.css
+      animations.css
+      branding.css
+      fonts.css
+      global.css
+      layout.css
+      reset.css
+      style.css   ← importa tudo
+      variables.css
+    /js
+      router.js
+      app.js
+      store.js
+      supabase.js
+    /img
+      icon-512.svg
+      icon-192.svg
+  /pages          ← icons para informar que podem instalar no dispositivo
+    home.html
+    branding.html
+    process-builder.html
+    offline.html
+  index.html
+  manifest.json   ← (para app)
+  service-worker.js  ← (para app offline)
+  instruções         ← onde eu estou a colocar algumas notas e informações para eu não me perder .😅

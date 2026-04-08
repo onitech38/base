@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="pt">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+        <title>Offline · Process Builder</title>
+
+        <!-- Tipos e tema -->
+        <meta name="theme-color" content="#020617" />
+
+        <!-- CSS principal da app -->
+        <link rel="stylesheet" href="/assets/css/style.css" />
+
+        <style>
+            /* =====================================================
+       Offline page – estilos específicos
+       ===================================================== */
+
+            @layer app {
+                body {
+                    min-height: 100vh;
+                    display: grid;
+                    place-items: center;
+                    background: var(--bg);
+                    color: var(--fg);
+                }
+
+                .offline-card {
+                    max-width: 420px;
+                    padding: var(--space-xl);
+                    border-radius: var(--radius-lg);
+                    background: var(--surface);
+                    box-shadow: var(--shadow-lg);
+                    text-align: center;
+                    animation: fade-in 0.3s ease;
+                }
+
+                .offline-icon {
+                    width: 64px;
+                    height: 64px;
+                    margin: 0 auto var(--space-md);
+                    opacity: 0.9;
+                }
+
+                .offline-card h1 {
+                    font-size: var(--text-xl);
+                    margin-bottom: var(--space-sm);
+                }
+
+                .offline-card p {
+                    font-size: var(--text-sm);
+                    color: var(--muted);
+                    line-height: 1.6;
+                    margin-bottom: var(--space-lg);
+                }
+
+                .offline-actions {
+                    display: grid;
+                    gap: var(--space-sm);
+                }
+
+                .offline-actions button {
+                    padding: var(--space-sm) var(--space-md);
+                    border-radius: var(--radius-md);
+                    border: 0;
+                    background: var(--primary);
+                    color: white;
+                    font-weight: 500;
+                    cursor: pointer;
+                }
+
+                .offline-actions button.secondary {
+                    background: transparent;
+                    color: var(--fg);
+                    border: 1px solid var(--border);
+                }
+
+                .offline-footer {
+                    margin-top: var(--space-md);
+                    font-size: var(--text-xs);
+                    color: var(--muted);
+                }
+                @keyframes pulse {
+                    0% {
+                        opacity: 0.4;
+                        transform: scale(0.95);
+                    }
+                    50% {
+                        opacity: 1;
+                        transform: scale(1);
+                    }
+                    100% {
+                        opacity: 0.4;
+                        transform: scale(0.95);
+                    }
+                }
+
+                @keyframes wave {
+                    0% {
+                        stroke-dashoffset: 48;
+                    }
+                    100% {
+                        stroke-dashoffset: 0;
+                    }
+                }
+
+                .offline-icon {
+                    animation: pulse 2s ease-in-out infinite;
+                }
+
+                .offline-icon path {
+                    stroke-dasharray: 48;
+                    animation: wave 0.8s ease-out;
+                }
+            }
+        </style>
+    </head>
+
+    <body>
+        <main class="offline-card" role="main">
+            <!-- Ícone -->
+            <svg
+                class="offline-icon"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+            >
+                <path d="M1 1l22 22"></path>
+            </svg>
+        </main>
+    </body>
+</html>

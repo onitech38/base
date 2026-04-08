@@ -1,0 +1,141 @@
+/* ================================
+   PROCESS BUILDER — UI/UX
+   ================================ */
+
+.pb-container {
+    margin-top: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+    animation: reveal 0.4s ease;
+}
+
+/* Inputs */
+.pb-new-process input,
+.pb-new-task input {
+    padding: 0.8rem 1rem;
+    border-radius: var(--br-rds);
+    border: var(--border-size) var(--clr-4);
+    background: var(--clr-bg-lght-drk);
+    color: var(--clr-2);
+    width: min(300px, 90%);
+    font-size: 1rem;
+    transition: border-color var(--tempo) ease;
+}
+
+.pb-new-process input:focus,
+.pb-new-task input:focus {
+    outline: none;
+    border-color: var(--clr-btn-bg-prim);
+}
+
+/* Botões */
+.pb-new-process button,
+.pb-new-task button,
+#pb-back {
+    padding: 0.8rem 1.2rem;
+    font-size: 0.9rem;
+    letter-spacing: 0.08rem;
+}
+
+/* Lista de processos */
+.pb-list {
+    display: grid;
+    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}
+
+/* Card de processo */
+.pb-process-item {
+    padding: 1.5rem;
+    border-radius: var(--br-rds);
+    border: var(--border-size) var(--clr-4);
+    background: var(--clr-bg-lght-drk);
+    box-shadow: var(--bx-sdw);
+    cursor: pointer;
+    text-align: center;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    transition:
+        transform var(--tempo),
+        box-shadow var(--tempo);
+}
+
+.pb-process-item:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Área de tarefas */
+.pb-tasks {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    animation: reveal 0.4s ease;
+}
+
+/* Lista de tarefas */
+#pb-task-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+/* Card de tarefa */
+.pb-task-item {
+    padding: 1rem 1.2rem;
+    border-radius: var(--br-rds);
+    border: var(--border-size) var(--clr-4);
+    background: var(--clr-bg-lght-drk);
+    cursor: pointer;
+    font-size: 1rem;
+    letter-spacing: 0.05em;
+    transition:
+        background var(--tempo),
+        transform var(--tempo);
+}
+
+.pb-task-item:hover {
+    transform: translateX(4px);
+}
+
+.pb-task-item.done {
+    opacity: 0.6;
+    text-decoration: line-through;
+    background: color-mix(in oklab, var(--clr-3) 60%, var(--clr-1));
+}
+
+/* Botão voltar */
+#pb-back {
+    align-self: center;
+    margin-top: 1rem;
+}
+
+#project-status {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    margin-left: 1rem;
+}
+#project-steps {
+    display: flex;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+    margin-left: 1rem;
+}
+
+#project-steps span {
+    padding: 2px 8px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    color: var(--muted);
+}
+
+#project-steps .active {
+    background: var(--primary);
+    color: #fff;
+    border-color: var(--primary);
+}

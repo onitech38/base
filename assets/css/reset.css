@@ -1,0 +1,62 @@
+@layer reset {
+    html {
+        color-scheme: light dark;
+        scroll-margin-top: 1rem;
+        scrollbar-gutter: stable;
+        -webkit-text-size-adjust: 100%;
+        -ms-text-size-adjust: 100%;
+
+        * {
+            transition:
+                color var(--tempo) ease,
+                background-color var(--tempo) ease,
+                box-shadow var(--tempo) ease,
+                border-color var(--tempo) ease,
+                transform var(--tempo) ease,
+                backdrop-filter var(--tempo) ease;
+        }
+
+        &:has(#themeSlider:checked) {
+            color-scheme: light;
+        }
+
+        @supports selector(::details-content) {
+            details::details-content {
+                block-size: 0;
+                overflow: hidden;
+
+                @media (prefers-reduced-motion: no-preference) {
+                    transition:
+                        block-size var(--tempo) ease,
+                        content-visibility var(--tempo) ease;
+                    transition-behavior: allow-discrete;
+                }
+            }
+
+            details[open]::details-content {
+                block-size: auto;
+                content-visibility: visible;
+            }
+        }
+    }
+
+    @media screen and (prefers-reduced-motion: reduce) {
+        html {
+            scroll-behavior: smooth;
+        }
+
+        .offline-icon {
+            animation: none;
+        }
+    }
+
+    *,
+    *::before,
+    *::after {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        list-style: none;
+        text-align: start;
+    }
+}
