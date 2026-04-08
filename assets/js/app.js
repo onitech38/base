@@ -1,180 +1,102 @@
 import { store } from "./store.js";
 
 /* =========================
-   STATE
+   WIZARD STATE
 ========================= */
-let currentProcess = null;
+let activeProcessIndex = 0;
+let activeTaskIndex = null;
 
 /* =========================
-   HELPERS
+   ELEMENTS
 ========================= */
-const getProcesses = () => store.processes;
-const listEl = () => document.getElementById("pb-process-list");
-const taskEl = () => document.getElementById("pb-task-list");
-const titleEl = () => document.getElementById("pb-current-title");
-const taskAreaEl = () => document.getElementById("pb-task-area");
+const processListEl = () => document.getElementById("pb-process-list");
+const planViewEl = () => document.getElementById("pb-plan-view");
+const taskViewEl = () => document.getElementById("pb-task-view");
+const taskTitleEl = () => document.getElementById("pb-task-title");
+const taskDescEl = () => document.getElementById("pb-task-description");
 
 /* =========================
-   PROCESS LIST
+   PLAN VIEW
 ========================= */
-function renderProcesses() {
-  if (!listEl()) return;
+function renderPlan() {
+  processListEl().innerHTML = "";
 
-  listEl().innerHTML = "";
-
-  getProcesses().forEach((p, i) => {
-    const div = document.createElement("div");
-    div.textContent = p.name;
-    div.className = "pb-process-item";
-    div.onclick = () => openProcess(i);
-    listEl().appendChild(div);
-  });
-}
-
-/* =========================
-   OPEN PROCESS
-========================= */
-function openProcess(index) {
-  currentProcess = index;
-
-  const process = getProcesses()[index];
-  titleEl().textContent = process.name;
-
-  // UX: mostrar tarefas, esconder lista
-  listEl().style.display = "none";
-  taskAreaEl().style.display = "block";
-
-  updateHint(process.name);
-  renderTasks();
-}
-
-/* =========================
-   TASKS
-========================= */
-function renderTasks() {
-  taskEl().innerHTML = "";
-
-  getProcesses()[currentProcess].tasks.forEach((t, i) => {
+  store.processes.forEach((process, pIndex) => {
     const li = document.createElement("li");
-    li.textContent = t.name;
-    li.style.cursor = "pointer";
+    li.innerHTML = `<strong>${process.name}</strong>`;
 
-    if (t.done) {
-      li.style.textDecoration = "line-through";
-      li.style.opacity = "0.6";
-    }
+    // Expand tasks
+    const ul = document.createElement("ul");
 
-    li.onclick = () => toggleTask(i);
-    taskEl().appendChild(li);
+    process.tasks.forEach((task, tIndex) => {
+      const taskLi = document.createElement("li");
+
+      taskLi.textContent = task.name;
+      taskLi.style.cursor = "pointer";
+      taskLi.style.opacity = task.done ? "0.5" : "1";
+
+      if (!task.done) {
+        taskLi.onclick = () => openTask(pIndex, tIndex);
+      }
+
+      ul.appendChild(taskLi);
+    });
+
+    li.appendChild(ul);
+    processListEl().appendChild(li);
   });
 }
 
-function toggleTask(i) {
-  const task = getProcesses()[currentProcess].tasks[i];
-  task.done = !task.done;
+/* =========================
+   TASK VIEW
+========================= */
+function openTask(pIndex, tIndex) {
+  activeProcessIndex = pIndex;
+  activeTaskIndex = tIndex;
 
-  store.updateGlobalProgress();
-  store.save();
+  const task = store.processes[pIndex].tasks[tIndex];
 
-  renderTasks();
+  planViewEl().style.display = "none";
+  taskViewEl().style.display = "block";
+
+  taskTitleEl().textContent = task.name;
+  taskDescEl().textContent =
+    "Executa esta tarefa e marca como concluída quando terminares.";
 }
 
-/* =========================
-   HINT TEXT
-========================= */
-function updateHint(processName) {
-  const hint = document.getElementById("pb-hint");
-  if (!hint) return;
-
-  hint.textContent = `Estás no processo "${processName}". Marca cada tarefa quando estiver concluída.`;
-}
-
-/* =========================
-   BACK TO PROCESS LIST
-========================= */
 document.addEventListener("click", (e) => {
-  if (e.target.id !== "pb-back") return;
+  if (e.target.id === "pb-task-done") {
+    const task =
+      store.processes[activeProcessIndex].tasks[activeTaskIndex];
 
-  taskAreaEl().style.display = "none";
-  listEl().style.display = "block";
-  titleEl().textContent = "Processos";
+    task.done = true;
+
+    store.updateGlobalProgress();
+    store.save();
+
+    backToPlan();
+  }
+
+  if (e.target.id === "pb-back-to-process") {
+    backToPlan();
+  }
 });
 
+function backToPlan() {
+  taskViewEl().style.display = "none";
+  planViewEl().style.display = "block";
+
+  activeTaskIndex = null;
+  renderPlan();
+}
+
 /* =========================
-   PUBLIC API
+   ENTRY POINT
 ========================= */
 window.processBuilder = {
   loadProcesses() {
-    renderProcesses();
-
-    // ABRIR AUTOMATICAMENTE O PRIMEIRO PROCESSO
-    if (store.processes.length > 0) {
-      openProcess(0);
-    }
+    renderPlan();
   },
 };
-
-/* =========================
-   SETUP
-========================= */
-document.addEventListener("click", (e) => {
-  if (e.target.id !== "setup-submit") return;
-
-  const project = {
-    name: document.getElementById("setup-name").value.trim(),
-    type: document.getElementById("setup-type").value,
-    goal: document.getElementById("setup-goal").value,
-    features: {
-      login: document.getElementById("feature-login").checked,
-      backend: document.getElementById("feature-backend").checked,
-      pwa: document.getElementById("feature-pwa").checked,
-    },
-  };
-
-  store.setProjectConfig(project);
-
-  if (!store.isSetupComplete()) {
-    alert("Preenche nome, tipo e objetivo do projeto.");
-    return;
-  }
-
-  store.completeSetup();
-  store.generateProcessesFromProject();
-  location.hash = "process-builder";
-});
-
-/* =========================
-   BRANDING
-========================= */
-document.addEventListener("click", (e) => {
-  if (e.target.id !== "branding-save") return;
-
-  const branding = {
-    primaryColor: document.getElementById("brand-primary")?.value || "",
-    secondaryColor: document.getElementById("brand-secondary")?.value || "",
-    fontPrimary: document.getElementById("brand-font")?.value || "",
-  };
-
-  const supportsDark =
-    document.getElementById("brand-darkmode")?.checked ?? true;
-
-  store.setBranding(branding, supportsDark);
-  store.generateProcessesFromProject();
-  location.hash = "process-builder";
-});
-
-/* =========================
-   EXPORT
-========================= */
-document.addEventListener("click", (e) => {
-  if (e.target.id !== "export-btn") return;
-
-  if (store.state.progress.global < 100) {
-    alert("Conclui todas as tarefas antes de exportar o projeto.");
-    return;
-  }
-
-  alert("Projeto exportado com sucesso (simulação).");
-});
 
 window.store = store;
