@@ -1,45 +1,35 @@
 <section class="page page-process-builder">
+    <header class="page-header">
+        <h1 id="pb-title">PROCESSO</h1>
+        <p class="pb-subtitle">
+            Este é o plano do teu projeto. Executa os processos pela ordem.
+        </p>
+    </header>
 
-  <header class="page-header">
-    <h1 id="pb-title">PROCESSO</h1>
-    <p class="pb-subtitle">
-      Este é o plano do teu projeto. Executa os processos pela ordem.
-    </p>
-  </header>
+    <div class="page-content">
+        <!-- ================= OVERVIEW (PLANO) ================= -->
+        <div id="pb-overview">
+            <ul id="pb-process-list">
+                <!-- preenchido via JS -->
+            </ul>
+        </div>
 
-  <div class="page-content">
+        <!-- ================= EXECUTION (FASE) ================= -->
+        <div id="pb-execution" style="display: none">
+            <h2 id="pb-phase-title"></h2>
+            <p id="pb-phase-description"></p>
 
-    <!-- ===== OVERVIEW (Progress Builder) ===== -->
-    <div id="pb-overview">
+            <ul id="pb-task-list"></ul>
 
-      <ul id="pb-process-list">
-        <!-- render JS -->
-      </ul>
+            <button id="pb-primary-cta">Guardar</button>
+        </div>
 
+        <!-- ================= EXPORT FINAL ================= -->
+        <div id="pb-export" style="display: none">
+            <h2>Projeto concluído 🎉</h2>
+            <p>O teu projeto está pronto para exportação.</p>
+
+            <button id="export-btn">Exportar Projeto</button>
+        </div>
     </div>
-
-    <!-- ===== EXECUTION (fase ativa ou edição) ===== -->
-    <div id="pb-execution" style="display:none;">
-
-      <h2 id="pb-phase-title"></h2>
-
-      <p id="pb-phase-description"></p>
-
-      <ul id="pb-task-list"></ul>
-
-      <div class="pb-actions">
-        <button id="pb-primary-cta"></button>
-        <button id="pb-back-overview">Voltar ao plano</button>
-      </div>
-
-    </div>
-
-    <!-- ===== EXPORT FINAL ===== -->
-    <div id="pb-export" style="display:none;">
-      <h2>Projeto concluído 🎉</h2>
-      <p>O teu projeto está pronto para exportação.</p>
-      <button id="export-btn">Exportar projeto</button>
-    </div>
-
-  </div>
 </section>

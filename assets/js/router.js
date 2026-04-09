@@ -1,72 +1,22 @@
-import { store } from "./store.js";
+import store from "./store.js";
 
 const app = document.getElementById("app");
 
-/* -------------------------------
-   Atualizar botão ativo no menu
-------------------------------- */
-function updateActiveNav(page) {
-  document.querySelectorAll("nav button").forEach((btn) => {
-    btn.classList.toggle("active", btn.dataset.page === page);
-  });
-}
-
-/* -------------------------------
-   Router SPA (VERSÃO FINAL)
-------------------------------- */
 async function loadPage() {
   let page = location.hash.replace("#", "").replace("/", "");
+  if (!page) page = "home";
 
-  // ✅ REGRA FINAL:
-  // Forçar Setup APENAS enquanto onboarding não terminou
-  if (!store.state.progress.onboardingCompleted) {
-    if (page !== "setup") {
-      location.hash = "#/setup";
-      return;
-    }
+  if (!store.state.progress.onboardingCompleted && page !== "setup") {
+    location.hash = "#/setup";
+    return;
   }
 
-  // Default depois do onboarding
-  if (!page) {
-    page = "home";
-  }
+  const res = await fetch(`pages/${page}.html`);
+  app.innerHTML = await res.text();
 
-  updateActiveNav(page);
-  app.classList.add("is-leaving");
-
-  try {
-    const res = await fetch(`pages/${page}.html`);
-    const html = await res.text();
-
-    setTimeout(() => {
-      app.innerHTML = html;
-
-      requestAnimationFrame(() => {
-        app.classList.remove("is-leaving");
-
-        // Bootstrap do Process Builder
-        if (page === "process-builder" && window.processBuilder) {
-          window.processBuilder.loadProcesses();
-        }
-      });
-    }, 150);
-  } catch (err) {
-    app.innerHTML = "<h2>Erro ao carregar página.</h2>";
-    app.classList.remove("is-leaving");
-  }
+  if (page === "home") window.renderHomeDashboard();
+  if (page === "process-builder") window.processBuilder.loadProcesses();
 }
 
-/* -------------------------------
-   Navegação via menu
-------------------------------- */
-document.querySelectorAll("nav button").forEach((btn) => {
-  btn.addEventListener("click", () => {
-    location.hash = btn.dataset.page;
-  });
-});
-
-/* -------------------------------
-   Eventos globais
-------------------------------- */
 window.addEventListener("hashchange", loadPage);
 window.addEventListener("DOMContentLoaded", loadPage);
