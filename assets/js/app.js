@@ -1,10 +1,41 @@
 import { store } from "./store.js";
 
 /* =====================================================
-   ESTADO GLOBAL DO WIZARD
+   SETUP (FECHO CORRETO DO ONBOARDING)
 ===================================================== */
-let mode = "execution"; // execution | overview
-let activePhaseIndex = store.currentPhaseIndex;
+document.addEventListener("click", (e) => {
+  if (e.target.id !== "setup-submit") return;
+
+  const project = {
+    name: document.getElementById("setup-name")?.value.trim(),
+    type: document.getElementById("setup-type")?.value,
+    goal: document.getElementById("setup-goal")?.value,
+    features: {
+      login: document.getElementById("feature-login")?.checked || false,
+      backend: document.getElementById("feature-backend")?.checked || false,
+      pwa: document.getElementById("feature-pwa")?.checked || false,
+    },
+  };
+
+  store.setProjectConfig(project);
+
+  if (!store.isSetupComplete()) {
+    alert("Preenche nome, tipo e objetivo do projeto.");
+    return;
+  }
+
+  // ✅ FECHO DEFINITIVO DO SETUP
+  store.generateProcessesFromProject();
+  store.completeSetup();
+
+  // ✅ ESTE REDIRECT É O QUE FALTAVA
+  location.hash = "#/process-builder";
+});
+
+/* =====================================================
+   ESTADO DO WIZARD
+===================================================== */
+let mode = "execution";
 let editingPhaseIndex = null;
 
 /* =====================================================
@@ -32,7 +63,7 @@ function phaseState(index) {
 }
 
 /* =====================================================
-   OVERVIEW (Progress Builder)
+   OVERVIEW
 ===================================================== */
 function renderOverview() {
   processListEl().innerHTML = "";
@@ -40,21 +71,10 @@ function renderOverview() {
   store.processes.forEach((phase, index) => {
     const li = document.createElement("li");
     li.textContent = phase.name;
+    li.className = `phase-${phaseState(index)}`;
 
-    const state = phaseState(index);
-
-    li.className = `phase-${state}`;
-
-    if (state === "completed") {
-      li.onclick = () => openPhase(index, true);
-    }
-
-    if (state === "active") {
-      li.onclick = () => openPhase(index, false);
-    }
-
-    if (state === "locked") {
-      li.title = "Conclui o processo anterior para desbloquear";
+    if (phaseState(index) !== "locked") {
+      li.onclick = () => openPhase(index, index < store.currentPhaseIndex);
     }
 
     processListEl().appendChild(li);
@@ -62,11 +82,10 @@ function renderOverview() {
 }
 
 /* =====================================================
-   EXECUTION (fase ativa ou edição)
+   EXECUÇÃO DE FASE
 ===================================================== */
 function openPhase(index, isEdit) {
   editingPhaseIndex = index;
-  mode = "execution";
 
   overviewEl().style.display = "none";
   exportEl().style.display = "none";
@@ -75,64 +94,50 @@ function openPhase(index, isEdit) {
   const phase = store.processes[index];
 
   phaseTitleEl().textContent = phase.name;
-
   phaseDescEl().textContent = isEdit
     ? "Estás a editar uma fase já concluída."
-    : "Conclui as tarefas desta fase para continuar.";
+    : "Conclui as tarefas para continuar.";
 
   renderTasks(index);
 
-  primaryCTAEl().textContent = isEdit
-    ? "Guardar"
-    : "Guardar e continuar";
+  primaryCTAEl().textContent = isEdit ? "Guardar" : "Guardar e continuar";
 }
 
 /* =====================================================
-   TASKS
+   TAREFAS
 ===================================================== */
 function renderTasks(phaseIndex) {
   taskListEl().innerHTML = "";
 
   store.processes[phaseIndex].tasks.forEach((task) => {
     const li = document.createElement("li");
-
     li.textContent = task.done ? "✓ " + task.name : task.name;
-    li.style.cursor = "pointer";
-    li.style.opacity = task.done ? "0.6" : "1";
-
     li.onclick = () => {
       task.done = !task.done;
       store.save();
       renderTasks(phaseIndex);
     };
-
     taskListEl().appendChild(li);
   });
 }
 
 /* =====================================================
-   CTA PRINCIPAL (Guardar / Guardar e continuar)
+   CTA PRINCIPAL
 ===================================================== */
 primaryCTAEl()?.addEventListener("click", () => {
-  const phaseIndex = editingPhaseIndex;
-  const phase = store.processes[phaseIndex];
+  const phase = store.processes[editingPhaseIndex];
+  const isEdit = editingPhaseIndex < store.currentPhaseIndex;
 
-  const allDone = phase.tasks.every(t => t.done);
-
-  // modo edição → apenas guarda
-  if (phaseIndex < store.currentPhaseIndex) {
-    store.save();
-    showOverview();
-    return;
-  }
-
-  // modo execução → valida conclusão
-  if (!allDone) {
+  if (!isEdit && !phase.tasks.every(t => t.done)) {
     alert("Conclui todas as tarefas antes de continuar.");
     return;
   }
 
-  store.completeCurrentPhase();
+  if (!isEdit) {
+    store.completeCurrentPhase();
+  } else {
+    store.save();
+  }
 
   if (store.state.progress.global === 100) {
     showExport();
@@ -142,14 +147,7 @@ primaryCTAEl()?.addEventListener("click", () => {
 });
 
 /* =====================================================
-   VOLTAR AO PLANO
-===================================================== */
-backOverviewEl()?.addEventListener("click", () => {
-  showOverview();
-});
-
-/* =====================================================
-   EXPORT FINAL
+   EXPORT
 ===================================================== */
 function showExport() {
   executionEl().style.display = "none";
@@ -164,15 +162,14 @@ document.addEventListener("click", (e) => {
 });
 
 /* =====================================================
-   VISUAL MODES
+   OVERVIEW
 ===================================================== */
-function showOverview() {
-  mode = "overview";
+backOverviewEl()?.addEventListener("click", () => {
   executionEl().style.display = "none";
   exportEl().style.display = "none";
   overviewEl().style.display = "block";
   renderOverview();
-}
+});
 
 /* =====================================================
    INIT
@@ -188,10 +185,7 @@ window.processBuilder = {
 };
 
 window.addEventListener("store-updated", () => {
-  if (mode === "overview") {
-    renderOverview();
-  }
+  if (mode === "overview") renderOverview();
 });
 
 window.store = store;
-``
