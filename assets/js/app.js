@@ -1,7 +1,23 @@
 import { store } from "./store.js";
 
 /* =====================================================
-   SETUP (FECHO CORRETO DO ONBOARDING)
+   UTIL: PROGRESS UI GLOBAL
+===================================================== */
+function updateProgressUI() {
+  const value = store.state.progress.global;
+
+  const valueEl = document.getElementById("progress-value");
+  const fillEl = document.getElementById("progress-fill");
+
+  if (valueEl) valueEl.textContent = `${value}%`;
+  if (fillEl) fillEl.style.width = `${value}%`;
+}
+
+window.addEventListener("store-updated", updateProgressUI);
+document.addEventListener("DOMContentLoaded", updateProgressUI);
+
+/* =====================================================
+   SETUP (FECHO DEFINITIVO)
 ===================================================== */
 document.addEventListener("click", (e) => {
   if (e.target.id !== "setup-submit") return;
@@ -24,34 +40,27 @@ document.addEventListener("click", (e) => {
     return;
   }
 
-  // ✅ FECHO DEFINITIVO DO SETUP
   store.generateProcessesFromProject();
-  store.completeSetup();
+  store.completeSetup(); // ✅ currentPhaseIndex = 1
 
-  // ✅ ESTE REDIRECT É O QUE FALTAVA
   location.hash = "#/process-builder";
 });
 
 /* =====================================================
-   ESTADO DO WIZARD
+   WIZARD STATE
 ===================================================== */
-let mode = "execution";
-let editingPhaseIndex = null;
+let currentPhase = null;
 
 /* =====================================================
    ELEMENTOS
 ===================================================== */
+const phaseTitleEl = () => document.getElementById("pb-phase-title");
+const taskListEl = () => document.getElementById("pb-task-list");
+const processListEl = () => document.getElementById("pb-process-list");
+const primaryCTAEl = () => document.getElementById("pb-primary-cta");
 const overviewEl = () => document.getElementById("pb-overview");
 const executionEl = () => document.getElementById("pb-execution");
 const exportEl = () => document.getElementById("pb-export");
-
-const processListEl = () => document.getElementById("pb-process-list");
-const phaseTitleEl = () => document.getElementById("pb-phase-title");
-const phaseDescEl = () => document.getElementById("pb-phase-description");
-const taskListEl = () => document.getElementById("pb-task-list");
-
-const primaryCTAEl = () => document.getElementById("pb-primary-cta");
-const backOverviewEl = () => document.getElementById("pb-back-overview");
 
 /* =====================================================
    HELPERS
@@ -63,7 +72,7 @@ function phaseState(index) {
 }
 
 /* =====================================================
-   OVERVIEW
+   OVERVIEW (Progress Builder)
 ===================================================== */
 function renderOverview() {
   processListEl().innerHTML = "";
@@ -74,7 +83,9 @@ function renderOverview() {
     li.className = `phase-${phaseState(index)}`;
 
     if (phaseState(index) !== "locked") {
-      li.onclick = () => openPhase(index, index < store.currentPhaseIndex);
+      li.onclick = () => openPhase(index);
+    } else {
+      li.title = "Conclui a fase anterior para desbloquear";
     }
 
     processListEl().appendChild(li);
@@ -82,25 +93,22 @@ function renderOverview() {
 }
 
 /* =====================================================
-   EXECUÇÃO DE FASE
+   EXECUÇÃO DA FASE
 ===================================================== */
-function openPhase(index, isEdit) {
-  editingPhaseIndex = index;
+function openPhase(index) {
+  currentPhase = index;
 
   overviewEl().style.display = "none";
   exportEl().style.display = "none";
   executionEl().style.display = "block";
 
   const phase = store.processes[index];
-
   phaseTitleEl().textContent = phase.name;
-  phaseDescEl().textContent = isEdit
-    ? "Estás a editar uma fase já concluída."
-    : "Conclui as tarefas para continuar.";
 
   renderTasks(index);
 
-  primaryCTAEl().textContent = isEdit ? "Guardar" : "Guardar e continuar";
+  primaryCTAEl().textContent =
+    index < store.currentPhaseIndex ? "Guardar" : "Guardar e continuar";
 }
 
 /* =====================================================
@@ -112,28 +120,35 @@ function renderTasks(phaseIndex) {
   store.processes[phaseIndex].tasks.forEach((task) => {
     const li = document.createElement("li");
     li.textContent = task.done ? "✓ " + task.name : task.name;
+    li.style.cursor = "pointer";
+
     li.onclick = () => {
       task.done = !task.done;
       store.save();
       renderTasks(phaseIndex);
     };
+
     taskListEl().appendChild(li);
   });
 }
 
 /* =====================================================
-   CTA PRINCIPAL
+   CTA PRINCIPAL (GUARDAR / CONTINUAR)
 ===================================================== */
-primaryCTAEl()?.addEventListener("click", () => {
-  const phase = store.processes[editingPhaseIndex];
-  const isEdit = editingPhaseIndex < store.currentPhaseIndex;
+document.addEventListener("click", (e) => {
+  if (e.target.id !== "pb-primary-cta") return;
 
-  if (!isEdit && !phase.tasks.every(t => t.done)) {
-    alert("Conclui todas as tarefas antes de continuar.");
-    return;
-  }
+  const phaseIndex = currentPhase;
+  const phase = store.processes[phaseIndex];
+
+  const isEdit = phaseIndex < store.currentPhaseIndex;
 
   if (!isEdit) {
+    const allDone = phase.tasks.every(t => t.done);
+    if (!allDone) {
+      alert("Conclui todas as tarefas antes de continuar.");
+      return;
+    }
     store.completeCurrentPhase();
   } else {
     store.save();
@@ -142,7 +157,7 @@ primaryCTAEl()?.addEventListener("click", () => {
   if (store.state.progress.global === 100) {
     showExport();
   } else {
-    openPhase(store.currentPhaseIndex, false);
+    openPhase(store.currentPhaseIndex);
   }
 });
 
@@ -162,30 +177,18 @@ document.addEventListener("click", (e) => {
 });
 
 /* =====================================================
-   OVERVIEW
-===================================================== */
-backOverviewEl()?.addEventListener("click", () => {
-  executionEl().style.display = "none";
-  exportEl().style.display = "none";
-  overviewEl().style.display = "block";
-  renderOverview();
-});
-
-/* =====================================================
    INIT
 ===================================================== */
 window.processBuilder = {
   loadProcesses() {
+    updateProgressUI();
     if (store.state.progress.global === 100) {
       showExport();
     } else {
-      openPhase(store.currentPhaseIndex, false);
+      openPhase(store.currentPhaseIndex);
     }
   }
 };
 
-window.addEventListener("store-updated", () => {
-  if (mode === "overview") renderOverview();
-});
-
 window.store = store;
+``
