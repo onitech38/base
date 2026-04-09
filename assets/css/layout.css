@@ -367,4 +367,97 @@
         transform: translateY(-2px);
         box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
     }
+    /* =====================================================
+   PAGES BASE
+===================================================== */
+.page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.page-header {
+  margin-bottom: 2.5rem;
+}
+
+.page-header h1 {
+  margin: 0 0 0.5rem;
+}
+
+.page-header p {
+  max-width: 640px;
+  opacity: 0.85;
+}
+
+/* =====================================================
+   HOME DASHBOARD
+===================================================== */
+#home-dashboard {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.5rem;
+}
+
+.home-phase {
+  border: 1px solid #e5e5e5;
+  border-radius: 12px;
+  padding: 1.25rem;
+  background: #fff;
+}
+
+.home-phase h3 {
+  margin: 0 0 0.75rem;
+  font-size: 0.9rem;
+}
+
+.home-phase ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.home-phase li {
+  font-size: 0.85rem;
+  margin-bottom: 0.25rem;
+}
+
+/* =====================================================
+   PROCESS BUILDER
+===================================================== */
+#pb-process-list {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 2rem;
+}
+
+#pb-process-list li {
+  padding: 0.5rem 0;
+  cursor: pointer;
+}
+
+#pb-process-list li:hover {
+  text-decoration: underline;
+}
+
+#pb-task-list {
+  list-style: none;
+  padding: 0;
+}
+
+#pb-task-list li {
+  cursor: pointer;
+  padding: 0.4rem 0;
+}
+
+/* =====================================================
+   BRANDING PAGE
+===================================================== */
+.page-branding label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-bottom: 1rem;
+  max-width: 280px;
+}
+
 }
