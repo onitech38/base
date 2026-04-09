@@ -40,13 +40,17 @@ function renderHomeDashboard() {
 
   container.innerHTML = "";
 
-  store.processes.forEach((phase) => {
-    const block = document.createElement("div");
-    block.className = "home-phase";
+  store.processes.forEach((phase, index) => {
+    const div = document.createElement("div");
+    div.className = "home-phase";
+
+    if (index < store.currentPhaseIndex) div.classList.add("completed");
+    else if (index === store.currentPhaseIndex) div.classList.add("active");
+    else div.classList.add("locked");
 
     const h3 = document.createElement("h3");
     h3.textContent = phase.name;
-    block.appendChild(h3);
+    div.appendChild(h3);
 
     const ul = document.createElement("ul");
     phase.tasks.forEach((task) => {
@@ -55,9 +59,18 @@ function renderHomeDashboard() {
       ul.appendChild(li);
     });
 
-    block.appendChild(ul);
-    container.appendChild(block);
+    div.appendChild(ul);
+    container.appendChild(div);
   });
+
+  // ✅ BOTÃO EXPORTAR NA HOME
+  if (store.state.progress.global === 100) {
+    const btn = document.createElement("button");
+    btn.textContent = "Exportar projeto";
+    btn.onclick = exportProject;
+    btn.style.marginTop = "2rem";
+    container.appendChild(btn);
+  }
 }
 
 window.renderHomeDashboard = renderHomeDashboard;
@@ -145,3 +158,39 @@ window.processBuilder = {
     else renderOverview();
   },
 };
+/* =====================
+   EXPORTAÇÃO DO PROJETO
+===================== */
+function exportProject() {
+  const zip = new JSZip();
+
+  // README
+  zip.file(
+    "README.md",
+    `# ${store.state.project.name}
+
+Projeto gerado com o Project Builder.
+
+Objetivo:
+${store.state.project.goal}
+
+Progresso: ${store.state.progress.global}%
+`,
+  );
+
+  // Estrutura base
+  zip.folder("src").file("index.html", "<!-- Projeto base -->");
+  zip.folder("assets/css").file("style.css", "/* styles */");
+  zip.folder("assets/js").file("app.js", "// js base");
+
+  zip.generateAsync({ type: "blob" }).then((blob) => {
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = `${store.state.project.name || "projeto"}.zip`;
+    link.click();
+    URL.revokeObjectURL(link.href);
+  });
+}
+
+// Tornar global
+window.exportProject = exportProject;
