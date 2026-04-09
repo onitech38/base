@@ -13,24 +13,33 @@
 
     <body>
         <header>
-            <nav id="main-nav">
-              <div class="nav-left">
-                <span id="nav-user" style="display:none;"></span>
+            <nav id="main-nav" class="nav">
+              <div class="nav-slot nav-left">
+                <button id="nav-home" style="display:none;"></button>
               </div>
             
-              <div class="nav-center">
-                <strong id="nav-logo">LOGO</strong>
+              <div class="nav-slot nav-center">
+                <span class="nav-logo">LOGO</span>
               </div>
             
-              <div class="nav-right">
-                <button data-page="process-builder" id="nav-process" style="display:none;">
+              <div class="nav-slot nav-right">
+                <button
+                  id="nav-process"
+                  data-page="process-builder"
+                  style="display:none;"
+                >
                   Process Builder
                 </button>
-                <button id="nav-logout" style="display:none;">
+            
+                <button
+                  id="nav-logout"
+                  style="display:none;"
+                >
                   Log out
                 </button>
-              </div>
+              </div>            
             </nav>
+
 
             <!-- Estado do projeto -->
             <div id="project-status">Setup</div>
