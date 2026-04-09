@@ -7,7 +7,7 @@ document.addEventListener("click", (e) => {
   if (e.target.id !== "setup-submit") return;
 
   const project = {
-    name: document.getElementById("setup-name")?.value.trim() || "",
+    name: document.getElementById("setup-name")?.value || "",
     type: document.getElementById("setup-type")?.value || "",
     goal: document.getElementById("setup-goal")?.value || "",
     features: {
@@ -20,7 +20,7 @@ document.addEventListener("click", (e) => {
   store.setProjectConfig(project);
 
   if (!store.isSetupComplete()) {
-    alert("Preenche nome, tipo e objetivo do projeto.");
+    alert("Preenche nome, tipo e objetivo.");
     return;
   }
 
@@ -31,158 +31,92 @@ document.addEventListener("click", (e) => {
 });
 
 /* =========================
-   HELPERS
+   PROCESS BUILDER
 ========================= */
+const processListEl = () => document.getElementById("pb-process-list");
+const taskListEl = () => document.getElementById("pb-task-list");
+const phaseTitleEl = () => document.getElementById("pb-phase-title");
+const exportBtn = () => document.getElementById("export-btn");
+
 function getPhaseState(index) {
   if (index < store.currentPhaseIndex) return "completed";
   if (index === store.currentPhaseIndex) return "active";
   return "locked";
 }
 
-/* =========================
-   PLAN VIEW
-========================= */
-const processListEl = () => document.getElementById("pb-process-list");
-const planViewEl = () => document.getElementById("pb-plan-view");
-const taskViewEl = () => document.getElementById("pb-task-view");
-const taskTitleEl = () => document.getElementById("pb-task-title");
-const taskDescEl = () => document.getElementById("pb-task-description");
-
-let activeProcessIndex = null;
-let activeTaskIndex = null;
-
-function renderPlan() {
+function renderBuilder() {
   processListEl().innerHTML = "";
+  taskListEl().innerHTML = "";
 
-  store.processes.forEach((process, pIndex) => {
-    const state = getPhaseState(pIndex);
+  store.processes.forEach((phase, i) => {
     const li = document.createElement("li");
-    li.textContent = process.name;
+    li.textContent = phase.name;
 
-    if (state === "completed") {
-      li.style.opacity = "0.5";
-      li.onclick = () => openPhase(pIndex);
-    }
+    const state = getPhaseState(i);
 
-    if (state === "active") {
-      li.style.fontWeight = "bold";
-      li.onclick = () => openPhase(pIndex);
-    }
-
-    if (state === "locked") {
-      li.style.opacity = "0.3";
-      li.title = "Conclui a fase anterior para desbloquear";
-    }
+    if (state === "completed") li.style.opacity = "0.5";
+    if (state === "locked") li.style.opacity = "0.25";
 
     processListEl().appendChild(li);
   });
-}
 
-/* =========================
-   PHASE / TASK VIEW
-========================= */
-function openPhase(pIndex) {
-  activeProcessIndex = pIndex;
-  activeTaskIndex = null;
+  const active = store.processes[store.currentPhaseIndex];
+  phaseTitleEl().textContent = active.name;
 
-  planViewEl().style.display = "none";
-  taskViewEl().style.display = "block";
-
-  const process = store.processes[pIndex];
-  taskTitleEl().textContent = process.name;
-  taskDescEl().innerHTML = "";
-
-  process.tasks.forEach((task, tIndex) => {
-    const btn = document.createElement("button");
-    btn.textContent = task.done ? "✓ " + task.name : task.name;
-    btn.disabled = task.done;
-    btn.onclick = () => openTask(pIndex, tIndex);
-    taskDescEl().appendChild(btn);
+  active.tasks.forEach((task, i) => {
+    const li = document.createElement("li");
+    li.textContent = task.done ? "✓ " + task.name : task.name;
+    li.style.textDecoration = task.done ? "line-through" : "none";
+    li.onclick = () => {
+      task.done = !task.done;
+      store.save();
+      renderBuilder();
+    };
+    taskListEl().appendChild(li);
   });
-}
 
-function openTask(pIndex, tIndex) {
-  activeTaskIndex = tIndex;
+  if (store.state.progress.global === 100) {
+    exportBtn().style.display = "block";
+  } else {
+    exportBtn().style.display = "none";
+  }
 }
 
 /* =========================
-   TASK ACTIONS
+   CONCLUIR FASE
 ========================= */
 document.addEventListener("click", (e) => {
-  if (e.target.id === "pb-task-done") {
-    const task =
-      store.processes[activeProcessIndex].tasks[activeTaskIndex];
+  if (e.target.id !== "pb-complete-phase") return;
 
-    task.done = true;
+  const active = store.processes[store.currentPhaseIndex];
+  const allDone = active.tasks.every(t => t.done);
 
-    const allDone = store.processes[activeProcessIndex].tasks
-      .every(t => t.done);
-
-    if (allDone) {
-      store.completeCurrentPhase();
-    }
-
-    store.save();
-    backToPlan();
+  if (!allDone) {
+    alert("Conclui todas as tarefas antes de continuar.");
+    return;
   }
 
-  if (e.target.id === "pb-back-to-process") {
-    backToPlan();
-  }
+  store.completeCurrentPhase();
+  renderBuilder();
 });
-
-function backToPlan() {
-  taskViewEl().style.display = "none";
-  planViewEl().style.display = "block";
-  renderPlan();
-}
-
-/* =========================
-   ENTRY POINT
-========================= */
-window.processBuilder = {
-  loadProcesses() {
-    renderPlan();
-  },
-};
 
 /* =========================
    EXPORT
 ========================= */
 document.addEventListener("click", (e) => {
   if (e.target.id !== "export-btn") return;
-
-  if (store.state.progress.global < 100) {
-    alert("Conclui todas as fases antes de exportar.");
-    return;
-  }
-
-  alert("Projeto exportado com sucesso.");
+  alert("Projeto exportado com sucesso!");
 });
 
+/* =========================
+   INIT
+========================= */
+window.processBuilder = {
+  loadProcesses() {
+    renderBuilder();
+  },
+};
+
+window.addEventListener("store-updated", renderBuilder);
 window.store = store;
-
-function updateProgressUI() {
-  const value = store.state.progress.global;
-
-  const valueEl = document.getElementById("progress-value");
-  const fillEl = document.getElementById("progress-fill");
-
-  if (valueEl) {
-    valueEl.textContent = `${value}%`;
-  }
-
-  if (fillEl) {
-    fillEl.style.width = `${value}%`;
-  }
-}
-
-window.addEventListener("store-updated", () => {
-  updateProgressUI();
-});
-
-document.addEventListener("DOMContentLoaded", () => {
-  updateProgressUI();
-});
-
-
+``
