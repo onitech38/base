@@ -244,31 +244,32 @@ window.closePreview = closePreview;
    NAV FLOW (FIGMA)
 ===================== */
 function updateNav() {
-  const name = store.state.project.name;
+  const userName = store.state.project.name;
   const setupDone = store.state.progress.onboardingCompleted;
 
-  const navUser = document.getElementById("nav-user");
+  const navHome = document.getElementById("nav-home");
   const navProcess = document.getElementById("nav-process");
   const navLogout = document.getElementById("nav-logout");
 
-  // Reset
-  navUser.style.display = "none";
+  // reset
+  navHome.style.display = "none";
   navProcess.style.display = "none";
   navLogout.style.display = "none";
 
-  // Após login (name definido)
-  if (name) {
+  // após login
+  if (userName) {
+    navHome.textContent = userName;
+    navHome.style.display = "inline-block";
+    navHome.onclick = () => location.hash = "#/home";
+
     navLogout.style.display = "inline-block";
-    navUser.textContent = name;
-    navUser.style.display = "inline-block";
   }
 
-  // Após setup completo
+  // após setup
   if (setupDone) {
     navProcess.style.display = "inline-block";
   }
 }
 
-// Atualizar sempre que store muda
 window.addEventListener("store-updated", updateNav);
 document.addEventListener("DOMContentLoaded", updateNav);
