@@ -56,9 +56,10 @@ export const store = {
     return Boolean(p.name && p.type && p.goal);
   },
 
+  
   completeSetup() {
-    // Setup conta como fase concluída
-    this.state.progress.currentPhaseIndex = 1;
+    this.state.progress.onboardingCompleted = true;
+    this.state.progress.currentPhaseIndex = 1; // primeira fase real
     this.updatePhaseProgress();
     this.save();
   },
