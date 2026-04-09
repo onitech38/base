@@ -2,23 +2,14 @@ import store from "./store.js";
 
 const app = document.getElementById("app");
 
-/* =====================
-   NAV CLICK
-===================== */
-document.querySelectorAll("nav button").forEach((btn) => {
-  btn.onclick = () => {
-    location.hash = `#/${btn.dataset.page}`;
-  };
+document.querySelectorAll("nav button").forEach(btn => {
+  btn.onclick = () => location.hash = `#/${btn.dataset.page}`;
 });
 
-/* =====================
-   ROUTER
-===================== */
 async function loadPage() {
   let page = location.hash.replace("#/", "");
   if (!page) page = "home";
 
-  // Forçar setup apenas antes do onboarding
   if (!store.state.progress.onboardingCompleted && page !== "setup") {
     location.hash = "#/setup";
     return;
@@ -27,19 +18,7 @@ async function loadPage() {
   const res = await fetch(`pages/${page}.html`);
   app.innerHTML = await res.text();
 
-  if (page === "process-builder") {
-    window.processBuilder.loadProcesses();
-  }
-
-  if (page === "home") {
-    if (
-      store.processes.length === 0 &&
-      store.state.progress.onboardingCompleted
-    ) {
-      store.generateProcessesFromProject();
-    }
-    window.renderHomeDashboard();
-  }
+  if (page === "home") window.renderHomeDashboard();
 }
 
 window.addEventListener("hashchange", loadPage);
