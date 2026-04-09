@@ -108,26 +108,99 @@ function openPreview() {
   const branding = project.branding || {};
 
   const primary = branding.primaryColor || "#4c6ef5";
+  const secondary = branding.secondaryColor || "#15aabf";
   const font = branding.fontPrimary || "system-ui, Arial, sans-serif";
+  const darkMode = branding.darkMode === true;
+
+  const bgMain = darkMode ? "#0f1115" : "#ffffff";
+  const bgHeader = darkMode ? "#1a1d23" : "#f5f6f8";
+  const textMain = darkMode ? "#f1f3f5" : "#1e1e1e";
+  const textMuted = darkMode ? "#adb5bd" : "#6c757d";
 
   frame.srcdoc = `
 <!DOCTYPE html>
-<html>
+<html lang="pt">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>${project.name}</title>
+
 <style>
-body { font-family:${font}; padding:2rem; }
-h1 { color:${primary}; }
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    font-family: ${font};
+    background: ${bgMain};
+    color: ${textMain};
+  }
+
+  header {
+    background: ${bgHeader};
+    padding: 1.5rem 2rem;
+    border-bottom: 3px solid ${primary};
+  }
+
+  header h1 {
+    margin: 0;
+    color: ${primary};
+    font-size: 1.5rem;
+  }
+
+  main {
+    padding: 3rem 2rem;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  main h2 {
+    margin-top: 0;
+  }
+
+  p {
+    line-height: 1.6;
+    color: ${textMuted};
+  }
+
+  .highlight {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    border-left: 4px solid ${secondary};
+    background: ${
+      darkMode ? "#1f232b" : "#f8f9fa"
+    };
+  }
 </style>
 </head>
+
 <body>
-<h1>${project.name}</h1>
-<p>${project.goal}</p>
+
+<header>
+  <h1>${project.name}</h1>
+</header>
+
+<main>
+  <h2>Objetivo do projeto</h2>
+  <p>${project.goal || "Objetivo não definido."}</p>
+
+  <div class="highlight">
+    <strong>Pré‑visualização do projeto</strong>
+    <p>
+      Este é um exemplo de como o teu projeto poderá começar,
+      com base no branding e estrutura definidos.
+    </p>
+  </div>
+</main>
+
 </body>
-</html>`;
+</html>
+`;
 
   modal.style.display = "block";
 }
+
 
 function closePreview() {
   document.getElementById("export-preview").style.display = "none";
