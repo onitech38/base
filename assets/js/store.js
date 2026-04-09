@@ -26,7 +26,7 @@ const defaultState = {
   },
 
   progress: {
-    currentPhase: "setup", // setup | planning | execution
+    currentPhaseIndex: "0", 
     global: 0,
   },
 };
