@@ -239,4 +239,36 @@ body {
 window.exportProject = exportProject;
 window.openPreview = openPreview;
 window.closePreview = closePreview;
-``
+
+/* =====================
+   NAV FLOW (FIGMA)
+===================== */
+function updateNav() {
+  const name = store.state.project.name;
+  const setupDone = store.state.progress.onboardingCompleted;
+
+  const navUser = document.getElementById("nav-user");
+  const navProcess = document.getElementById("nav-process");
+  const navLogout = document.getElementById("nav-logout");
+
+  // Reset
+  navUser.style.display = "none";
+  navProcess.style.display = "none";
+  navLogout.style.display = "none";
+
+  // Após login (name definido)
+  if (name) {
+    navLogout.style.display = "inline-block";
+    navUser.textContent = name;
+    navUser.style.display = "inline-block";
+  }
+
+  // Após setup completo
+  if (setupDone) {
+    navProcess.style.display = "inline-block";
+  }
+}
+
+// Atualizar sempre que store muda
+window.addEventListener("store-updated", updateNav);
+document.addEventListener("DOMContentLoaded", updateNav);
