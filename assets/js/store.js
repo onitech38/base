@@ -1,3 +1,4 @@
+
 const STORE_KEY = "process-builder";
 
 const defaultState = {
@@ -6,6 +7,7 @@ const defaultState = {
     type: "",
     goal: "",
     features: {},
+    branding: {},
   },
   planning: {
     processes: [],
@@ -18,9 +20,7 @@ const defaultState = {
 };
 
 const store = {
-  state:
-    JSON.parse(localStorage.getItem(STORE_KEY)) ||
-    structuredClone(defaultState),
+  state: JSON.parse(localStorage.getItem(STORE_KEY)) || structuredClone(defaultState),
 
   save() {
     localStorage.setItem(STORE_KEY, JSON.stringify(this.state));
@@ -58,9 +58,18 @@ const store = {
         name: "Branding & Tema",
         tasks: [{ name: "Definir cores", done: false }],
       },
-      { name: "Acessibilidade", tasks: [{ name: "Contraste", done: false }] },
-      { name: "SEO", tasks: [{ name: "Meta tags", done: false }] },
-      { name: "Export", tasks: [{ name: "Exportar", done: false }] },
+      {
+        name: "Acessibilidade",
+        tasks: [{ name: "Contraste", done: false }],
+      },
+      {
+        name: "SEO",
+        tasks: [{ name: "Meta tags", done: false }],
+      },
+      {
+        name: "Export",
+        tasks: [{ name: "Exportar projeto", done: false }],
+      },
     ];
     this.updatePhaseProgress();
     this.save();
@@ -69,15 +78,12 @@ const store = {
   updatePhaseProgress() {
     const total = this.state.planning.processes.length;
     this.state.progress.global = Math.round(
-      (this.state.progress.currentPhaseIndex / total) * 100,
+      (this.state.progress.currentPhaseIndex / total) * 100
     );
   },
 
   completeCurrentPhase() {
-    if (
-      this.state.progress.currentPhaseIndex <
-      this.state.planning.processes.length
-    ) {
+    if (this.state.progress.currentPhaseIndex < this.state.planning.processes.length) {
       this.state.progress.currentPhaseIndex++;
       this.updatePhaseProgress();
       this.save();
