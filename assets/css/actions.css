@@ -11,6 +11,11 @@
         border: var(--border-size) var(--clr-3);
         cursor: pointer;
 
+        &:disabled {
+            opacity:0.5;
+            cursor: not-allowed;
+        }
+
         &:hover,
         &:focus-visible {
             background-color: var(--clr-btn-bg-prim-hover) !important;
