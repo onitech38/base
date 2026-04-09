@@ -1,35 +1,20 @@
-<section class="page page-branding" data-page="branding">
-    <header class="page-header">
-        <h1>Branding</h1>
-        <p>Define cores, tipografia e tema do projeto.</p>
-    </header>
+<section class="page page-branding">
+  <header class="page-header">
+    <h1>Branding</h1>
+    <p>Define cores, tipografia e tema do projeto</p>
+  </header>
 
-    <div class="page-content">
-        <label>
-            Cor primária
-            <input type="color" id="brand-primary" />
-        </label>
+  <div class="page-content">
+    <label>Neutro light <input type="color" id="color-neutral-light"></label>
+    <label>Neutro dark <input type="color" id="color-neutral-dark"></label>
+    <label>Primary <input type="color" id="color-primary"></label>
+    <label>Secondary <input type="color" id="color-secondary"></label>
 
-        <label>
-            Cor secundária
-            <input type="color" id="brand-secondary" />
-        </label>
+    <label>Fonte primária <input type="text" id="font-primary"></label>
+    <label>Fonte secundária <input type="text" id="font-secondary"></label>
 
-        <label>
-            Tipografia principal
-            <select id="brand-font">
-                <option value="">Seleciona</option>
-                <option value="Inter">Inter</option>
-                <option value="Roboto">Roboto</option>
-                <option value="System">System UI</option>
-            </select>
-        </label>
+    <label><input type="checkbox" id="toggle-dark-mode"> Dark mode</label>
 
-        <label>
-            <input type="checkbox" id="brand-darkmode" checked />
-            Suportar Dark Mode
-        </label>
-
-        <button id="branding-save">Guardar Branding</button>
-    </div>
+    <button id="save-branding">Guardar</button>
+  </div>
 </section>
