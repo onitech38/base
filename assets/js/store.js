@@ -18,7 +18,6 @@ const defaultState = {
     theme: {
       supportsDarkMode: true,
     },
-    stack: {},
   },
 
   planning: {
@@ -26,7 +25,7 @@ const defaultState = {
   },
 
   progress: {
-    currentPhaseIndex: 0, // ✅ número, não string
+    currentPhaseIndex: 0,
     global: 0,
   },
 };
@@ -35,7 +34,7 @@ export const store = {
   state: load(),
 
   /* =========================
-     Persistência
+     PERSISTÊNCIA
   ========================= */
   save() {
     localStorage.setItem(STORE_KEY, JSON.stringify(this.state));
@@ -43,7 +42,7 @@ export const store = {
   },
 
   /* =========================
-     Setup
+     SETUP
   ========================= */
   setProjectConfig(project) {
     this.state.project = { ...this.state.project, ...project };
@@ -56,14 +55,14 @@ export const store = {
   },
 
   completeSetup() {
-    // primeira fase (Setup) conta como concluída
+    // Setup conta como fase concluída
     this.state.progress.currentPhaseIndex = 1;
     this.updatePhaseProgress();
     this.save();
   },
 
   /* =========================
-     Branding
+     BRANDING
   ========================= */
   setBranding(branding, supportsDarkMode) {
     this.state.project.branding = {
@@ -74,23 +73,17 @@ export const store = {
     this.save();
   },
 
-  hasBranding() {
-    const b = this.state.project.branding;
-    return Boolean(b.primaryColor || b.fontPrimary);
-  },
-
   /* =========================
-     Planeamento
+     PLANEAMENTO (FASES)
   ========================= */
   generateProcessesFromProject() {
-    const p = this.state.project;
     const processes = [];
 
     processes.push({
       name: "Setup & Funcionalidades",
       tasks: [
         { name: "Confirmar nome do projeto", done: true },
-        { name: "Confirmar tipo de projeto", done: true },
+        { name: "Confirmar tipo do projeto", done: true },
         { name: "Confirmar objetivo do projeto", done: true },
       ],
     });
@@ -115,10 +108,10 @@ export const store = {
     processes.push({
       name: "Acessibilidade",
       tasks: [
-        { name: "Verificar contraste de cores", done: false },
-        { name: "Garantir labels em inputs", done: false },
-        { name: "Verificar navegação por teclado", done: false },
-        { name: "Adicionar atributos ARIA essenciais", done: false },
+        { name: "Verificar contraste", done: false },
+        { name: "Garantir labels", done: false },
+        { name: "Navegação por teclado", done: false },
+        { name: "ARIA essenciais", done: false },
       ],
     });
 
@@ -126,17 +119,17 @@ export const store = {
       name: "SEO",
       tasks: [
         { name: "Definir title e description", done: false },
-        { name: "Verificar hierarquia de headings", done: false },
-        { name: "Adicionar meta tags básicas", done: false },
-        { name: "Estrutura HTML semântica", done: false },
+        { name: "Hierarquia de headings", done: false },
+        { name: "Meta tags básicas", done: false },
+        { name: "HTML semântico", done: false },
       ],
     });
 
     processes.push({
       name: "Export",
       tasks: [
-        { name: "Rever progresso final", done: false },
-        { name: "Validar base do projeto", done: false },
+        { name: "Revisão final", done: false },
+        { name: "Validar base", done: false },
       ],
     });
 
@@ -146,29 +139,30 @@ export const store = {
   },
 
   /* =========================
-     Progresso por fases ✅
+     PROGRESSO POR FASE (✔)
   ========================= */
   updatePhaseProgress() {
-    const totalPhases = this.state.planning.processes.length;
+    const total = this.state.planning.processes.length;
     const completed = this.state.progress.currentPhaseIndex;
 
     this.state.progress.global = Math.round(
-      (completed / totalPhases) * 100
+      (completed / total) * 100
     );
   },
 
   completeCurrentPhase() {
-    const next = this.state.progress.currentPhaseIndex + 1;
-
-    if (next <= this.state.planning.processes.length) {
-      this.state.progress.currentPhaseIndex = next;
+    if (
+      this.state.progress.currentPhaseIndex <
+      this.state.planning.processes.length
+    ) {
+      this.state.progress.currentPhaseIndex++;
       this.updatePhaseProgress();
       this.save();
     }
   },
 
   /* =========================
-     Getters
+     GETTERS
   ========================= */
   get processes() {
     return this.state.planning.processes;
