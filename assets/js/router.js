@@ -2,23 +2,24 @@ import store from "./store.js";
 
 const app = document.getElementById("app");
 
-// Navegação
+// NAV
 document.querySelectorAll("nav button").forEach(btn => {
   btn.onclick = () => {
     const page = btn.dataset.page;
     if (!page) return;
+
     if (page === "logout") {
       localStorage.removeItem("process-builder");
       location.reload();
       return;
     }
+
     location.hash = `#/${page}`;
   };
 });
 
 async function loadPage() {
   let page = location.hash.replace("#/", "");
-
   if (!page) page = "home";
 
   // Forçar setup antes de tudo
@@ -28,14 +29,15 @@ async function loadPage() {
   }
 
   const res = await fetch(`pages/${page}.html`);
-  app.innerHTML = await res.text();
+  const html = await res.text();
+  app.innerHTML = html;
 
-  // Home
+  // ✅ HOME
   if (page === "home" && window.renderHomeDashboard) {
     window.renderHomeDashboard();
   }
 
-  // Process Builder
+  // ✅ PROCESS BUILDER — ISTO FALTAVA
   if (page === "process-builder" && window.processBuilder) {
     window.processBuilder.loadProcesses();
   }
