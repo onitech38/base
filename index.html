@@ -13,10 +13,23 @@
 
     <body>
         <header>
-            <nav>
-                <button data-page="home">Home</button>
-                <button data-page="branding">Branding</button>
-                <button data-page="process-builder">Process Builder</button>
+            <nav id="main-nav">
+              <div class="nav-left">
+                <span id="nav-user" style="display:none;"></span>
+              </div>
+            
+              <div class="nav-center">
+                <strong id="nav-logo">LOGO</strong>
+              </div>
+            
+              <div class="nav-right">
+                <button data-page="process-builder" id="nav-process" style="display:none;">
+                  Process Builder
+                </button>
+                <button id="nav-logout" style="display:none;">
+                  Log out
+                </button>
+              </div>
             </nav>
 
             <!-- Estado do projeto -->
