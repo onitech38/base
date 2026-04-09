@@ -2,22 +2,19 @@
 
   <header class="page-header">
     <h1>Process Builder</h1>
-    <p>
-      Executa os processos pela ordem até terminares o teu projeto.
-    </p>
+    <p>Executa os processos pela ordem até terminares o teu projeto.</p>
   </header>
 
   <div class="page-content">
 
-    <!-- ================= OVERVIEW ================= -->
+    <!-- ===== OVERVIEW ===== -->
     <div id="pb-overview">
       <ul id="pb-process-list"></ul>
     </div>
 
-    <!-- ================= EXECUTION ================= -->
+    <!-- ===== EXECUTION ===== -->
     <div id="pb-execution" style="display:none;">
       <h2 id="pb-phase-title"></h2>
-
       <ul id="pb-task-list"></ul>
 
       <button id="pb-primary-cta">
@@ -25,7 +22,7 @@
       </button>
     </div>
 
-    <!-- ================= EXPORT FINAL ================= -->
+    <!-- ===== EXPORT ===== -->
     <div id="pb-export" style="display:none;">
       <h2>Projeto concluído 🎉</h2>
       <p>
@@ -41,46 +38,34 @@
   </div>
 </section>
 
-<!-- ================= PREVIEW MODAL ================= -->
-<div
-  id="export-preview"
-  style="
-    display:none;
-    position:fixed;
-    inset:0;
-    background:rgba(0,0,0,0.6);
-    z-index:999;
-  "
->
-  <div
-    style="
-      background:#fff;
-      width:90%;
-      height:90%;
-      margin:2rem auto;
-      padding:1rem;
+<!-- ===== PREVIEW MODAL ===== -->
+<div id="export-preview" style="
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.6);
+  z-index:999;
+">
+  <div style="
+    background:#fff;
+    width:90%;
+    height:90%;
+    margin:2rem auto;
+    padding:1rem;
+    display:flex;
+    flex-direction:column;
+    border-radius:12px;
+  ">
+    <strong style="margin-bottom:0.5rem">Pré‑visualização do projeto</strong>
+
+    <iframe id="preview-frame" style="flex:1; border:1px solid #ccc;"></iframe>
+
+    <div style="
+      margin-top:1rem;
       display:flex;
-      flex-direction:column;
-      border-radius:12px;
-    "
-  >
-    <strong style="margin-bottom:0.5rem">
-      Pré‑visualização do projeto
-    </strong>
-
-    <iframe
-      id="preview-frame"
-      style="flex:1; border:1px solid #ccc;"
-    ></iframe>
-
-    <div
-      style="
-        margin-top:1rem;
-        display:flex;
-        gap:1rem;
-        justify-content:flex-end;
-      "
-    >
+      gap:1rem;
+      justify-content:flex-end;
+    ">
       <button onclick="closePreview()">Fechar</button>
       <button onclick="exportProject()">Exportar projeto</button>
     </div>
