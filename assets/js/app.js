@@ -101,11 +101,118 @@ document.addEventListener("click", (e) => {
 });
 
 /* =========================
-   EXPORT
+   EXPORT REAL (ZIP)
 ========================= */
-document.addEventListener("click", (e) => {
+document.addEventListener("click", async (e) => {
   if (e.target.id !== "export-btn") return;
-  alert("Projeto exportado com sucesso!");
+
+  if (store.state.progress.global < 100) {
+    alert("Conclui todas as fases antes de exportar.");
+    return;
+  }
+
+  const zip = new JSZip();
+
+  // root folder
+  const root = zip.folder("project");
+
+  /* ------------ index.html ------------ */
+  root.file(
+    "index.html",
+    `<!doctype html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>${store.state.project.name}</title>
+  <link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body>
+  <h1>${store.state.project.name}</h1>
+  <p>${store.state.project.goal}</p>
+</body>
+</html>`
+  );
+
+  /* ------------ pages ------------ */
+  const pages = root.folder("pages");
+
+  [
+    "home",
+    "setup",
+    "branding",
+    "process-builder",
+    "a11y",
+    "seo",
+  ].forEach((page) => {
+    pages.file(
+      `${page}.html`,
+      `<!-- ${page}.html -->
+<section>
+  <h1>${page}</h1>
+</section>`
+    );
+  });
+
+  /* ------------ assets ------------ */
+  const assets = root.folder("assets");
+  assets.folder("css").file(
+    "style.css",
+    `/* Base styles */
+body {
+  font-family: system-ui, sans-serif;
+  margin: 0;
+  padding: 2rem;
+}`
+  );
+
+  assets.folder("js").file(
+    "app.js",
+    `// JS base do projeto exportado`
+  );
+
+  /* ------------ manifest ------------ */
+  root.file(
+    "manifest.json",
+    JSON.stringify(
+      {
+        name: store.state.project.name,
+        short_name: store.state.project.name,
+        start_url: "/",
+        display: "standalone",
+        background_color: "#ffffff",
+        theme_color: "#000000",
+      },
+      null,
+      2
+    )
+  );
+
+  /* ------------ README ------------ */
+  root.file(
+    "README.md",
+    `# ${store.state.project.name}
+
+Projeto gerado com o Progress Builder.
+
+## Objetivo
+${store.state.project.goal}
+
+## Estrutura
+Projeto base pronto para desenvolvimento.
+`
+  );
+
+  /* ------------ gerar ZIP ------------ */
+  const blob = await zip.generateAsync({ type: "blob" });
+  const url = URL.createObjectURL(blob);
+
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `${store.state.project.name || "project"}.zip`;
+  link.click();
+
+  URL.revokeObjectURL(url);
 });
 
 /* =========================
