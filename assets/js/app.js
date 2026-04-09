@@ -119,4 +119,32 @@ window.processBuilder = {
 
 window.addEventListener("store-updated", renderBuilder);
 window.store = store;
-``
+
+/* =========================
+   PROGRESS UI (GLOBAL)
+========================= */
+function updateProgressUI() {
+  const value = store.state.progress.global;
+
+  const valueEl = document.getElementById("progress-value");
+  const fillEl = document.getElementById("progress-fill");
+
+  if (valueEl) {
+    valueEl.textContent = `${value}%`;
+  }
+
+  if (fillEl) {
+    fillEl.style.width = `${value}%`;
+  }
+}
+
+/* ouvir mudanças no store */
+window.addEventListener("store-updated", () => {
+  updateProgressUI();
+});
+
+/* atualizar ao carregar página */
+document.addEventListener("DOMContentLoaded", () => {
+  updateProgressUI();
+});
+
