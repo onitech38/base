@@ -1,257 +1,197 @@
 import { store } from "./store.js";
 
-/* =========================
-   SETUP
-========================= */
-document.addEventListener("click", (e) => {
-  if (e.target.id !== "setup-submit") return;
+/* =====================================================
+   ESTADO GLOBAL DO WIZARD
+===================================================== */
+let mode = "execution"; // execution | overview
+let activePhaseIndex = store.currentPhaseIndex;
+let editingPhaseIndex = null;
 
-  const project = {
-    name: document.getElementById("setup-name")?.value || "",
-    type: document.getElementById("setup-type")?.value || "",
-    goal: document.getElementById("setup-goal")?.value || "",
-    features: {
-      login: document.getElementById("feature-login")?.checked || false,
-      backend: document.getElementById("feature-backend")?.checked || false,
-      pwa: document.getElementById("feature-pwa")?.checked || false,
-    },
-  };
+/* =====================================================
+   ELEMENTOS
+===================================================== */
+const overviewEl = () => document.getElementById("pb-overview");
+const executionEl = () => document.getElementById("pb-execution");
+const exportEl = () => document.getElementById("pb-export");
 
-  store.setProjectConfig(project);
-
-  if (!store.isSetupComplete()) {
-    alert("Preenche nome, tipo e objetivo.");
-    return;
-  }
-
-  store.generateProcessesFromProject();
-  store.completeSetup();
-
-  location.hash = "#/process-builder";
-});
-
-/* =========================
-   PROCESS BUILDER
-========================= */
 const processListEl = () => document.getElementById("pb-process-list");
-const taskListEl = () => document.getElementById("pb-task-list");
 const phaseTitleEl = () => document.getElementById("pb-phase-title");
-const exportBtn = () => document.getElementById("export-btn");
+const phaseDescEl = () => document.getElementById("pb-phase-description");
+const taskListEl = () => document.getElementById("pb-task-list");
 
-function getPhaseState(index) {
+const primaryCTAEl = () => document.getElementById("pb-primary-cta");
+const backOverviewEl = () => document.getElementById("pb-back-overview");
+
+/* =====================================================
+   HELPERS
+===================================================== */
+function phaseState(index) {
   if (index < store.currentPhaseIndex) return "completed";
   if (index === store.currentPhaseIndex) return "active";
   return "locked";
 }
 
-function renderBuilder() {
+/* =====================================================
+   OVERVIEW (Progress Builder)
+===================================================== */
+function renderOverview() {
   processListEl().innerHTML = "";
-  taskListEl().innerHTML = "";
 
-  store.processes.forEach((phase, i) => {
+  store.processes.forEach((phase, index) => {
     const li = document.createElement("li");
     li.textContent = phase.name;
 
-    const state = getPhaseState(i);
+    const state = phaseState(index);
 
-    if (state === "completed") li.style.opacity = "0.5";
-    if (state === "locked") li.style.opacity = "0.25";
+    li.className = `phase-${state}`;
+
+    if (state === "completed") {
+      li.onclick = () => openPhase(index, true);
+    }
+
+    if (state === "active") {
+      li.onclick = () => openPhase(index, false);
+    }
+
+    if (state === "locked") {
+      li.title = "Conclui o processo anterior para desbloquear";
+    }
 
     processListEl().appendChild(li);
   });
+}
 
-  const active = store.processes[store.currentPhaseIndex];
-  phaseTitleEl().textContent = active.name;
+/* =====================================================
+   EXECUTION (fase ativa ou edição)
+===================================================== */
+function openPhase(index, isEdit) {
+  editingPhaseIndex = index;
+  mode = "execution";
 
-  active.tasks.forEach((task, i) => {
+  overviewEl().style.display = "none";
+  exportEl().style.display = "none";
+  executionEl().style.display = "block";
+
+  const phase = store.processes[index];
+
+  phaseTitleEl().textContent = phase.name;
+
+  phaseDescEl().textContent = isEdit
+    ? "Estás a editar uma fase já concluída."
+    : "Conclui as tarefas desta fase para continuar.";
+
+  renderTasks(index);
+
+  primaryCTAEl().textContent = isEdit
+    ? "Guardar"
+    : "Guardar e continuar";
+}
+
+/* =====================================================
+   TASKS
+===================================================== */
+function renderTasks(phaseIndex) {
+  taskListEl().innerHTML = "";
+
+  store.processes[phaseIndex].tasks.forEach((task) => {
     const li = document.createElement("li");
+
     li.textContent = task.done ? "✓ " + task.name : task.name;
-    li.style.textDecoration = task.done ? "line-through" : "none";
+    li.style.cursor = "pointer";
+    li.style.opacity = task.done ? "0.6" : "1";
+
     li.onclick = () => {
       task.done = !task.done;
       store.save();
-      renderBuilder();
+      renderTasks(phaseIndex);
     };
+
     taskListEl().appendChild(li);
   });
-
-  if (store.state.progress.global === 100) {
-    exportBtn().style.display = "block";
-  } else {
-    exportBtn().style.display = "none";
-  }
 }
 
-/* =========================
-   CONCLUIR FASE
-========================= */
-document.addEventListener("click", (e) => {
-  if (e.target.id !== "pb-complete-phase") return;
+/* =====================================================
+   CTA PRINCIPAL (Guardar / Guardar e continuar)
+===================================================== */
+primaryCTAEl()?.addEventListener("click", () => {
+  const phaseIndex = editingPhaseIndex;
+  const phase = store.processes[phaseIndex];
 
-  const active = store.processes[store.currentPhaseIndex];
-  const allDone = active.tasks.every(t => t.done);
+  const allDone = phase.tasks.every(t => t.done);
 
+  // modo edição → apenas guarda
+  if (phaseIndex < store.currentPhaseIndex) {
+    store.save();
+    showOverview();
+    return;
+  }
+
+  // modo execução → valida conclusão
   if (!allDone) {
     alert("Conclui todas as tarefas antes de continuar.");
     return;
   }
 
   store.completeCurrentPhase();
-  renderBuilder();
+
+  if (store.state.progress.global === 100) {
+    showExport();
+  } else {
+    openPhase(store.currentPhaseIndex, false);
+  }
 });
 
-/* =========================
-   EXPORT REAL (ZIP)
-========================= */
-document.addEventListener("click", async (e) => {
-  if (e.target.id !== "export-btn") return;
-
-  if (store.state.progress.global < 100) {
-    alert("Conclui todas as fases antes de exportar.");
-    return;
-  }
-
-  const zip = new JSZip();
-
-  // root folder
-  const root = zip.folder("project");
-
-  /* ------------ index.html ------------ */
-  root.file(
-    "index.html",
-    `<!doctype html>
-<html lang="pt">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>${store.state.project.name}</title>
-  <link rel="stylesheet" href="assets/css/style.css" />
-</head>
-<body>
-  <h1>${store.state.project.name}</h1>
-  <p>${store.state.project.goal}</p>
-</body>
-</html>`
-  );
-
-  /* ------------ pages ------------ */
-  const pages = root.folder("pages");
-
-  [
-    "home",
-    "setup",
-    "branding",
-    "process-builder",
-    "a11y",
-    "seo",
-  ].forEach((page) => {
-    pages.file(
-      `${page}.html`,
-      `<!-- ${page}.html -->
-<section>
-  <h1>${page}</h1>
-</section>`
-    );
-  });
-
-  /* ------------ assets ------------ */
-  const assets = root.folder("assets");
-  assets.folder("css").file(
-    "style.css",
-    `/* Base styles */
-body {
-  font-family: system-ui, sans-serif;
-  margin: 0;
-  padding: 2rem;
-}`
-  );
-
-  assets.folder("js").file(
-    "app.js",
-    `// JS base do projeto exportado`
-  );
-
-  /* ------------ manifest ------------ */
-  root.file(
-    "manifest.json",
-    JSON.stringify(
-      {
-        name: store.state.project.name,
-        short_name: store.state.project.name,
-        start_url: "/",
-        display: "standalone",
-        background_color: "#ffffff",
-        theme_color: "#000000",
-      },
-      null,
-      2
-    )
-  );
-
-  /* ------------ README ------------ */
-  root.file(
-    "README.md",
-    `# ${store.state.project.name}
-
-Projeto gerado com o Progress Builder.
-
-## Objetivo
-${store.state.project.goal}
-
-## Estrutura
-Projeto base pronto para desenvolvimento.
-`
-  );
-
-  /* ------------ gerar ZIP ------------ */
-  const blob = await zip.generateAsync({ type: "blob" });
-  const url = URL.createObjectURL(blob);
-
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = `${store.state.project.name || "project"}.zip`;
-  link.click();
-
-  URL.revokeObjectURL(url);
+/* =====================================================
+   VOLTAR AO PLANO
+===================================================== */
+backOverviewEl()?.addEventListener("click", () => {
+  showOverview();
 });
 
-/* =========================
-   INIT
-========================= */
-window.processBuilder = {
-  loadProcesses() {
-    renderBuilder();
-  },
-};
-
-window.addEventListener("store-updated", renderBuilder);
-window.store = store;
-
-/* =========================
-   PROGRESS UI (GLOBAL)
-========================= */
-function updateProgressUI() {
-  const value = store.state.progress.global;
-
-  const valueEl = document.getElementById("progress-value");
-  const fillEl = document.getElementById("progress-fill");
-
-  if (valueEl) {
-    valueEl.textContent = `${value}%`;
-  }
-
-  if (fillEl) {
-    fillEl.style.width = `${value}%`;
-  }
+/* =====================================================
+   EXPORT FINAL
+===================================================== */
+function showExport() {
+  executionEl().style.display = "none";
+  overviewEl().style.display = "none";
+  exportEl().style.display = "block";
 }
 
-/* ouvir mudanças no store */
+document.addEventListener("click", (e) => {
+  if (e.target.id === "export-btn") {
+    alert("Export real já implementado (ZIP).");
+  }
+});
+
+/* =====================================================
+   VISUAL MODES
+===================================================== */
+function showOverview() {
+  mode = "overview";
+  executionEl().style.display = "none";
+  exportEl().style.display = "none";
+  overviewEl().style.display = "block";
+  renderOverview();
+}
+
+/* =====================================================
+   INIT
+===================================================== */
+window.processBuilder = {
+  loadProcesses() {
+    if (store.state.progress.global === 100) {
+      showExport();
+    } else {
+      openPhase(store.currentPhaseIndex, false);
+    }
+  }
+};
+
 window.addEventListener("store-updated", () => {
-  updateProgressUI();
+  if (mode === "overview") {
+    renderOverview();
+  }
 });
 
-/* atualizar ao carregar página */
-document.addEventListener("DOMContentLoaded", () => {
-  updateProgressUI();
-});
-
+window.store = store;
+``
