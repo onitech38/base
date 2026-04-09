@@ -25,9 +25,11 @@ const defaultState = {
   },
 
   progress: {
+    onboardingCompleted: false,
     currentPhaseIndex: 0,
     global: 0,
   },
+
 };
 
 export const store = {
