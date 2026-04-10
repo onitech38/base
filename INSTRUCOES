@@ -1,3 +1,40 @@
+TIPO DE APP - SPA  Single Page Application
+
+É uma técnica de desenvolvimento onde o site carrega apenas uma
+única página HTML inicial e, em seguida, atualiza o conteúdo
+dinamicamente à medida que o usuário interage com ele, sem precisar
+recarregar o navegador a cada clique.
+
+----------------------------------------------------------------------
+----------------------------------------------------------------------
+--Ideia e resumo--
+
+📌 1️⃣ Ideia do projeto
+O que é este projeto
+Uma web app de apoio à criação e planeamento de projetos digitais
+(website / web app), que guia o utilizador desde a ideia inicial até à
+exportação de uma estrutura base do projeto.
+Em termos simples
+
+Um Project / Process Builder que:
+
+
+ajuda a definir um projeto
+guia o utilizador por etapas lógicas
+mostra progresso
+permite pré‑visualizar
+e no fim exportar uma base de projeto reutilizável
+
+Objetivo conceptual
+
+Não é um builder visual tipo Wix
+Não é um gestor de tarefas genérico
+É uma ferramenta de estrutura + decisão + arranque técnico
+
+----------------------------------------------------------------------
+----------------------------------------------------------------------
+--Arquitetura--
+
 /projeto-base
   /assets
     /css
@@ -12,19 +49,208 @@
       style.css   ← importa tudo
       variables.css
     /js
-      router.js
-      app.js
-      store.js
+      router.js       ← SPA router (hash-based) Decidir o que renderizar consoante a rota/estado
+      app.js          ← lógica principal (UI, preview, Process Builder, export, nav...)
+      store.js        ← estado global + persistência + Estado (auth, projetos, fases…)
+      auth.js         ← Renderizar Login / Signup (HTML + eventos)
       supabase.js
     /img
       icon-512.svg
       icon-192.svg
-  /pages          ← icons para informar que podem instalar no dispositivo
-    home.html
+  /pages
+    a11y.html
     branding.html
-    process-builder.html
+    export.html
+    home.html
     offline.html
+    process-builder.html
+    seo.html
+    setup.html
+    welcome.html  ← página informativa
   index.html
   manifest.json   ← (para app)
   service-worker.js  ← (para app offline)
   instruções         ← onde eu estou a colocar algumas notas e informações para eu não me perder .😅
+
+
+----------------------------------------------------------------------
+----------------------------------------------------------------------
+-- Ordem de trabalhos --
+
+✅ 3️⃣ Ponto de situação — o que JÁ FOI FEITO
+Apesar da frustração (compreensível), muita coisa importante já está feita.
+✅ Base técnica
+
+SPA com router por hash
+Estado centralizado (store)
+Persistência em localStorage
+Separação clara entre:
+
+estrutura
+lógica
+UI
+
+
+
+✅ Fluxo funcional (em intenção)
+
+Setup do projeto
+Process Builder (fases + tarefas)
+Home como resumo
+Branding como configuração do projeto
+Export (ZIP)
+Preview antes do export
+
+✅ UX / Produto
+
+Fluxo pensado (não aleatório)
+Separação clara entre:
+
+ferramenta (a app)
+projeto do utilizador (o que está a ser criado)
+
+
+Decisão correta:
+
+Dark Mode = projeto, não app
+
+
+
+✅ CSS
+
+Sistema modular
+style.css como agregador
+Base pronta para escalar
+
+
+
+⚠️ 4️⃣ O que está BLOQUEADO / inconsistente neste momento
+🔴 Problema principal
+O Process Builder não está a renderizar as fases, apesar de:
+
+o HTML carregar
+o router funcionar
+o estado existir
+
+Isto indica incongruência entre:
+
+estado (store)
+momento de inicialização
+ou código JS efetivamente executado
+
+👉 Este é um problema técnico pontual, não conceptual.
+⚠️ Consequência
+Enquanto isto não estiver resolvido:
+
+não dá para aprofundar os conteúdos das fases
+não dá para validar o fluxo completo
+trava o avanço do produto
+
+👉 É correto parar e diagnosticar, como sugeriste.
+
+
+
+
+
+🔧 5️⃣ O que FALTA FAZER (em ordem correta)
+🔴 Curto prazo (técnico)
+
+Diagnóstico completo com todos os ficheiros
+
+exatamente como propuseste
+
+
+Resolver definitivamente:
+
+renderização do Process Builder
+sem workarounds
+
+
+
+👉 Isto é 1 tarefa, não várias.
+
+🟡 Médio prazo (produto)
+Depois do bloqueio técnico resolvido:
+
+Aprofundar conteúdos das fases
+
+Estrutura
+Branding
+SEO
+Export
+
+
+Tornar as tarefas:
+
+menos genéricas
+mais acionáveis
+
+
+Melhorar copy (texto orientador)
+
+
+🟢 Longo prazo (valor e aprendizagem)
+
+Export mais inteligente
+Preview mais fiel a produção
+Documentação do projeto
+Explicação final completa
+
+arquitetura
+decisões
+erros
+como debugar isto sozinho no futuro
+(como pediste desde o início)
+
+
+
+
+
+
+🎯 6️⃣ Objetivo final do projeto
+Em termos de produto
+
+Uma ferramenta funcional, coerente e apresentável
+Algo que possas:
+
+mostrar
+explicar
+evoluir
+
+
+
+Em termos pessoais
+
+Aprender:
+
+SPA sem framework
+gestão de estado
+debug real (não tutoriais artificiais)
+
+
+Ganhar confiança para:
+
+resolver bloqueios
+não desistir quando algo “não faz sentido”
+
+
+
+👉 O que aconteceu aqui faz parte do processo real, mesmo que seja desagradável.
+
+
+
+✅ Próximo passo
+
+Partilhar TODOS os ficheiros relevantes → diagnóstico único → correção definitiva
+
+index.html
+assets/js/app.js
+assets/js/router.js
+assets/js/store.js
+pages/process-builder.html
+
+👉 Só depois disso é que fazes o diagnóstico.
+👉 Sem sugerir alterações antes.
+👉 Sem mais ciclos de tentativa‑erro.
+
+Lembrar que de momento estamos a tentar entender porque é que na página Process Builder não aparessem os passos

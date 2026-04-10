@@ -1,63 +1,103 @@
 import store from "./store.js";
+import { renderLogin, renderSignup } from "./auth.js";
 
 const app = document.getElementById("app");
 
 /* =====================
-   NAV
+   ROUTES CONFIG
 ===================== */
-document.querySelectorAll("nav button").forEach(btn => {
-  btn.onclick = () => {
-    const page = btn.dataset.page;
-    if (!page) return;
+const PUBLIC_ROUTES = ["welcome", "login", "signup"];
+const AUTH_NO_PROJECT_ROUTES = ["project-select", "setup"];
+const AUTH_PROJECT_ROUTES = ["home", "process-builder"];
 
-    if (page === "logout") {
-      localStorage.removeItem("process-builder");
-      location.reload();
+/* =====================
+   ROUTER CORE
+===================== */
+async function loadPage() {
+  let route = location.hash.replace("#/", "");
+  if (!route) route = "welcome";
+
+  const { auth } = store.state;
+  const project = store.currentProject;
+
+  /* ---------- STATE A: GUEST ---------- */
+  if (auth.status === "guest") {
+    if (!PUBLIC_ROUTES.includes(route)) {
+      return redirect("welcome");
+    }
+
+    // 🔐 AUTH via JS (sem fetch)
+    if (route === "login") {
+      renderLogin();
       return;
     }
 
-    location.hash = `#/${page}`;
-  };
-});
+    if (route === "signup") {
+      renderSignup();
+      return;
+    }
 
-/* =====================
-   ROUTER
-===================== */
-async function loadPage() {
-  let page = location.hash.replace("#/", "");
-  if (!page) page = "home";
-
-  // Forçar setup
-  if (!store.state.progress.onboardingCompleted && page !== "setup") {
-    location.hash = "#/setup";
-    return;
+    return render(route);
   }
 
-  const res = await fetch(`pages/${page}.html`);
+  /* ---------- STATE B: AUTH, NO PROJECT ---------- */
+  if (auth.status === "authenticated" && !auth.activeProjectId) {
+    if (!AUTH_NO_PROJECT_ROUTES.includes(route)) {
+      return redirect("project-select");
+    }
+
+    return render(route);
+  }
+
+  /* ---------- STATE C: AUTH WITH PROJECT ---------- */
+  if (auth.status === "authenticated" && project) {
+    // setup é sempre obrigatório
+    if (!project.setupCompleted && route !== "setup") {
+      return redirect("setup");
+    }
+
+    // setup já feito → não volta
+    if (project.setupCompleted && route === "setup") {
+      return redirect("home");
+    }
+
+    if (!AUTH_PROJECT_ROUTES.includes(route)) {
+      return redirect("home");
+    }
+
+    return render(route);
+  }
+
+  // fallback seguro
+  redirect("welcome");
+}
+
+/* =====================
+   RENDER (HTML PAGES)
+===================== */
+async function render(route) {
+  const res = await fetch(`pages/${route}.html`);
   app.innerHTML = await res.text();
 
-  // HOME
-  if (page === "home" && window.renderHomeDashboard) {
+  // hooks por página
+  if (route === "home" && window.renderHomeDashboard) {
     window.renderHomeDashboard();
   }
 
-  // PROCESS BUILDER — ESPERAR ATÉ EXISTIR
-  if (page === "process-builder") {
-    waitForProcessBuilder();
+  if (route === "process-builder" && window.processBuilder) {
+    window.processBuilder.loadPhases?.();
   }
 }
 
 /* =====================
-   GUARDA ROBUSTA
+   UTILS
 ===================== */
-function waitForProcessBuilder() {
-  if (window.processBuilder && typeof window.processBuilder.loadProcesses === "function") {
-    window.processBuilder.loadProcesses();
-  } else {
-    // tenta novamente no próximo frame
-    requestAnimationFrame(waitForProcessBuilder);
-  }
+function redirect(route) {
+  location.hash = `#/${route}`;
 }
 
+/* =====================
+   LISTENERS
+===================== */
 window.addEventListener("hashchange", loadPage);
 window.addEventListener("DOMContentLoaded", loadPage);

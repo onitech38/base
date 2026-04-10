@@ -1,5 +1,5 @@
 import store from "./store.js";
-
+const app = document.getElementById("app");
 /* =====================
    PROGRESS HEADER
 ===================== */
@@ -17,7 +17,7 @@ window.addEventListener("store-updated", updateProgressUI);
 /* =====================
    SETUP
 ===================== */
-document.addEventListener("click", e => {
+document.addEventListener("click", (e) => {
   if (e.target.id !== "setup-submit") return;
 
   const project = {
@@ -41,7 +41,7 @@ document.addEventListener("click", e => {
 /* =====================
    BRANDING
 ===================== */
-document.addEventListener("click", e => {
+document.addEventListener("click", (e) => {
   if (e.target.id !== "save-branding") return;
 
   store.state.project.branding = {
@@ -52,8 +52,7 @@ document.addEventListener("click", e => {
     fontPrimary:
       document.getElementById("font-primary").value ||
       "system-ui, Arial, sans-serif",
-    fontSecondary:
-      document.getElementById("font-secondary").value || null,
+    fontSecondary: document.getElementById("font-secondary").value || null,
     darkMode: document.getElementById("toggle-dark-mode").checked,
   };
 
@@ -64,37 +63,83 @@ document.addEventListener("click", e => {
 /* =====================
    HOME DASHBOARD
 ===================== */
+
+function calculateProgress(phases) {
+  // tenta calcular por tarefas (se existirem)
+  const allTasks = phases.flatMap((phase) => phase.tasks || []);
+
+  if (allTasks.length > 0) {
+    const doneTasks = allTasks.filter((t) => t.done).length;
+    return Math.round((doneTasks / allTasks.length) * 100);
+  }
+
+  // fallback: progresso por fases
+  const completedPhases = phases.filter((p) => p.status === "completed").length;
+  return Math.round((completedPhases / phases.length) * 100);
+}
+
 function renderHomeDashboard() {
   const container = document.getElementById("home-dashboard");
   if (!container) return;
 
   container.innerHTML = "";
 
-  store.processes.forEach(phase => {
+  const phases = store.phases;
+  const progress = calculateProgress(phases);
+
+  // Header (progresso global)
+  const progressEl = document.getElementById("progress-value");
+  const fillEl = document.getElementById("progress-fill");
+
+  if (progressEl) progressEl.textContent = `${progress}%`;
+  if (fillEl) fillEl.style.width = `${progress}%`;
+
+  // Fases
+  phases.forEach((phase) => {
     const div = document.createElement("div");
     div.className = "home-phase";
 
-    const h3 = document.createElement("h3");
-    h3.textContent = phase.name;
-    div.appendChild(h3);
+    const title = document.createElement("h3");
+    title.textContent = phase.title;
 
-    const ul = document.createElement("ul");
-    phase.tasks.forEach(task => {
-      const li = document.createElement("li");
-      li.textContent = task.done ? `✅ ${task.name}` : `⬜ ${task.name}`;
-      ul.appendChild(li);
-    });
+    if (phase.status === "completed") {
+      title.innerHTML += " ✅";
+    }
 
-    div.appendChild(ul);
+    div.appendChild(title);
+
+    // tarefas (se existirem)
+    if (phase.tasks && phase.tasks.length > 0) {
+      const ul = document.createElement("ul");
+      phase.tasks.forEach((task) => {
+        const li = document.createElement("li");
+        li.textContent = task.done ? `✅ ${task.label}` : `⬜ ${task.label}`;
+        ul.appendChild(li);
+      });
+      div.appendChild(ul);
+    }
+
     container.appendChild(div);
   });
 
-  if (store.state.progress.global === 100) {
-    const btn = document.createElement("button");
-    btn.textContent = "Pré-visualizar & Exportar";
-    btn.onclick = openPreview;
-    btn.style.marginTop = "2rem";
-    container.appendChild(btn);
+  // Botões finais (só quando tudo completo)
+  if (phases.every((p) => p.status === "completed")) {
+    const actions = document.createElement("div");
+    actions.style.marginTop = "2rem";
+
+    const previewBtn = document.createElement("button");
+    previewBtn.textContent = "Pré-visualizar";
+    previewBtn.onclick = openPreview;
+
+    const exportBtn = document.createElement("button");
+    exportBtn.textContent = "Exportar";
+    exportBtn.style.marginLeft = "1rem";
+    exportBtn.onclick = exportProject;
+
+    actions.appendChild(previewBtn);
+    actions.appendChild(exportBtn);
+
+    container.appendChild(actions);
   }
 }
 
@@ -219,7 +264,7 @@ body {
   zip.file("assets/js/main.js", `console.log("Projeto ${project.name}");`);
   zip.file("README.md", `# ${project.name}\n\n${project.goal}`);
 
-  zip.generateAsync({ type: "blob" }).then(blob => {
+  zip.generateAsync({ type: "blob" }).then((blob) => {
     const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
     link.download = `${project.name}.zip`;
@@ -236,8 +281,9 @@ window.exportProject = exportProject;
    NAV FLOW (FIGMA)
 ===================== */
 function updateNav() {
-  const userName = store.state.project.name;
-  const setupDone = store.state.progress.onboardingCompleted;
+  const project = store.currentProject;
+  const userName = project ? project.name : null;
+  const setupDone = project && project.setupCompleted;
 
   const navHome = document.getElementById("nav-home");
   const navProcess = document.getElementById("nav-process");
@@ -252,7 +298,7 @@ function updateNav() {
   if (userName) {
     navHome.textContent = userName;
     navHome.style.display = "inline-block";
-    navHome.onclick = () => location.hash = "#/home";
+    navHome.onclick = () => (location.hash = "#/home");
     navLogout.style.display = "inline-block";
   }
 
@@ -263,4 +309,89 @@ function updateNav() {
 
 window.addEventListener("store-updated", updateNav);
 document.addEventListener("DOMContentLoaded", updateNav);
-``
+
+/* =====================
+   PROCESS BUILDER
+===================== */
+
+function loadPhases() {
+  const list = document.getElementById("pb-process-list");
+  if (!list) return;
+
+  list.innerHTML = "";
+
+  store.phases.forEach((phase) => {
+    const li = document.createElement("li");
+    li.className = `pb-phase pb-phase-${phase.status}`;
+    li.textContent = phase.title;
+
+    if (phase.status !== "locked") {
+      li.onclick = () => openPhase(phase);
+    } else {
+      li.title = "Conclui a fase anterior para desbloquear";
+    }
+
+    list.appendChild(li);
+  });
+}
+
+function openPhase(phase) {
+  const overview = document.getElementById("pb-overview");
+  const execution = document.getElementById("pb-execution");
+  const title = document.getElementById("pb-phase-title");
+  const cta = document.getElementById("pb-primary-cta");
+
+  if (!overview || !execution || !title || !cta) return;
+
+  overview.style.display = "none";
+  execution.style.display = "block";
+
+  title.textContent = phase.title;
+
+  // Fase ativa → primeira execução
+  if (phase.status === "active") {
+    cta.textContent = "Guardar e continuar";
+    cta.onclick = () => {
+      store.completePhase(phase.id);
+      closePhase();
+    };
+  }
+
+  // Fase concluída → revisão
+  if (phase.status === "completed") {
+    cta.textContent = "Guardar";
+    cta.onclick = () => {
+      closePhase();
+    };
+  }
+}
+
+function closePhase() {
+  const overview = document.getElementById("pb-overview");
+  const execution = document.getElementById("pb-execution");
+
+  if (!overview || !execution) return;
+
+  execution.style.display = "none";
+  overview.style.display = "block";
+
+  loadPhases();
+}
+
+/* expor para o router */
+window.processBuilder = {
+  loadPhases,
+};
+
+/* =====================
+   WELCOME ACTIONS
+===================== */
+document.addEventListener("click", (e) => {
+  if (e.target.id === "welcome-login") {
+    location.hash = "#/login";
+  }
+
+  if (e.target.id === "welcome-signup") {
+    location.hash = "#/signup";
+  }
+});
