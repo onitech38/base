@@ -7,9 +7,11 @@ function updateProgressUI() {
   const value = store.state.progress.global;
   const valueEl = document.getElementById("progress-value");
   const fillEl = document.getElementById("progress-fill");
+
   if (valueEl) valueEl.textContent = `${value}%`;
   if (fillEl) fillEl.style.width = `${value}%`;
 }
+
 window.addEventListener("store-updated", updateProgressUI);
 
 /* =====================
@@ -68,7 +70,7 @@ function renderHomeDashboard() {
 
   container.innerHTML = "";
 
-  store.processes.forEach((phase, index) => {
+  store.processes.forEach(phase => {
     const div = document.createElement("div");
     div.className = "home-phase";
 
@@ -95,6 +97,7 @@ function renderHomeDashboard() {
     container.appendChild(btn);
   }
 }
+
 window.renderHomeDashboard = renderHomeDashboard;
 
 /* =====================
@@ -126,9 +129,7 @@ function openPreview() {
 <title>${project.name}</title>
 
 <style>
-  * {
-    box-sizing: border-box;
-  }
+  * { box-sizing: border-box; }
 
   body {
     margin: 0;
@@ -155,10 +156,6 @@ function openPreview() {
     margin: 0 auto;
   }
 
-  main h2 {
-    margin-top: 0;
-  }
-
   p {
     line-height: 1.6;
     color: ${textMuted};
@@ -168,15 +165,12 @@ function openPreview() {
     margin-top: 2rem;
     padding: 1.5rem;
     border-left: 4px solid ${secondary};
-    background: ${
-      darkMode ? "#1f232b" : "#f8f9fa"
-    };
+    background: ${darkMode ? "#1f232b" : "#f8f9fa"};
   }
 </style>
 </head>
 
 <body>
-
 <header>
   <h1>${project.name}</h1>
 </header>
@@ -186,21 +180,19 @@ function openPreview() {
   <p>${project.goal || "Objetivo não definido."}</p>
 
   <div class="highlight">
-    <strong>Pré‑visualização do projeto</strong>
+    <strong>Pré-visualização do projeto</strong>
     <p>
       Este é um exemplo de como o teu projeto poderá começar,
       com base no branding e estrutura definidos.
     </p>
   </div>
 </main>
-
 </body>
 </html>
 `;
 
   modal.style.display = "block";
 }
-
 
 function closePreview() {
   document.getElementById("export-preview").style.display = "none";
@@ -218,7 +210,7 @@ function exportProject() {
   --font:${branding.fontPrimary || "system-ui, Arial"};
 }
 body {
-  font-family:var(--font);
+  font-family: var(--font);
 }
 `;
 
@@ -236,9 +228,9 @@ body {
   });
 }
 
-window.exportProject = exportProject;
 window.openPreview = openPreview;
 window.closePreview = closePreview;
+window.exportProject = exportProject;
 
 /* =====================
    NAV FLOW (FIGMA)
@@ -251,21 +243,19 @@ function updateNav() {
   const navProcess = document.getElementById("nav-process");
   const navLogout = document.getElementById("nav-logout");
 
-  // reset
+  if (!navHome || !navProcess || !navLogout) return;
+
   navHome.style.display = "none";
   navProcess.style.display = "none";
   navLogout.style.display = "none";
 
-  // após login
   if (userName) {
     navHome.textContent = userName;
     navHome.style.display = "inline-block";
     navHome.onclick = () => location.hash = "#/home";
-
     navLogout.style.display = "inline-block";
   }
 
-  // após setup
   if (setupDone) {
     navProcess.style.display = "inline-block";
   }
@@ -273,3 +263,4 @@ function updateNav() {
 
 window.addEventListener("store-updated", updateNav);
 document.addEventListener("DOMContentLoaded", updateNav);
+``
