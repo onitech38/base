@@ -1,18 +1,5 @@
 import store from "./store.js";
 const app = document.getElementById("app");
-/* =====================
-   PROGRESS HEADER
-===================== */
-function updateProgressUI() {
-  const value = store.state.progress.global;
-  const valueEl = document.getElementById("progress-value");
-  const fillEl = document.getElementById("progress-fill");
-
-  if (valueEl) valueEl.textContent = `${value}%`;
-  if (fillEl) fillEl.style.width = `${value}%`;
-}
-
-window.addEventListener("store-updated", updateProgressUI);
 
 /* =====================
    SETUP
@@ -20,21 +7,24 @@ window.addEventListener("store-updated", updateProgressUI);
 document.addEventListener("click", (e) => {
   if (e.target.id !== "setup-submit") return;
 
-  const project = {
+  const data = {
     name: document.getElementById("setup-name").value.trim(),
     type: document.getElementById("setup-type").value,
     goal: document.getElementById("setup-goal").value,
+
+    features: {
+      login: document.getElementById("feature-login").checked,
+      backend: document.getElementById("feature-backend").checked,
+      pwa: document.getElementById("feature-pwa").checked,
+    },
   };
 
-  store.setProjectConfig(project);
-
-  if (!store.isSetupComplete()) {
+  if (!data.name || !data.type || !data.goal) {
     alert("Preenche nome, tipo e objetivo.");
     return;
   }
 
-  store.generateProcessesFromProject();
-  store.completeSetup();
+  store.completeSetup(data);
   location.hash = "#/process-builder";
 });
 
@@ -394,4 +384,14 @@ document.addEventListener("click", (e) => {
   if (e.target.id === "welcome-signup") {
     location.hash = "#/signup";
   }
+});
+
+/* =====================
+   PROJECT SELECT
+===================== */
+document.addEventListener("click", (e) => {
+  if (e.target.id !== "create-project") return;
+
+  store.createProject();
+  location.hash = "#/setup";
 });

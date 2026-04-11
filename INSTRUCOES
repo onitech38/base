@@ -1,46 +1,76 @@
-TIPO DE APP - SPA  Single Page Application
+🧩 1️⃣ Que projeto é este (em termos simples e reais)
+Este projeto é:
+Uma web app (SPA, sem framework) que ajuda a planear, estruturar e arrancar projetos digitais, guiando o utilizador por fases obrigatórias e sequenciais, até o projeto estar pronto para execução, pré‑visualização e exportação.
+O valor não está no visual, mas:
 
-É uma técnica de desenvolvimento onde o site carrega apenas uma
-única página HTML inicial e, em seguida, atualiza o conteúdo
-dinamicamente à medida que o usuário interage com ele, sem precisar
-recarregar o navegador a cada clique.
+no modelo mental
+na estrutura de decisão
+no fluxo guiado
+no estado como motor
 
-----------------------------------------------------------------------
-----------------------------------------------------------------------
---Ideia e resumo--
+🧠 É uma ferramenta de pensamento estruturado, não de execução.
+O que NÃO é
 
-📌 1️⃣ Ideia do projeto
-O que é este projeto
-Uma web app de apoio à criação e planeamento de projetos digitais
-(website / web app), que guia o utilizador desde a ideia inicial até à
-exportação de uma estrutura base do projeto.
-Em termos simples
+❌ Um Wix / Webflow
+❌ Um gestor de tarefas genérico
+❌ Um formulário grande disfarçado
 
-Um Project / Process Builder que:
+O que É
+
+✅ Ferramenta de decisão + estrutura
+✅ Processo guiado (sem caos)
+✅ SPA offline‑first
+✅ Projeto real para aprender arquitetura SPA (não tutorial)
 
 
-ajuda a definir um projeto
-guia o utilizador por etapas lógicas
-mostra progresso
-permite pré‑visualizar
-e no fim exportar uma base de projeto reutilizável
+🧠 2️⃣ Conceitos fundamentais (fechados)
+Estas decisões já não estão em discussão — são a base sólida do projeto.
+🧠 User ≠ Projeto
+User
 
-Objetivo conceptual
+Tem identidade (login local)
+Pode ter até 2 projetos
 
-Não é um builder visual tipo Wix
-Não é um gestor de tarefas genérico
-É uma ferramenta de estrutura + decisão + arranque técnico
+Projeto
 
-----------------------------------------------------------------------
-----------------------------------------------------------------------
---Arquitetura--
+Tem setup próprio
+Tem progresso próprio
+Vive independentemente do user
+
+
+🌐 Offline‑first (real)
+
+Tudo funciona sem internet
+localStorage é a fonte da verdade
+Sync pode existir no futuro, não agora
+
+
+🧱 Fases obrigatórias e sequenciais
+Todo projeto passa sempre por estas 5 fases, nesta ordem:
+
+Setup & Funcionalidades
+Estrutura Base
+Branding & Temas
+Acessibilidade
+SEO
+
+Regras:
+
+📌 Não há skip
+📌 Não há export sem completar todas
+📌 Só uma fase ativa
+📌 Fases concluídas podem ser revisitadas (revisão), sem bloquear progresso
+
+
+🏗️ 3️⃣ Arquitetura técnica (atual)
+SPA sem framework, mas com separação correta de responsabilidades.
 
 /projeto-base
   /assets
     /css
       actions.css
-      app.css
       animations.css
+      app.css
       branding.css
       fonts.css
       global.css
@@ -64,6 +94,7 @@ Não é um gestor de tarefas genérico
     home.html
     offline.html
     process-builder.html
+    project-select.html
     seo.html
     setup.html
     welcome.html  ← página informativa
@@ -72,185 +103,128 @@ Não é um gestor de tarefas genérico
   service-worker.js  ← (para app offline)
   instruções         ← onde eu estou a colocar algumas notas e informações para eu não me perder .😅
 
+📌 Isto já é uma SPA “a sério”, não um esqueleto.
 
-----------------------------------------------------------------------
-----------------------------------------------------------------------
--- Ordem de trabalhos --
+🧠 4️⃣ Lógica de pensamento (modelo mental)
+Princípios seguidos
 
-✅ 3️⃣ Ponto de situação — o que JÁ FOI FEITO
-Apesar da frustração (compreensível), muita coisa importante já está feita.
-✅ Base técnica
+Estado manda, não páginas
+Router decide com base em estado, não URL solto
+UI reflete decisões, não as inventa
+Store é a única fonte da verdade
+Setup define decisões → fases reagem
 
-SPA com router por hash
-Estado centralizado (store)
-Persistência em localStorage
-Separação clara entre:
+📌 Regra de ouro aplicada:
 
-estrutura
-lógica
-UI
+app.js pergunta.
+store.js decide.
 
 
+🔄 5️⃣ Flow de páginas / etapas (validado)
+Fluxo completo, testado desde o ponto 0:
+Visitor
+ → Welcome
+ → Login / Signup
+ → Project Select
+ → Criar projeto
+ → Setup
+ → Process Builder
+ → Home
 
-✅ Fluxo funcional (em intenção)
+Com guardrails claros:
 
-Setup do projeto
-Process Builder (fases + tarefas)
-Home como resumo
-Branding como configuração do projeto
-Export (ZIP)
-Preview antes do export
+Guest não entra onde não deve
+Auth sem projeto é redirecionado
+Projeto sem Setup é forçado ao Setup
+Setup concluído não volta atrás
 
-✅ UX / Produto
+✅ Router está sólido
+✅ Estado está coerente
 
-Fluxo pensado (não aleatório)
-Separação clara entre:
+✅ 6️⃣ O que foi FEITO e está SÓLIDO
+✅ Store (estado)
 
-ferramenta (a app)
-projeto do utilizador (o que está a ser criado)
+Auth local (guest / authenticated)
+Multi‑projeto (limite de 2)
+Projeto com:
 
+setupCompleted
+features
+process.phases
 
-Decisão correta:
 
-Dark Mode = projeto, não app
+Progressão de fases correta
+Revisitação sem regressão
+Derived state bem definido:
 
+currentUser
+currentProject
+projectFeatures
+structureRequirements
 
 
-✅ CSS
 
-Sistema modular
-style.css como agregador
-Base pronta para escalar
+👉 store.js é o coração da app e está bem desenhado.
 
+✅ Router
 
+State‑driven
+Bloqueia acessos indevidos
+Força Setup quando necessário
+Evita loops (já corrigidos)
+Respeita todos os estados previstos
 
-⚠️ 4️⃣ O que está BLOQUEADO / inconsistente neste momento
-🔴 Problema principal
-O Process Builder não está a renderizar as fases, apesar de:
+👉 Isto é difícil de fazer bem — e está feito.
 
-o HTML carregar
-o router funcionar
-o estado existir
+✅ Setup
 
-Isto indica incongruência entre:
+UI funcional
+Recolhe decisões reais
+Grava no estado corretamente
+Desbloqueia o fluxo seguinte
 
-estado (store)
-momento de inicialização
-ou código JS efetivamente executado
+👉 Setup deixou de ser formulário — passou a ser configurador.
 
-👉 Este é um problema técnico pontual, não conceptual.
-⚠️ Consequência
-Enquanto isto não estiver resolvido:
+✅ Project Select
 
-não dá para aprofundar os conteúdos das fases
-não dá para validar o fluxo completo
-trava o avanço do produto
+Existe
+Cria projeto corretamente
+Encaixa no fluxo (mínimo, mas correto)
 
-👉 É correto parar e diagnosticar, como sugeriste.
 
+✅ Process Builder
 
+Lista das 5 fases
+Locked / active / completed funcionam
+Só fase ativa executa
+Revisão de fases concluídas funciona
+Integra com estado
 
 
+🚧 7️⃣ O que ainda NÃO foi feito (e está tudo bem)
+Estas coisas não deviam estar feitas ainda:
 
-🔧 5️⃣ O que FALTA FAZER (em ordem correta)
-🔴 Curto prazo (técnico)
-
-Diagnóstico completo com todos os ficheiros
-
-exatamente como propuseste
-
-
-Resolver definitivamente:
-
-renderização do Process Builder
-sem workarounds
-
-
-
-👉 Isto é 1 tarefa, não várias.
-
-🟡 Médio prazo (produto)
-Depois do bloqueio técnico resolvido:
-
-Aprofundar conteúdos das fases
-
-Estrutura
-Branding
-SEO
-Export
-
-
-Tornar as tarefas:
-
-menos genéricas
-mais acionáveis
-
-
-Melhorar copy (texto orientador)
-
-
-🟢 Longo prazo (valor e aprendizagem)
-
-Export mais inteligente
-Preview mais fiel a produção
-Documentação do projeto
-Explicação final completa
-
-arquitetura
-decisões
-erros
-como debugar isto sozinho no futuro
-(como pediste desde o início)
-
-
-
-
-
-
-🎯 6️⃣ Objetivo final do projeto
-Em termos de produto
-
-Uma ferramenta funcional, coerente e apresentável
-Algo que possas:
-
-mostrar
-explicar
-evoluir
-
-
-
-Em termos pessoais
-
-Aprender:
-
-SPA sem framework
-gestão de estado
-debug real (não tutoriais artificiais)
-
-
-Ganhar confiança para:
-
-resolver bloqueios
-não desistir quando algo “não faz sentido”
-
-
-
-👉 O que aconteceu aqui faz parte do processo real, mesmo que seja desagradável.
-
-
-
-✅ Próximo passo
-
-Partilhar TODOS os ficheiros relevantes → diagnóstico único → correção definitiva
-
-index.html
-assets/js/app.js
-assets/js/router.js
-assets/js/store.js
-pages/process-builder.html
-
-👉 Só depois disso é que fazes o diagnóstico.
-👉 Sem sugerir alterações antes.
-👉 Sem mais ciclos de tentativa‑erro.
-
-Lembrar que de momento estamos a tentar entender porque é que na página Process Builder não aparessem os passos
+❌ Tasks reais dentro das fases
+❌ Estrutura detalhada de cada fase
+❌ Copy final
+❌ UI refinada
+❌ Export inteligente
+❌ Sync / backend real
+❌ Limpeza profunda de ficheiros parasitas
+
+👉 Nada disto está atrasado.
+
+📍 8️⃣ Fase atual exata (nítida)
+📌 Estamos oficialmente na Opção A — Setup Inteligente
+Sub‑fase: A2 — Estrutura Base adaptativa
+O que já foi iniciado:
+
+✅ Setup grava decisões
+✅ projectFeatures existe
+✅ structureRequirements existe
+
+O que ainda falta nesta A2:
+
+Fazer a fase “Estrutura Base” reagir a essas decisões
+Sem mudar UI ainda
+Só lógica + integração com Process Builder

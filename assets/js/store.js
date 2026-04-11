@@ -111,13 +111,15 @@ const store = {
     this.save();
   },
 
-  completeSetup({ name, type, goal }) {
+  completeSetup({ name, type, goal, features }) {
     const project = this.currentProject;
     if (!project) return;
 
     project.name = name;
     project.type = type;
     project.goal = goal;
+    project.features = features;
+
     project.setupCompleted = true;
     project.updatedAt = Date.now();
 
@@ -165,6 +167,41 @@ const store = {
   get phases() {
     const project = this.currentProject;
     return project ? project.process.phases : [];
+  },
+
+  get projectFeatures() {
+    return (
+      this.currentProject?.features || {
+        login: false,
+        backend: false,
+        pwa: false,
+      }
+    );
+  },
+
+  get structureRequirements() {
+    const features = this.projectFeatures;
+
+    return {
+      pages: [
+        "Home",
+        "Sobre",
+        "Contacto",
+        ...(features.login ? ["Login", "Registo", "Área privada"] : []),
+      ],
+
+      hasBackend: features.backend,
+
+      hasAuth: features.login,
+
+      isPWA: features.pwa,
+
+      notes: [
+        ...(features.backend ? ["Definir API e modelo de dados"] : []),
+        ...(features.login ? ["Definir fluxos de autenticação"] : []),
+        ...(features.pwa ? ["Planeamento offline e cache"] : []),
+      ],
+    };
   },
 
   get currentPhase() {

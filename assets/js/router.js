@@ -7,8 +7,8 @@ const app = document.getElementById("app");
    ROUTES CONFIG
 ===================== */
 const PUBLIC_ROUTES = ["welcome", "login", "signup"];
-const AUTH_NO_PROJECT_ROUTES = ["project-select", "setup"];
-const AUTH_PROJECT_ROUTES = ["home", "process-builder"];
+const AUTH_NO_PROJECT_ROUTES = ["project-select"];
+const AUTH_PROJECT_ROUTES = ["setup", " home", "process-builder"];
 
 /* =====================
    ROUTER CORE

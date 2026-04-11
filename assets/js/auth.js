@@ -1,5 +1,4 @@
 import store from "./store.js";
-import { renderLogin, renderSignup } from "./auth.js";
 
 const app = document.getElementById("app");
 
