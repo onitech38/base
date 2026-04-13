@@ -23,6 +23,17 @@ O que É
 ✅ Projeto real para aprender arquitetura SPA (não tutorial)
 
 
+✅ Sequência oficial de fases
+A ordem correta e definitiva passa a ser:
+
+Setup & Funcionalidades
+Estrutura Base ✅ (já implementada A2.1–A2.3)
+Estrutura de Layout (UI Structure) 🆕
+Branding & Temas
+Acessibilidade
+SEO
+
+
 🧠 2️⃣ Conceitos fundamentais (fechados)
 Estas decisões já não estão em discussão — são a base sólida do projeto.
 🧠 User ≠ Projeto
@@ -48,11 +59,34 @@ Sync pode existir no futuro, não agora
 🧱 Fases obrigatórias e sequenciais
 Todo projeto passa sempre por estas 5 fases, nesta ordem:
 
-Setup & Funcionalidades
-Estrutura Base
-Branding & Temas
-Acessibilidade
-SEO
+🧱 Nova sequência oficial de fases (proposta sólida)
+Atualizando o teu fluxo para algo mais correto e mais profissional:
+
+
+※ Setup & Funcionalidades
+→ tipo de produto, conteúdo, acesso, estratégia
+
+
+※ Estrutura Base
+→ páginas, áreas, módulos, fluxos obrigatórios
+(o que já estamos a fazer com baseStructure)
+
+
+※ Estrutura de Layout / UI Structure ✅ (nova fase)
+→ navegação, hierarquia, padrões de layout
+(sem cores, sem branding)
+
+
+※ Branding & Temas
+→ cores, tipografia, identidade visual
+
+
+※ Acessibilidade
+→ aplicar regras sobre uma estrutura já clara
+
+
+※ SEO
+→ otimização sobre conteúdo e layout já definidos
 
 Regras:
 
@@ -78,26 +112,27 @@ SPA sem framework, mas com separação correta de responsabilidades.
       reset.css
       style.css   ← importa tudo
       variables.css
+    /img
+      icon-512.svg
+      icon-192.svg
     /js
       router.js       ← SPA router (hash-based) Decidir o que renderizar consoante a rota/estado
       app.js          ← lógica principal (UI, preview, Process Builder, export, nav...)
       store.js        ← estado global + persistência + Estado (auth, projetos, fases…)
       auth.js         ← Renderizar Login / Signup (HTML + eventos)
       supabase.js
-    /img
-      icon-512.svg
-      icon-192.svg
-  /pages
-    a11y.html
-    branding.html
-    export.html
-    home.html
-    offline.html
-    process-builder.html
-    project-select.html
-    seo.html
-    setup.html
-    welcome.html  ← página informativa
+    /pages
+      a11y.html
+      branding.html
+      export.html
+      home.html
+      offline.html
+      process-builder.html
+      project-select.html
+      seo.html
+      setup.html
+      structure-base.html
+      welcome.html  ← página informativa
   index.html
   manifest.json   ← (para app)
   service-worker.js  ← (para app offline)
@@ -121,47 +156,14 @@ store.js decide.
 
 
 🔄 5️⃣ Flow de páginas / etapas (validado)
-Fluxo completo, testado desde o ponto 0:
+Fluxo completo:
 Visitor
  → Welcome
- → Login / Signup
- → Project Select
- → Criar projeto
+ → Login / Project Select se já tiver projeto + opção de criar mais 1 *MAXIMO DE 2 POR USUÁRIO
+ → Signup / Project Select
  → Setup
  → Process Builder
  → Home
-
-Com guardrails claros:
-
-Guest não entra onde não deve
-Auth sem projeto é redirecionado
-Projeto sem Setup é forçado ao Setup
-Setup concluído não volta atrás
-
-✅ Router está sólido
-✅ Estado está coerente
-
-✅ 6️⃣ O que foi FEITO e está SÓLIDO
-✅ Store (estado)
-
-Auth local (guest / authenticated)
-Multi‑projeto (limite de 2)
-Projeto com:
-
-setupCompleted
-features
-process.phases
-
-
-Progressão de fases correta
-Revisitação sem regressão
-Derived state bem definido:
-
-currentUser
-currentProject
-projectFeatures
-structureRequirements
-
 
 
 👉 store.js é o coração da app e está bem desenhado.
@@ -212,19 +214,9 @@ Estas coisas não deviam estar feitas ainda:
 ❌ Sync / backend real
 ❌ Limpeza profunda de ficheiros parasitas
 
-👉 Nada disto está atrasado.
+Blocos das Fase e tarefas estão a ser desenvolvidos bloco a
+bloco para ir de encontro com o fluxo de trabalho do figma.
 
-📍 8️⃣ Fase atual exata (nítida)
-📌 Estamos oficialmente na Opção A — Setup Inteligente
-Sub‑fase: A2 — Estrutura Base adaptativa
-O que já foi iniciado:
+Nota: O fluxo de trabalho do figma é o que define o que deve ser feito.
 
-✅ Setup grava decisões
-✅ projectFeatures existe
-✅ structureRequirements existe
-
-O que ainda falta nesta A2:
-
-Fazer a fase “Estrutura Base” reagir a essas decisões
-Sem mudar UI ainda
-Só lógica + integração com Process Builder
+- Pedir ficheiros importantes para enquadrar o fluxo de trabalho do figma

@@ -8,46 +8,46 @@
     /* =============================
        NAV (FIGMA STYLE)
     ============================= */
-    
+
     .nav {
-      display: grid;
-      grid-template-columns: 1fr auto 1fr;
-      align-items: center;
-      padding: 1rem 2rem;
-      background: var(--bg-secondary, #eee);
-      border-bottom: 1px solid rgba(0,0,0,0.1);
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        align-items: center;
+        padding: 1rem 2rem;
+        background: var(--bg-secondary, #eee);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
     }
-    
+
     .nav-slot {
-      display: flex;
-      align-items: center;
+        display: flex;
+        align-items: center;
     }
-    
+
     .nav-left {
-      justify-content: flex-start;
+        justify-content: flex-start;
     }
-    
+
     .nav-center {
-      justify-content: center;
+        justify-content: center;
     }
-    
+
     .nav-right {
-      justify-content: flex-end;
-      gap: 1rem;
+        justify-content: flex-end;
+        gap: 1rem;
     }
-    
+
     .nav-logo {
-      font-weight: 600;
-      letter-spacing: 0.2em;
-      font-size: 0.9rem;
+        font-weight: 600;
+        letter-spacing: 0.2em;
+        font-size: 0.9rem;
     }
-    
+
     .nav button {
-      background: none;
-      border: 1px solid #222;
-      padding: 0.35rem 0.9rem;
-      border-radius: 999px;
-      font-size: 0.75rem;
+        background: none;
+        border: 1px solid #222;
+        padding: 0.35rem 0.9rem;
+        border-radius: 999px;
+        font-size: 0.75rem;
     }
 
     header {
@@ -199,37 +199,88 @@
     /* =====================================================
        HOME – VISÃO GERAL DO PROJETO
     ===================================================== */
+    /* ===============================
+       HOME – TYPOGRAPHY (FIGMA)
+    ================================ */
 
-    .page-home .page-header {
-        margin-bottom: 2rem;
+    /* Título principal */
+    .page-home .page-header h1 {
+        font-size: 2.2rem;
+        font-weight: 400;
+        letter-spacing: 0.12em;
+        text-align: center;
+        margin-bottom: 0.75rem;
     }
 
-    /* GRID DE FASES */
+    /* Texto introdutório */
+    .page-home .page-header p {
+        font-size: 0.9rem;
+        text-align: center;
+        opacity: 0.8;
+        max-width: 520px;
+        margin: 0 auto;
+    }
+
+    /* COLUNA ESQUERDA – META */
+    .home-meta {
+        width: 240px;
+        font-size: 0.9rem;
+        line-height: 1.7;
+        color: #c9a86a; /* dourado do Figma */
+    }
+
+    .home-meta p {
+        margin: 0 0 6px;
+    }
+
+    /* Percentagem (discreta, não protagonista) */
+    .home-progress span {
+        display: block;
+        margin-top: 0.75rem;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+        font-size: 0.85rem;
+        color: #c9a86a;
+    }
+
+    /* Cards das fases */
+    .phase-card .phase-title {
+        font-size: 0.8rem;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+    }
+
+    /* Subtarefas */
+    .phase-subtasks {
+        list-style: none;
+        padding: 0;
+        margin-top: 12px;
+        font-size: 0.75rem;
+        line-height: 1.5;
+    }
+
+    .phase-subtasks li {
+        margin-bottom: 4px;
+    }
+
     #home-dashboard {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
         gap: 1.5rem;
-        margin-top: 2rem;
     }
 
-    /* CARD DE FASE */
     .home-phase {
-        background: #ffffff;
-        border: 1px solid var(--border-color, #e6e6e6);
+        border: 1px solid #e5e5e5;
         border-radius: 12px;
-        padding: 1rem 1.25rem;
-        transition: all 0.2s ease;
+        padding: 1.25rem;
+        background: #fff;
     }
 
-    /* título da fase */
     .home-phase h3 {
         margin: 0 0 0.75rem;
-        font-size: 0.85rem;
-        text-transform: uppercase;
-        letter-spacing: 0.04em;
+        font-size: 0.9rem;
     }
 
-    /* lista de tarefas */
     .home-phase ul {
         list-style: none;
         padding: 0;
@@ -238,121 +289,543 @@
 
     .home-phase li {
         font-size: 0.85rem;
-        margin: 0.25rem 0;
-        opacity: 0.85;
+        margin-bottom: 0.25rem;
     }
 
-    /* estados */
-    .home-phase.completed {
-        background: #f6fffb;
-        border-color: #b7e4c7;
+    .home-layout {
+        margin-top: 40px;
+        display: flex;
+        gap: 4rem; /* igual ao espaçamento do Figma */
+        align-items: flex-start;
     }
 
-    .home-phase.active {
-        background: #f8fbff;
-        border-color: #74c0fc;
+    .home-meta {
+        width: 240px;
+        font-size: 0.9rem;
+        line-height: 1.6;
+        color: #c9a86a; /* tom dourado do Figma */
     }
 
-    .home-phase.locked {
+    .home-meta p {
+        margin: 0 0 6px;
+    }
+
+    .home-progress span {
+        display: block;
+        margin-top: 0.75rem;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+        font-size: 0.85rem;
+    }
+
+    .phase-card {
+        padding: 20px;
+        border-radius: 12px;
+        border: 1px solid #e5e5e5;
+        background: #fff;
+        transition: all 0.2s ease;
+        cursor: pointer;
+    }
+
+    .phase-card .phase-title {
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    /* ✅ COMPLETED */
+    .phase-card.completed {
         opacity: 0.45;
     }
 
-    /* hover subtil */
-    .home-phase:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+    .phase-card.completed .phase-title {
+        text-decoration: line-through;
     }
+
+    /* 🔓 ACTIVE */
+    .phase-card.active {
+        border-color: #111;
+        background: #fafafa;
+    }
+
+    .phase-card.active:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+    }
+
+    /* 🔒 LOCKED */
+    .phase-card.locked {
+        opacity: 0.35;
+        cursor: not-allowed;
+        background: #f7f7f7;
+    }
+
+    .phase-card.locked::after {
+        content: "🔒";
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        font-size: 0.8rem;
+    }
+
+    .phase-card.locked:hover::after {
+        content: "Terminar tarefas e fase anterior";
+        top: auto;
+        bottom: -28px;
+        right: auto;
+        left: 0;
+        background: #111;
+        color: #fff;
+        padding: 4px 8px;
+        font-size: 0.7rem;
+        border-radius: 6px;
+        white-space: nowrap;
+    }
+
+    .phase-subtasks {
+        list-style: none;
+        padding: 0;
+        margin-top: 12px;
+        font-size: 0.75rem;
+    }
+
+    .phase-subtasks li {
+        margin-bottom: 4px;
+    }
+    /* ===============================
+       HOME – FIGMA TASK UI
+    ================================ */
+
+    .phase-group {
+        margin-bottom: 2rem;
+        cursor: pointer;
+    }
+
+    .phase-group.locked {
+        opacity: 0.35;
+        cursor: not-allowed;
+    }
+
+    .phase-header {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        margin-bottom: 0.6rem;
+    }
+
+    .phase-header h3 {
+        font-size: 0.85rem;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+    }
+
+    .phase-check {
+        width: 14px;
+        height: 14px;
+        border: 1px solid #999;
+        border-radius: 3px;
+        display: inline-block;
+    }
+
+    .phase-check.checked {
+        background: #111;
+        border-color: #111;
+    }
+
+    .phase-tasks {
+        list-style: none;
+        padding-left: 1.4rem;
+        margin: 0;
+    }
+
+    .phase-tasks li {
+        font-size: 0.75rem;
+        line-height: 1.6;
+        color: #999;
+    }
+
+    .phase-tasks li.done {
+        color: #111;
+        text-decoration: line-through;
+    }
+
     /* =====================================================
    PAGES BASE
 ===================================================== */
-.page {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 2rem;
-}
+    .page {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
 
-.page-header {
-  margin-bottom: 2.5rem;
-}
+    .page-header {
+        margin-bottom: 2.5rem;
+    }
 
-.page-header h1 {
-  margin: 0 0 0.5rem;
-}
+    .page-header h1 {
+        margin: 0 0 0.5rem;
+    }
 
-.page-header p {
-  max-width: 640px;
-  opacity: 0.85;
-}
+    .page-header p {
+        max-width: 640px;
+        opacity: 0.85;
+    }
 
-/* =====================================================
-   HOME DASHBOARD
-===================================================== */
-#home-dashboard {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 1.5rem;
-}
-
-.home-phase {
-  border: 1px solid #e5e5e5;
-  border-radius: 12px;
-  padding: 1.25rem;
-  background: #fff;
-}
-
-.home-phase h3 {
-  margin: 0 0 0.75rem;
-  font-size: 0.9rem;
-}
-
-.home-phase ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.home-phase li {
-  font-size: 0.85rem;
-  margin-bottom: 0.25rem;
-}
-
-/* =====================================================
+    /* =====================================================
    PROCESS BUILDER
 ===================================================== */
-#pb-process-list {
-  list-style: none;
-  padding: 0;
-  margin-bottom: 2rem;
-}
+    #pb-process-list {
+        list-style: none;
+        padding: 0;
+        margin-bottom: 2rem;
+    }
 
-#pb-process-list li {
-  padding: 0.5rem 0;
-  cursor: pointer;
-}
+    #pb-process-list li {
+        padding: 0.5rem 0;
+        cursor: pointer;
+    }
 
-#pb-process-list li:hover {
-  text-decoration: underline;
-}
+    #pb-process-list li:hover {
+        text-decoration: underline;
+    }
 
-#pb-task-list {
-  list-style: none;
-  padding: 0;
-}
+    #pb-task-list {
+        list-style: none;
+        padding: 0;
+    }
 
-#pb-task-list li {
-  cursor: pointer;
-  padding: 0.4rem 0;
-}
+    #pb-task-list li {
+        cursor: pointer;
+        padding: 0.4rem 0;
+    }
+    /* ===============================
+       PROCESS BUILDER – HYBRID UI
+    ================================ */
+    .pb-phase[data-tooltip] {
+        position: relative;
+    }
 
-/* =====================================================
+    .pb-phase[data-tooltip]::after {
+        content: attr(data-tooltip);
+        position: absolute;
+        left: 0;
+        bottom: calc(100% + 8px);
+
+        background: #111;
+        color: #fff;
+        font-size: 0.7rem;
+        padding: 4px 8px;
+        border-radius: 6px;
+        white-space: nowrap;
+
+        opacity: 0;
+        transform: translateY(4px);
+        pointer-events: none;
+
+        transition:
+            opacity 0.15s ease,
+            transform 0.15s ease;
+    }
+
+    .pb-phase[data-tooltip]:hover::after {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    #pb-process-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    /* FASE BASE */
+    .pb-phase {
+        position: relative;
+        padding: 1rem 1.2rem;
+        border: 1px solid #e5e5e5;
+        border-radius: 10px;
+        background: #fff;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .pb-phase:hover {
+        border-color: #111;
+    }
+
+    /* ESTADOS */
+    .pb-completed {
+        opacity: 0.5;
+    }
+
+    .pb-locked {
+        opacity: 0.35;
+        cursor: not-allowed;
+    }
+
+    .pb-active {
+        border-color: #111;
+    }
+
+    /* LINHA PRINCIPAL */
+    .pb-phase-main {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+    }
+
+    .pb-phase-title {
+        font-size: 0.85rem;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+    }
+
+    /* STATUS VISUAL */
+    .pb-phase-status {
+        width: 12px;
+        height: 12px;
+        border-radius: 3px;
+        border: 1px solid #999;
+    }
+
+    .pb-completed .pb-phase-status {
+        background: #111;
+        border-color: #111;
+    }
+
+    .pb-active .pb-phase-status {
+        border-color: #111;
+    }
+
+    .pb-locked .pb-phase-status {
+        border-color: #ccc;
+    }
+
+    /* ===============================
+        HOVER ANIMATION
+    ================================ */
+    .pb-phase-hover {
+        display: none;
+        transform: translateY(6px);
+        pointer-events: none;
+        margin-top: 0.8rem;
+        padding-top: 0.8rem;
+        border-top: 1px dashed #e5e5e5;
+
+        transition:
+            opacity 0.18s ease,
+            transform 0.18s ease;
+    }
+
+    .pb-phase:hover .pb-phase-hover {
+        display: block;
+    }
+
+    /* TASKS */
+    .pb-phase-hover ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .pb-phase-hover li {
+        font-size: 0.75rem;
+        line-height: 1.6;
+        color: #999;
+    }
+
+    .pb-phase-hover li.done {
+        color: #111;
+        text-decoration: line-through;
+    }
+
+    /* ===============================
+       ESTRUTURA BASE – FIGMA UI
+    ================================ */
+
+    .structure-page-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.25rem 0;
+    }
+
+    .structure-page-item .remove-page {
+        background: none;
+        border: none;
+        color: #999;
+        cursor: pointer;
+    }
+
+    .structure-page-item .remove-page:hover {
+        color: #c00;
+    }
+
+    .page-structure-base .structure-content {
+        display: flex;
+        flex-direction: column;
+        gap: 3rem;
+    }
+
+    .structure-block.is-hidden {
+        display: none;
+    }
+
+    .structure-block {
+        border-bottom: 1px solid #e5e5e5;
+        padding-bottom: 2rem;
+    }
+
+    .structure-block:last-child {
+        border-bottom: none;
+    }
+
+    .structure-block h2 {
+        font-size: 0.9rem;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        margin-bottom: 1.2rem;
+    }
+
+    .structure-block label {
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
+        font-size: 0.75rem;
+        margin-bottom: 1rem;
+    }
+
+    .structure-block input,
+    .structure-block textarea {
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        padding: 0.45rem 0.6rem;
+        font-size: 0.8rem;
+    }
+
+    .structure-block textarea {
+        resize: vertical;
+        min-height: 70px;
+    }
+
+    .structure-block.is-locked input,
+    .structure-block.is-locked textarea,
+    .structure-block.is-locked button {
+        background-color: #eee;
+        color: #999;
+        border-color: #ccc;
+    }
+
+    .structure-block.is-locked {
+        opacity: 0.35;
+        pointer-events: none;
+        filter: grayscale(1);
+        background-color: #f5f5f5;
+        border-color: #ddd;
+    }
+
+    .structure-block.is-locked::before {
+        content: "🔒 Completa o passo anterior para continuar";
+        display: block;
+        margin-bottom: 0.6rem;
+        font-size: 0.8rem;
+        color: #666;
+    }
+
+    .structure-block.is-locked::after {
+        content: "🔒 Completa o passo anterior para continuar";
+        display: block;
+        margin-top: 0.5rem;
+        font-size: 0.8rem;
+        opacity: 0.7;
+    }
+
+    .structure-block.is-locked *,
+    .structure-block.is-locked input,
+    .structure-block.is-locked textarea,
+    .structure-block.is-locked button {
+        pointer-events: none;
+    }
+
+    .structure-block {
+        transition: opacity 0.3s ease;
+    }
+
+    /* Páginas */
+    .structure-pages {
+        display: flex;
+        gap: 0.6rem;
+        margin-bottom: 0.8rem;
+    }
+
+    #pages-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    #pages-list li {
+        font-size: 0.75rem;
+        padding: 0.35rem 0;
+        border-bottom: 1px dashed #ddd;
+    }
+
+    /* Ações */
+    .structure-actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+
+    /* ===============================
+       LAYOUT – FIGMA UI
+    ================================ */
+    .layout-block.is-hidden {
+        display: none;
+    }
+
+    .layout-state {
+        margin: 0.5rem 0;
+        font-size: 0.9rem;
+        color: #666;
+    }
+
+    .layout-options {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.5rem;
+        margin: 0.75rem 0;
+    }
+
+    .layout-option {
+        border: 1px solid #ccc;
+        background: #fafafa;
+        padding: 0.5rem;
+        cursor: pointer;
+        border-radius: 6px;
+        text-align: left;
+        opacity: 0.6;
+    }
+
+    .layout-option.active {
+        border-color: #000;
+        background: #eee;
+        opacity: 1;
+    }
+
+    #layout-apply[disabled] {
+        opacity: 0.4;
+        cursor: not-allowed;
+    }
+
+    /* =====================================================
    BRANDING PAGE
 ===================================================== */
-.page-branding label {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  margin-bottom: 1rem;
-  max-width: 280px;
-}
-
+    .page-branding label {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+        margin-bottom: 1rem;
+        max-width: 280px;
+    }
 }

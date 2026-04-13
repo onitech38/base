@@ -1,397 +1,617 @@
+/* ============================================================
+   BOOT / GLOBAL STATE
+============================================================ */
 import store from "./store.js";
-const app = document.getElementById("app");
+window.store = store;
+window.pendingPhaseToOpen = null;
 
-/* =====================
-   SETUP
-===================== */
-document.addEventListener("click", (e) => {
-  if (e.target.id !== "setup-submit") return;
+/* ============================================================
+   GENERIC UI HELPERS (ÚNICOS)
+============================================================ */
+function showBlock(prefix, blockName) {
+  const el = document.querySelector(
+    `.${prefix}-block[data-block="${blockName}"]`,
+  );
+  if (el) el.classList.remove("is-hidden");
+}
 
-  const data = {
-    name: document.getElementById("setup-name").value.trim(),
-    type: document.getElementById("setup-type").value,
-    goal: document.getElementById("setup-goal").value,
+function updateVisibility(prefix, rules) {
+  rules.forEach(({ condition, block }) => {
+    if (condition()) showBlock(prefix, block);
+  });
+}
 
-    features: {
-      login: document.getElementById("feature-login").checked,
-      backend: document.getElementById("feature-backend").checked,
-      pwa: document.getElementById("feature-pwa").checked,
+/* ============================================================
+   PHASE RULES (FONTE DA VERDADE DO FLUXO)
+============================================================ */
+const structureRules = [
+  {
+    block: "pages",
+    condition: () =>
+      store.baseStructure.architecture.type &&
+      store.baseStructure.architecture.approach,
+  },
+  {
+    block: "navigation",
+    condition: () => store.baseStructure.pages.length > 0,
+  },
+  {
+    block: "foundation",
+    condition: () =>
+      store.baseStructure.navigation.pattern &&
+      store.baseStructure.navigation.hierarchy,
+  },
+];
+
+const layoutRules = [
+  {
+    block: "pages",
+    condition: () => {
+      const l = store.currentProject.layout;
+      return l.grid.type && l.grid.maxWidth;
     },
-  };
+  },
+  {
+    block: "globals",
+    condition: () => {
+      const l = store.currentProject.layout;
+      return Object.keys(l.pages || {}).length > 0;
+    },
+  },
+  {
+    block: "hierarchy",
+    condition: () => {
+      const l = store.currentProject.layout;
+      return (
+        l.globalComponents.header ||
+        l.globalComponents.navigation ||
+        l.globalComponents.footer
+      );
+    },
+  },
+];
 
-  if (!data.name || !data.type || !data.goal) {
-    alert("Preenche nome, tipo e objetivo.");
-    return;
-  }
+const brandingRules = [
+  {
+    block: "colors",
+    condition: () => !!store.currentProject.branding.tone,
+  },
+  {
+    block: "type",
+    condition: () =>
+      store.currentProject.branding.colors.primary &&
+      store.currentProject.branding.colors.secondary,
+  },
+];
 
-  store.completeSetup(data);
-  location.hash = "#/process-builder";
-});
-
-/* =====================
-   BRANDING
-===================== */
-document.addEventListener("click", (e) => {
-  if (e.target.id !== "save-branding") return;
-
-  store.state.project.branding = {
-    neutralLight: document.getElementById("color-neutral-light").value,
-    neutralDark: document.getElementById("color-neutral-dark").value,
-    primaryColor: document.getElementById("color-primary").value,
-    secondaryColor: document.getElementById("color-secondary").value,
-    fontPrimary:
-      document.getElementById("font-primary").value ||
-      "system-ui, Arial, sans-serif",
-    fontSecondary: document.getElementById("font-secondary").value || null,
-    darkMode: document.getElementById("toggle-dark-mode").checked,
-  };
-
-  store.save();
-  alert("Branding guardado com sucesso.");
-});
-
-/* =====================
-   HOME DASHBOARD
-===================== */
-
-function calculateProgress(phases) {
-  // tenta calcular por tarefas (se existirem)
-  const allTasks = phases.flatMap((phase) => phase.tasks || []);
-
-  if (allTasks.length > 0) {
-    const doneTasks = allTasks.filter((t) => t.done).length;
-    return Math.round((doneTasks / allTasks.length) * 100);
-  }
-
-  // fallback: progresso por fases
-  const completedPhases = phases.filter((p) => p.status === "completed").length;
-  return Math.round((completedPhases / phases.length) * 100);
-}
-
-function renderHomeDashboard() {
-  const container = document.getElementById("home-dashboard");
-  if (!container) return;
-
-  container.innerHTML = "";
-
-  const phases = store.phases;
-  const progress = calculateProgress(phases);
-
-  // Header (progresso global)
-  const progressEl = document.getElementById("progress-value");
-  const fillEl = document.getElementById("progress-fill");
-
-  if (progressEl) progressEl.textContent = `${progress}%`;
-  if (fillEl) fillEl.style.width = `${progress}%`;
-
-  // Fases
-  phases.forEach((phase) => {
-    const div = document.createElement("div");
-    div.className = "home-phase";
-
-    const title = document.createElement("h3");
-    title.textContent = phase.title;
-
-    if (phase.status === "completed") {
-      title.innerHTML += " ✅";
-    }
-
-    div.appendChild(title);
-
-    // tarefas (se existirem)
-    if (phase.tasks && phase.tasks.length > 0) {
-      const ul = document.createElement("ul");
-      phase.tasks.forEach((task) => {
-        const li = document.createElement("li");
-        li.textContent = task.done ? `✅ ${task.label}` : `⬜ ${task.label}`;
-        ul.appendChild(li);
-      });
-      div.appendChild(ul);
-    }
-
-    container.appendChild(div);
-  });
-
-  // Botões finais (só quando tudo completo)
-  if (phases.every((p) => p.status === "completed")) {
-    const actions = document.createElement("div");
-    actions.style.marginTop = "2rem";
-
-    const previewBtn = document.createElement("button");
-    previewBtn.textContent = "Pré-visualizar";
-    previewBtn.onclick = openPreview;
-
-    const exportBtn = document.createElement("button");
-    exportBtn.textContent = "Exportar";
-    exportBtn.style.marginLeft = "1rem";
-    exportBtn.onclick = exportProject;
-
-    actions.appendChild(previewBtn);
-    actions.appendChild(exportBtn);
-
-    container.appendChild(actions);
-  }
-}
-
-window.renderHomeDashboard = renderHomeDashboard;
-
-/* =====================
-   EXPORT + PREVIEW
-===================== */
-function openPreview() {
-  const frame = document.getElementById("preview-frame");
-  const modal = document.getElementById("export-preview");
-
-  const project = store.state.project;
-  const branding = project.branding || {};
-
-  const primary = branding.primaryColor || "#4c6ef5";
-  const secondary = branding.secondaryColor || "#15aabf";
-  const font = branding.fontPrimary || "system-ui, Arial, sans-serif";
-  const darkMode = branding.darkMode === true;
-
-  const bgMain = darkMode ? "#0f1115" : "#ffffff";
-  const bgHeader = darkMode ? "#1a1d23" : "#f5f6f8";
-  const textMain = darkMode ? "#f1f3f5" : "#1e1e1e";
-  const textMuted = darkMode ? "#adb5bd" : "#6c757d";
-
-  frame.srcdoc = `
-<!DOCTYPE html>
-<html lang="pt">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>${project.name}</title>
-
-<style>
-  * { box-sizing: border-box; }
-
-  body {
-    margin: 0;
-    font-family: ${font};
-    background: ${bgMain};
-    color: ${textMain};
-  }
-
-  header {
-    background: ${bgHeader};
-    padding: 1.5rem 2rem;
-    border-bottom: 3px solid ${primary};
-  }
-
-  header h1 {
-    margin: 0;
-    color: ${primary};
-    font-size: 1.5rem;
-  }
-
-  main {
-    padding: 3rem 2rem;
-    max-width: 800px;
-    margin: 0 auto;
-  }
-
-  p {
-    line-height: 1.6;
-    color: ${textMuted};
-  }
-
-  .highlight {
-    margin-top: 2rem;
-    padding: 1.5rem;
-    border-left: 4px solid ${secondary};
-    background: ${darkMode ? "#1f232b" : "#f8f9fa"};
-  }
-</style>
-</head>
-
-<body>
-<header>
-  <h1>${project.name}</h1>
-</header>
-
-<main>
-  <h2>Objetivo do projeto</h2>
-  <p>${project.goal || "Objetivo não definido."}</p>
-
-  <div class="highlight">
-    <strong>Pré-visualização do projeto</strong>
-    <p>
-      Este é um exemplo de como o teu projeto poderá começar,
-      com base no branding e estrutura definidos.
-    </p>
-  </div>
-</main>
-</body>
-</html>
-`;
-
-  modal.style.display = "block";
-}
-
-function closePreview() {
-  document.getElementById("export-preview").style.display = "none";
-}
-
-function exportProject() {
-  const zip = new JSZip();
-  const project = store.state.project;
-  const branding = project.branding || {};
-
-  const css = `
-:root {
-  --primary:${branding.primaryColor || "#4c6ef5"};
-  --secondary:${branding.secondaryColor || "#15aabf"};
-  --font:${branding.fontPrimary || "system-ui, Arial"};
-}
-body {
-  font-family: var(--font);
-}
-`;
-
-  zip.file("index.html", `<h1>${project.name}</h1>`);
-  zip.file("assets/css/style.css", css);
-  zip.file("assets/js/main.js", `console.log("Projeto ${project.name}");`);
-  zip.file("README.md", `# ${project.name}\n\n${project.goal}`);
-
-  zip.generateAsync({ type: "blob" }).then((blob) => {
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = `${project.name}.zip`;
-    link.click();
-    URL.revokeObjectURL(link.href);
-  });
-}
-
-window.openPreview = openPreview;
-window.closePreview = closePreview;
-window.exportProject = exportProject;
-
-/* =====================
-   NAV FLOW (FIGMA)
-===================== */
+/* ============================================================
+   GLOBAL NAV
+============================================================ */
 function updateNav() {
+  const user = store.currentUser;
   const project = store.currentProject;
-  const userName = project ? project.name : null;
-  const setupDone = project && project.setupCompleted;
 
   const navHome = document.getElementById("nav-home");
   const navProcess = document.getElementById("nav-process");
   const navLogout = document.getElementById("nav-logout");
-
   if (!navHome || !navProcess || !navLogout) return;
 
-  navHome.style.display = "none";
-  navProcess.style.display = "none";
-  navLogout.style.display = "none";
+  const isAuth = store.state.auth.status === "authenticated";
+  const hasProject = !!project;
 
-  if (userName) {
-    navHome.textContent = userName;
-    navHome.style.display = "inline-block";
-    navHome.onclick = () => (location.hash = "#/home");
-    navLogout.style.display = "inline-block";
-  }
+  navHome.style.display = isAuth && hasProject ? "inline-block" : "none";
+  navProcess.style.display = hasProject ? "inline-block" : "none";
+  navLogout.style.display = isAuth ? "inline-block" : "none";
 
-  if (setupDone) {
-    navProcess.style.display = "inline-block";
-  }
+  if (user) navHome.textContent = `${user.firstName} ${user.lastName}`;
+
+  navHome.onclick = () => (location.hash = "#/home");
+  navProcess.onclick = () => (location.hash = "#/process-builder");
+  navLogout.onclick = () => {
+    store.logout();
+    location.hash = "#/welcome";
+  };
 }
 
+window.updateNav = updateNav;
 window.addEventListener("store-updated", updateNav);
-document.addEventListener("DOMContentLoaded", updateNav);
 
-/* =====================
+/* ============================================================
+   HOME
+============================================================ */
+window.renderHome = function () {
+  renderHomeProgress();
+  renderHomePhases();
+};
+
+function renderHomeProgress() {
+  const phases = store.phases;
+  const completed = phases.filter((p) => p.status === "completed").length;
+  const percent = Math.round((completed / phases.length) * 100);
+
+  const value = document.getElementById("home-progress-value");
+  const fill = document.getElementById("home-progress-fill");
+
+  if (value) value.textContent = `${percent}%`;
+  if (fill) fill.style.width = `${percent}%`;
+}
+
+function renderHomePhases() {
+  const container = document.getElementById("home-phases");
+  if (!container) return;
+
+  container.innerHTML = "";
+
+  store.phases.forEach((phase) => {
+    const el = document.createElement("div");
+    el.className = `phase-group ${phase.status}`;
+
+    const tasks = store.phaseTasks?.[phase.id] || [];
+    const tasksHtml = tasks.length
+      ? `<ul class="phase-tasks">
+          ${tasks
+            .map((t) => `<li class="${t.done ? "done" : ""}">${t.label}</li>`)
+            .join("")}
+        </ul>`
+      : "";
+
+    el.innerHTML = `
+      <div class="phase-header">
+        <span class="phase-check ${
+          phase.status === "completed" ? "checked" : ""
+        }"></span>
+        <h3>${phase.title}</h3>
+      </div>
+      ${tasksHtml}
+    `;
+
+    if (phase.status !== "locked") {
+      el.onclick = () => {
+        location.hash =
+          phase.id === "setup"
+            ? "#/setup"
+            : phase.id === "structure"
+              ? "#/structure-base"
+              : phase.id === "layout"
+                ? "#/layout"
+                : "#/home";
+      };
+    }
+
+    container.appendChild(el);
+  });
+}
+
+/* ============================================================
    PROCESS BUILDER
-===================== */
-
-function loadPhases() {
+============================================================ */
+window.renderProcessBuilder = function () {
   const list = document.getElementById("pb-process-list");
   if (!list) return;
 
   list.innerHTML = "";
 
   store.phases.forEach((phase) => {
-    const li = document.createElement("li");
-    li.className = `pb-phase pb-phase-${phase.status}`;
-    li.textContent = phase.title;
+    const el = document.createElement("div");
+    el.className = `pb-phase pb-${phase.status}`;
 
-    if (phase.status !== "locked") {
-      li.onclick = () => openPhase(phase);
-    } else {
-      li.title = "Conclui a fase anterior para desbloquear";
+    const tasks = store.phaseTasks?.[phase.id] || [];
+
+    if (phase.status === "locked") {
+      el.setAttribute(
+        "data-tooltip",
+        "Conclui a fase anterior para desbloquear",
+      );
     }
 
+    const hover = tasks.length
+      ? `<div class="pb-phase-hover">
+          <ul>
+            ${tasks
+              .map((t) => `<li class="${t.done ? "done" : ""}">${t.label}</li>`)
+              .join("")}
+          </ul>
+        </div>`
+      : "";
+
+    el.innerHTML = `
+      <div class="pb-phase-main">
+        <span class="pb-phase-status"></span>
+        <span class="pb-phase-title">${phase.title}</span>
+      </div>
+      ${hover}
+    `;
+
+    if (phase.status !== "locked") {
+      el.onclick = () => {
+        location.hash =
+          phase.id === "setup"
+            ? "#/setup"
+            : phase.id === "structure"
+              ? "#/structure-base"
+              : phase.id === "layout"
+                ? "#/layout"
+                : "#/process-builder";
+      };
+    }
+
+    list.appendChild(el);
+  });
+};
+
+/* ============================================================
+   STRUCTURE BASE (FASE 2)
+============================================================ */
+window.renderStructureBase = function () {
+  const bs = store.baseStructure;
+  if (!bs) return;
+
+  const set = (id, v = "") => {
+    const el = document.getElementById(id);
+    if (el) el.value = v;
+  };
+
+  set("arch-type", bs.architecture.type);
+  set("arch-approach", bs.architecture.approach);
+  set("arch-notes", bs.architecture.notes);
+
+  set("nav-pattern", bs.navigation.pattern);
+  set("nav-hierarchy", bs.navigation.hierarchy);
+  set("nav-notes", bs.navigation.notes);
+
+  set("foundation-mindset", bs.foundation.mindset);
+  set("foundation-constraints", bs.foundation.constraints);
+  set("foundation-assumptions", bs.foundation.assumptions);
+
+  renderStructurePages();
+  renderStructureActions();
+  updateVisibility("structure", structureRules);
+};
+
+function renderStructurePages() {
+  const list = document.getElementById("pages-list");
+  if (!list) return;
+
+  list.innerHTML = "";
+
+  store.baseStructure.pages.forEach((page, index) => {
+    const li = document.createElement("li");
+    li.className = "structure-page-item";
+
+    const name = document.createElement("span");
+    name.textContent = page.name;
+
+    const remove = document.createElement("button");
+    remove.textContent = "✕";
+    remove.className = "remove-page";
+    remove.title = "Remover página";
+
+    remove.onclick = () => {
+      store.baseStructure.pages.splice(index, 1);
+      store.save();
+      renderStructurePages();
+      updateVisibility("structure", structureRules);
+    };
+
+    li.appendChild(name);
+    li.appendChild(remove);
     list.appendChild(li);
   });
 }
 
-function openPhase(phase) {
-  const overview = document.getElementById("pb-overview");
-  const execution = document.getElementById("pb-execution");
-  const title = document.getElementById("pb-phase-title");
-  const cta = document.getElementById("pb-primary-cta");
+document.addEventListener("click", (e) => {
+  if (e.target.id !== "add-page") return;
 
-  if (!overview || !execution || !title || !cta) return;
+  const input = document.getElementById("page-name");
+  const name = input.value.trim();
+  if (!name) return;
 
-  overview.style.display = "none";
-  execution.style.display = "block";
+  store.addPageToStructure({ name });
+  input.value = "";
+  renderStructurePages();
+  updateVisibility("structure", structureRules);
+});
 
-  title.textContent = phase.title;
+function renderStructureActions() {
+  renderPhaseActions({
+    phaseId: "structure",
+    isCompleted: store.baseStructure.completed,
+    onSave: () => {
+      store.updateBaseStructure("architecture", {
+        type: document.getElementById("arch-type")?.value || "",
+        approach: document.getElementById("arch-approach")?.value || "",
+        notes: document.getElementById("arch-notes")?.value || "",
+      });
 
-  // Fase ativa → primeira execução
-  if (phase.status === "active") {
-    cta.textContent = "Guardar e continuar";
-    cta.onclick = () => {
-      store.completePhase(phase.id);
-      closePhase();
-    };
-  }
+      store.updateBaseStructure("navigation", {
+        pattern: document.getElementById("nav-pattern")?.value || "",
+        hierarchy: document.getElementById("nav-hierarchy")?.value || "",
+        notes: document.getElementById("nav-notes")?.value || "",
+      });
 
-  // Fase concluída → revisão
-  if (phase.status === "completed") {
-    cta.textContent = "Guardar";
-    cta.onclick = () => {
-      closePhase();
-    };
-  }
+      store.updateBaseStructure("foundation", {
+        mindset: document.getElementById("foundation-mindset")?.value || "",
+        constraints:
+          document.getElementById("foundation-constraints")?.value || "",
+        assumptions:
+          document.getElementById("foundation-assumptions")?.value || "",
+      });
+
+      store.checkAutoCompleteStructure();
+      updateVisibility("structure", structureRules);
+    },
+    onContinueRoute: "#/layout",
+  });
 }
 
-function closePhase() {
-  const overview = document.getElementById("pb-overview");
-  const execution = document.getElementById("pb-execution");
+/* ============================================================
+   LAYOUT (FASE 3)
+============================================================ */
+window.renderLayout = function () {
+  const layout = store.currentProject.layout;
 
-  if (!overview || !execution) return;
+  // -------- hidratar campos globais --------
+  const set = (id, v = "") => {
+    const el = document.getElementById(id);
+    if (el) el.value = v;
+  };
+  const check = (id, v) => {
+    const el = document.getElementById(id);
+    if (el) el.checked = !!v;
+  };
 
-  execution.style.display = "none";
-  overview.style.display = "block";
+  set("layout-grid-type", layout.grid.type);
+  set("layout-max-width", layout.grid.maxWidth);
+  set("layout-grid-notes", layout.grid.notes);
 
-  loadPhases();
-}
+  set("layout-primary-focus", layout.hierarchy.primaryFocus);
+  set("layout-secondary-focus", layout.hierarchy.secondaryFocus);
 
-/* expor para o router */
-window.processBuilder = {
-  loadPhases,
+  check("layout-header", layout.globalComponents.header);
+  check("layout-navigation", layout.globalComponents.navigation);
+  check("layout-footer", layout.globalComponents.footer);
+
+  // ✅ UX por página (TUDO acontece aqui)
+  renderLayoutPagesUX();
+
+  // ✅ ações globais da fase
+  renderLayoutActions();
+
+  // ✅ progressão visual
+  updateVisibility("layout", layoutRules);
 };
 
-/* =====================
-   WELCOME ACTIONS
-===================== */
-document.addEventListener("click", (e) => {
-  if (e.target.id === "welcome-login") {
-    location.hash = "#/login";
-  }
+function renderLayoutPagesUX() {
+  const pageSelect = document.getElementById("layout-page-select");
+  const state = document.getElementById("layout-page-state");
+  const applyBtn = document.getElementById("layout-apply");
+  const options = document.querySelectorAll(".layout-option");
 
-  if (e.target.id === "welcome-signup") {
-    location.hash = "#/signup";
-  }
+  if (!pageSelect || !state || !applyBtn) return;
+
+  // --- popular páginas ---
+  pageSelect.innerHTML = `<option value="">— selecionar página —</option>`;
+  store.baseStructure.pages.forEach((p) => {
+    const opt = document.createElement("option");
+    opt.value = p.name;
+    opt.textContent = p.name;
+    pageSelect.appendChild(opt);
+  });
+
+  let currentPage = null;
+
+  // --- mudança de página ---
+  pageSelect.onchange = () => {
+    currentPage = pageSelect.value;
+    applyBtn.disabled = true;
+
+    options.forEach((b) => b.classList.remove("active"));
+
+    if (!currentPage) {
+      state.textContent =
+        "ℹ️ O layout é definido página a página. Escolhe uma página.";
+      return;
+    }
+
+    const saved = store.currentProject.layout.pages[currentPage];
+
+    if (saved) {
+      state.textContent = `✅ Layout já definido para a página "${currentPage}"`;
+      document
+        .querySelector(`.layout-option[data-pattern="${saved.pattern}"]`)
+        ?.classList.add("active");
+    } else {
+      state.textContent = `⚠️ Esta página ainda não tem layout definido`;
+    }
+  };
+
+  // --- escolher layout (não guarda) ---
+  options.forEach((btn) => {
+    btn.onclick = () => {
+      if (!currentPage) return;
+
+      options.forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+      applyBtn.disabled = false;
+    };
+  });
+
+  // --- aplicar layout (guarda mesmo) ---
+  applyBtn.onclick = () => {
+    const selected = document.querySelector(".layout-option.active");
+    if (!currentPage || !selected) return;
+
+    const pattern = selected.dataset.pattern;
+
+    store.currentProject.layout.pages[currentPage] = { pattern };
+    store.save();
+
+    state.textContent = `✅ Layout aplicado à página "${currentPage}"`;
+
+    applyBtn.disabled = true;
+    updateVisibility("layout", layoutRules);
+  };
+}
+
+document.addEventListener("click", (e) => {
+  if (e.target.id !== "layout-save-page") return;
+
+  const page = document.getElementById("layout-page-select").value;
+  const pattern = document.getElementById("layout-page-pattern").value;
+
+  if (!page || !pattern) return;
+
+  store.currentProject.layout.pages[page] = { pattern };
+
+  store.save();
+  updateVisibility("layout", layoutRules);
 });
 
-/* =====================
-   PROJECT SELECT
-===================== */
-document.addEventListener("click", (e) => {
-  if (e.target.id !== "create-project") return;
+function renderLayoutActions() {
+  renderPhaseActions({
+    phaseId: "layout",
+    isCompleted: store.currentProject.layout.completed,
+    onSave: () => {
+      const layout = store.currentProject.layout;
 
-  store.createProject();
-  location.hash = "#/setup";
-});
+      layout.grid.type =
+        document.getElementById("layout-grid-type")?.value || "";
+      layout.grid.maxWidth =
+        document.getElementById("layout-max-width")?.value || "";
+      layout.grid.notes =
+        document.getElementById("layout-grid-notes")?.value || "";
+
+      layout.globalComponents.header =
+        document.getElementById("layout-header")?.checked || false;
+      layout.globalComponents.navigation =
+        document.getElementById("layout-navigation")?.checked || false;
+      layout.globalComponents.footer =
+        document.getElementById("layout-footer")?.checked || false;
+
+      layout.hierarchy.primaryFocus =
+        document.getElementById("layout-primary-focus")?.value || "";
+      layout.hierarchy.secondaryFocus =
+        document.getElementById("layout-secondary-focus")?.value || "";
+
+      store.checkAutoCompleteLayout();
+      store.save();
+      updateVisibility("layout", layoutRules);
+    },
+    onContinueRoute: "#/branding",
+  });
+}
+
+/* ============================================================
+   BRANDING (FASE 4)
+============================================================ */
+window.renderBranding = function () {
+  const branding = store.currentProject.branding;
+  if (!branding) return;
+
+  // helper local
+  const set = (id, v = "") => {
+    const el = document.getElementById(id);
+    if (el) el.value = v;
+  };
+
+  // hidratar campos existentes
+  set("branding-primary-color", branding.colors.primary);
+  set("branding-secondary-color", branding.colors.secondary);
+
+  renderBrandingUX();
+  renderBrandingActions();
+  updateVisibility("branding", brandingRules);
+};
+
+function renderBrandingUX() {
+  const state = document.getElementById("branding-state");
+  const applyBtn = document.getElementById("branding-apply");
+  const toneRadios = document.querySelectorAll(".branding-tone");
+
+  if (!state || !applyBtn || !toneRadios.length) return;
+
+  applyBtn.disabled = true;
+
+  /* --- estado inicial --- */
+  if (!store.currentProject.branding.tone) {
+    state.textContent = "ℹ️ Começa por definir o tom base do projeto.";
+  } else {
+    state.textContent = `✅ Tom definido: "${store.currentProject.branding.tone}"`;
+
+    const radio = document.querySelector(
+      `.branding-tone[value="${store.currentProject.branding.tone}"]`,
+    );
+
+    if (radio) {
+      radio.checked = true;
+    }
+  }
+
+  /* --- mudar tom (não guarda) --- */
+  toneRadios.forEach((radio) => {
+    radio.onchange = () => {
+      applyBtn.disabled = false;
+    };
+  });
+
+  /* --- aplicar tom (guarda mesmo) --- */
+  applyBtn.onclick = () => {
+    const selected = document.querySelector(".branding-tone:checked");
+    if (!selected) return;
+
+    store.currentProject.branding.tone = selected.value;
+    store.save();
+
+    state.textContent = `✅ Tom "${selected.value}" aplicado ao projeto`;
+    applyBtn.disabled = true;
+
+    updateVisibility("branding", brandingRules);
+  };
+}
+
+function renderBrandingActions() {
+  renderPhaseActions({
+    phaseId: "branding",
+    isCompleted: store.currentProject.branding.completed,
+    onSave: () => {
+      store.checkAutoCompleteBranding();
+      store.save();
+    },
+    onContinueRoute: "#/accessibility",
+  });
+}
+
+/* ============================================================
+   GENERIC PHASE FOOTER ACTIONS
+============================================================ */
+function renderPhaseActions({ phaseId, isCompleted, onSave, onContinueRoute }) {
+  const footer = document.querySelector(".phase-actions");
+  if (!footer) return;
+
+  footer.innerHTML = "";
+
+  const primary = document.createElement("button");
+  const secondary = document.createElement("button");
+
+  secondary.textContent = "← Voltar ao Process Builder";
+  secondary.onclick = () => (location.hash = "#/process-builder");
+
+  if (!isCompleted) {
+    primary.textContent = "Guardar e continuar";
+    primary.onclick = () => {
+      onSave();
+      const phase = store.currentProject.process.phases.find(
+        (p) => p.id === phaseId,
+      );
+      if (phase?.status === "completed") location.hash = onContinueRoute;
+    };
+  } else {
+    primary.textContent = "Guardar alterações";
+    primary.onclick = () => {
+      onSave();
+      alert("Alterações guardadas ✅");
+    };
+  }
+
+  footer.append(primary, secondary);
+}

@@ -29,6 +29,7 @@
     p,
     .eyebrow {
         font-family: var(--fnt-body);
+        color: var(--clr-btn-txt-sec);
     }
     h1,
     .h1-big,

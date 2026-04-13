@@ -7,28 +7,26 @@ const app = document.getElementById("app");
 ===================== */
 export function renderLogin() {
   app.innerHTML = `
-    <section class="page page-login">
-      <h1>Log in</h1>
+    <h2>Log in</h2>
 
-      <form id="login-form">
-        <label>
-          Primeiro nome
-          <input type="text" id="login-firstname" required />
-        </label>
+    <form id="login-form">
+      <label>
+        Primeiro nome
+        <input id="login-firstname" required />
+      </label>
 
-        <label>
-          Password
-          <input type="password" id="login-password" required />
-        </label>
+      <label>
+        Password
+        <input id="login-password" type="password" required />
+      </label>
 
-        <button type="submit">Entrar</button>
-      </form>
+      <button type="submit">Entrar</button>
+    </form>
 
-      <p>
-        Ainda não tens conta?
-        <button id="go-signup" type="button">Criar conta</button>
-      </p>
-    </section>
+    <p>
+      Ainda não tens conta?
+      <button id="go-signup">Criar conta</button>
+    </p>
   `;
 
   bindLoginEvents();
@@ -39,38 +37,36 @@ export function renderLogin() {
 ===================== */
 export function renderSignup() {
   app.innerHTML = `
-    <section class="page page-signup">
-      <h1>Sign up</h1>
+    <h2>Sign up</h2>
 
-      <form id="signup-form">
-        <label>
-          Primeiro nome
-          <input type="text" id="signup-firstname" required />
-        </label>
+    <form id="signup-form">
+      <label>
+        Primeiro nome
+        <input id="signup-firstname" required />
+      </label>
 
-        <label>
-          Último nome
-          <input type="text" id="signup-lastname" required />
-        </label>
+      <label>
+        Último nome
+        <input id="signup-lastname" required />
+      </label>
 
-        <label>
-          Password
-          <input type="password" id="signup-password" required />
-        </label>
+      <label>
+        Password
+        <input id="signup-password" type="password" required />
+      </label>
 
-        <label>
-          Confirmar password
-          <input type="password" id="signup-password-confirm" required />
-        </label>
+      <label>
+        Confirmar password
+        <input id="signup-password-confirm" type="password" required />
+      </label>
 
-        <button type="submit">Criar conta</button>
-      </form>
+      <button type="submit">Criar conta</button>
+    </form>
 
-      <p>
-        Já tens conta?
-        <button id="go-login" type="button">Fazer login</button>
-      </p>
-    </section>
+    <p>
+      Já tens conta?
+      <button id="go-login">Fazer login</button>
+    </p>
   `;
 
   bindSignupEvents();
@@ -93,11 +89,28 @@ function bindLoginEvents() {
       return;
     }
 
-    location.hash = "#/project-select";
+    // ✅ DECISÃO DE FLUXO APÓS LOGIN
+    const user = store.currentUser;
+
+    if (user.projectIds.length === 0) {
+      // nunca criou projeto
+      location.hash = "#/project-select";
+    } else if (user.projectIds.length === 1) {
+      // tem apenas um projeto → continuar
+      store.selectProject(user.projectIds[0]);
+
+      const project = store.currentProject;
+      location.hash = project.setupCompleted ? "#/process-builder" : "#/setup";
+    } else {
+      // mais que um projeto → escolher
+      // 🔴 FORÇAR O ROUTER A REAGIR AO NOVO ESTADO
+      location.hash = "#/project-select";
+    }
+    window.dispatchEvent(new HashChangeEvent("hashchange"));
   });
 
   document.getElementById("go-signup").onclick = () => {
-    renderSignup();
+    location.hash = "#/signup";
   };
 }
 
@@ -110,11 +123,6 @@ function bindSignupEvents() {
     const password = document.getElementById("signup-password").value;
     const confirm = document.getElementById("signup-password-confirm").value;
 
-    if (!firstName || !lastName) {
-      alert("Preenche nome e apelido.");
-      return;
-    }
-
     if (password.length < 6) {
       alert("Password deve ter pelo menos 6 caracteres.");
       return;
@@ -126,10 +134,16 @@ function bindSignupEvents() {
     }
 
     store.signUp({ firstName, lastName, password });
+
+    // 🔴 FORÇAR O ROUTER A REAGIR AO NOVO ESTADO
+    location.hash = "#/project-select";
+    window.dispatchEvent(new HashChangeEvent("hashchange"));
+
+    // ✅ SAÍDA IMEDIATA DO ESTADO GUEST
     location.hash = "#/project-select";
   });
 
   document.getElementById("go-login").onclick = () => {
-    renderLogin();
+    location.hash = "#/login";
   };
 }

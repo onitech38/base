@@ -1,20 +1,20 @@
-<section class="page page-branding">
-  <header class="page-header">
-    <h1>Branding</h1>
-    <p>Define cores, tipografia e tema do projeto</p>
-  </header>
+<section class="page page-branding" data-page="branding">
+    <header>
+        <h1>Branding & Identidade</h1>
+        <p>
+            Aqui defines como o projeto se apresenta visualmente. O layout já
+            foi decidido.
+        </p>
+    </header>
 
-  <div class="page-content">
-    <label>Neutro light <input type="color" id="color-neutral-light"></label>
-    <label>Neutro dark <input type="color" id="color-neutral-dark"></label>
-    <label>Primary <input type="color" id="color-primary"></label>
-    <label>Secondary <input type="color" id="color-secondary"></label>
+    <!-- IDENTIDADE BASE -->
+    <section class="branding-block" data-block="identity">...</section>
 
-    <label>Fonte primária <input type="text" id="font-primary"></label>
-    <label>Fonte secundária <input type="text" id="font-secondary"></label>
+    <!-- CORES -->
+    <section class="branding-block is-hidden" data-block="colors">...</section>
 
-    <label><input type="checkbox" id="toggle-dark-mode"> Dark mode</label>
-
-    <button id="save-branding">Guardar</button>
-  </div>
+    <!-- TIPOGRAFIA -->
+    <section class="branding-block is-hidden" data-block="type">...</section>
 </section>
+
+<footer class="phase-actions"></footer>

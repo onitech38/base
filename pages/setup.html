@@ -14,8 +14,35 @@
             Tipo de projeto
             <select id="setup-type">
                 <option value="">Seleciona</option>
-                <option value="website">Website</option>
-                <option value="app">Web App</option>
+                <option value="landing">Landing page</option>
+                <option value="institutional">Website institucional</option>
+                <option value="blog">Blog / Conteúdo</option>
+                <option value="ecommerce">E‑commerce</option>
+                <option value="admin">Dashboard / Administrativo</option>
+                <option value="saas">Produto digital / SaaS</option>
+            </select>
+        </label>
+
+        <label>
+            Modelo de conteúdo
+            <select id="setup-content-model">
+                <option value="">Seleciona</option>
+                <option value="static">Conteúdo estático</option>
+                <option value="cms">CMS / Conteúdo editável</option>
+                <option value="catalog">Catálogo (produtos, serviços)</option>
+                <option value="application">Dinâmico / Aplicacional</option>
+            </select>
+        </label>
+
+        <label>
+            Acesso ao projeto
+            <select id="setup-user-access">
+                <option value="">Seleciona</option>
+                <option value="public">Apenas público</option>
+                <option value="admin-only">Apenas administração</option>
+                <option value="authenticated-users">
+                    Utilizadores autenticados
+                </option>
             </select>
         </label>
 
@@ -45,6 +72,40 @@
             <label>
                 <input type="checkbox" id="feature-pwa" />
                 PWA / Offline
+            </label>
+        </fieldset>
+
+        <fieldset>
+            <legend>Orientação do projeto</legend>
+
+            <label>
+                Foco principal
+                <select id="strategy-focus">
+                    <option value="">Seleciona</option>
+                    <option value="conversion">Conversão</option>
+                    <option value="content">Conteúdo</option>
+                    <option value="tool">Ferramenta</option>
+                </select>
+            </label>
+
+            <label>
+                Público-alvo
+                <select id="strategy-audience">
+                    <option value="">Seleciona</option>
+                    <option value="general">Geral</option>
+                    <option value="professional">Profissional</option>
+                    <option value="technical">Técnico</option>
+                </select>
+            </label>
+
+            <label>
+                Prioridade técnica
+                <select id="strategy-priority">
+                    <option value="">Seleciona</option>
+                    <option value="performance">Performance</option>
+                    <option value="seo">SEO</option>
+                    <option value="experience">Experiência</option>
+                </select>
             </label>
         </fieldset>
 

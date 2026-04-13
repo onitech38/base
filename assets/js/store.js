@@ -1,17 +1,16 @@
 const STORE_KEY = "project-builder";
 
 /* =====================
-   STATE BASE
+   DEFAULT STATE
 ===================== */
 const defaultState = {
   auth: {
-    status: "guest", // "guest" | "authenticated"
+    status: "guest",
     activeUserId: null,
     activeProjectId: null,
   },
-
-  users: {}, // { [userId]: user }
-  projects: {}, // { [projectId]: project }
+  users: {},
+  projects: {},
 };
 
 /* =====================
@@ -20,7 +19,7 @@ const defaultState = {
 const store = {
   state: loadState(),
 
-  /* ---------- persistência ---------- */
+  /* ---------- persist ---------- */
   save() {
     localStorage.setItem(STORE_KEY, JSON.stringify(this.state));
     window.dispatchEvent(new Event("store-updated"));
@@ -36,14 +35,15 @@ const store = {
       id: userId,
       firstName,
       lastName,
-      password, // simples e local (por agora)
+      password,
       projectIds: [],
-      createdAt: Date.now(),
     };
 
-    this.state.auth.status = "authenticated";
-    this.state.auth.activeUserId = userId;
-    this.state.auth.activeProjectId = null;
+    this.state.auth = {
+      status: "authenticated",
+      activeUserId: userId,
+      activeProjectId: null,
+    };
 
     this.save();
   },
@@ -55,9 +55,11 @@ const store = {
 
     if (!user) return false;
 
-    this.state.auth.status = "authenticated";
-    this.state.auth.activeUserId = user.id;
-    this.state.auth.activeProjectId = null;
+    this.state.auth = {
+      status: "authenticated",
+      activeUserId: user.id,
+      activeProjectId: null,
+    };
 
     this.save();
     return true;
@@ -78,83 +80,142 @@ const store = {
   createProject() {
     const user = this.currentUser;
     if (!user) return;
-    if (user.projectIds.length >= 2) return;
 
     const projectId = crypto.randomUUID();
 
     this.state.projects[projectId] = {
       id: projectId,
-      ownerId: user.id,
-
       name: "",
-      type: "",
+      productType: null,
+      contentModel: null,
+      userAccess: null,
       goal: "",
+      features: {},
+      strategy: {},
+
       setupCompleted: false,
 
-      process: {
-        phases: createInitialPhases(),
+      layout: {
+        grid: {
+          type: "", // ex: single-column, 12-col, split
+          maxWidth: "", // ex: 1200px
+          notes: "",
+        },
+        pages: {}, // pageId -> layout definition
+        globalComponents: {
+          header: false,
+          footer: false,
+          navigation: false,
+        },
+        hierarchy: {
+          primaryFocus: "",
+          secondaryFocus: "",
+        },
+        completed: false,
       },
 
-      createdAt: Date.now(),
-      updatedAt: Date.now(),
+      baseStructure: {
+        architecture: {
+          type: "",
+          approach: "",
+          notes: "",
+        },
+        pages: [],
+        navigation: {
+          pattern: "",
+          hierarchy: "",
+          notes: "",
+        },
+        foundation: {
+          mindset: "",
+          constraints: "",
+          assumptions: "",
+        },
+        completed: false,
+      },
+
+      process: {
+        phases: createPhases(),
+      },
     };
 
     user.projectIds.push(projectId);
     this.state.auth.activeProjectId = projectId;
-
     this.save();
   },
 
-  selectProject(projectId) {
-    if (!this.state.projects[projectId]) return;
-    this.state.auth.activeProjectId = projectId;
+  completeSetup(data) {
+    const p = this.currentProject;
+    if (!p) return;
+
+    Object.assign(p, data);
+    p.setupCompleted = true;
     this.save();
   },
 
-  completeSetup({ name, type, goal, features }) {
-    const project = this.currentProject;
-    if (!project) return;
+  completePhase(id) {
+    const phases = this.currentProject?.process.phases;
+    if (!phases) return;
 
-    project.name = name;
-    project.type = type;
-    project.goal = goal;
-    project.features = features;
-
-    project.setupCompleted = true;
-    project.updatedAt = Date.now();
-
-    this.save();
-  },
-
-  /* =====================
-     PHASES (PROGRESSÃO)
-  ===================== */
-  completePhase(phaseId) {
-    const project = this.currentProject;
-    if (!project) return;
-
-    const phases = project.process.phases;
-    const index = phases.findIndex((p) => p.id === phaseId);
-
+    const index = phases.findIndex((p) => p.id === id);
     if (index === -1) return;
-    if (phases[index].status !== "active") return;
 
-    // concluir fase atual
     phases[index].status = "completed";
 
-    // desbloquear próxima (uma única vez)
-    if (phases[index + 1]) {
-      if (phases[index + 1].status === "locked") {
-        phases[index + 1].status = "active";
-      }
+    if (phases[index + 1] && phases[index + 1].status === "locked") {
+      phases[index + 1].status = "active";
     }
 
-    project.updatedAt = Date.now();
     this.save();
   },
 
+  checkAutoCompleteStructure() {
+    const project = this.currentProject;
+    if (!project) return;
+
+    const bs = project.baseStructure;
+    if (!bs) return;
+
+    const tasks = this.structureTasks;
+    const allDone = tasks.length > 0 && tasks.every((t) => t.done);
+
+    if (allDone && !bs.completed) {
+      bs.completed = true;
+      this.completePhase("structure");
+    }
+  },
+
   /* =====================
-     DERIVED STATE
+     BASE STRUCTURE
+  ===================== */
+  updateBaseStructure(section, data) {
+    const bs = this.currentProject?.baseStructure;
+    if (!bs || !bs[section]) return;
+
+    Object.assign(bs[section], data);
+    this.checkAutoCompleteStructure();
+    this.save();
+  },
+
+  addPageToStructure(page) {
+    const pages = this.currentProject?.baseStructure.pages;
+    if (!pages) return;
+
+    pages.push(page);
+    this.checkAutoCompleteStructure();
+    this.save();
+  },
+
+  markBaseStructureCompleted() {
+    const bs = this.currentProject?.baseStructure;
+    if (!bs) return;
+
+    bs.completed = true;
+    this.completePhase("structure");
+  },
+
+  /* =====================
+     DERIVED STATE - GETTER
   ===================== */
   get currentUser() {
     return this.state.users[this.state.auth.activeUserId] || null;
@@ -165,87 +226,122 @@ const store = {
   },
 
   get phases() {
-    const project = this.currentProject;
-    return project ? project.process.phases : [];
+    return this.currentProject?.process.phases || [];
   },
 
-  get projectFeatures() {
-    return (
-      this.currentProject?.features || {
-        login: false,
-        backend: false,
-        pwa: false,
-      }
-    );
+  get baseStructure() {
+    return this.currentProject?.baseStructure || null;
   },
 
-  get structureRequirements() {
-    const features = this.projectFeatures;
+  get structureTasks() {
+    const bs = this.baseStructure;
+    if (!bs) return [];
 
+    return [
+      {
+        id: "architecture",
+        label: "Arquitetura do Projeto",
+        done:
+          !!bs.architecture.type ||
+          !!bs.architecture.approach ||
+          !!bs.architecture.notes,
+      },
+      {
+        id: "pages",
+        label: "Organização de páginas / vistas",
+        done: bs.pages.length > 0,
+      },
+      {
+        id: "navigation",
+        label: "Estrutura lógica e navegação",
+        done:
+          !!bs.navigation.pattern ||
+          !!bs.navigation.hierarchy ||
+          !!bs.navigation.notes,
+      },
+      {
+        id: "foundation",
+        label: "Fundação técnica e mental do projeto",
+        done:
+          !!bs.foundation.mindset ||
+          !!bs.foundation.constraints ||
+          !!bs.foundation.assumptions,
+      },
+    ];
+  },
+
+  get layoutTasks() {
+    const l = this.currentProject?.layout;
+    if (!l) return [];
+
+    return [
+      {
+        id: "grid",
+        label: "Definir grelha base do layout",
+        done: !!l.grid.type && !!l.grid.maxWidth,
+      },
+      {
+        id: "pages",
+        label: "Definir layout das páginas",
+        done: Object.keys(l.pages).length > 0,
+      },
+      {
+        id: "global",
+        label: "Definir componentes globais",
+        done:
+          l.globalComponents.header ||
+          l.globalComponents.footer ||
+          l.globalComponents.navigation,
+      },
+      {
+        id: "hierarchy",
+        label: "Definir hierarquia visual",
+        done: !!l.hierarchy.primaryFocus || !!l.hierarchy.secondaryFocus,
+      },
+    ];
+  },
+
+  get setupTasks() {
+    const p = this.currentProject;
+    if (!p) return [];
+
+    return [
+      { label: "Nome do projeto", done: !!p.name },
+      { label: "Tipo de projeto", done: !!p.productType },
+      { label: "Objetivo principal", done: !!p.goal },
+    ];
+  },
+
+  get phaseTasks() {
     return {
-      pages: [
-        "Home",
-        "Sobre",
-        "Contacto",
-        ...(features.login ? ["Login", "Registo", "Área privada"] : []),
-      ],
-
-      hasBackend: features.backend,
-
-      hasAuth: features.login,
-
-      isPWA: features.pwa,
-
-      notes: [
-        ...(features.backend ? ["Definir API e modelo de dados"] : []),
-        ...(features.login ? ["Definir fluxos de autenticação"] : []),
-        ...(features.pwa ? ["Planeamento offline e cache"] : []),
-      ],
+      setup: this.setupTasks,
+      structure: this.structureTasks,
+      layout: this.layoutTasks,
     };
   },
 
-  get currentPhase() {
-    return this.phases.find((p) => p.status === "active") || null;
-  },
+  checkAutoCompleteLayout() {
+    const tasks = this.layoutTasks;
+    const allDone = tasks.length > 0 && tasks.every((t) => t.done);
 
-  get isProjectCompleted() {
-    return (
-      this.phases.length > 0 &&
-      this.phases.every((p) => p.status === "completed")
-    );
+    if (allDone) {
+      const phase = this.phases.find((p) => p.id === "layout");
+      if (phase && phase.status !== "completed") {
+        this.currentProject.layout.completed = true;
+        this.completePhase("layout");
+      }
+    }
   },
 };
 
 /* =====================
    HELPERS
 ===================== */
-function createInitialPhases() {
+function createPhases() {
   return [
-    {
-      id: "setup",
-      title: "Setup & Funcionalidades",
-      status: "active",
-    },
-    {
-      id: "structure",
-      title: "Estrutura Base",
-      status: "locked",
-    },
-    {
-      id: "branding",
-      title: "Branding & Temas",
-      status: "locked",
-    },
-    {
-      id: "accessibility",
-      title: "Acessibilidade",
-      status: "locked",
-    },
-    {
-      id: "seo",
-      title: "SEO",
-      status: "locked",
-    },
+    { id: "setup", title: "Setup", status: "active" },
+    { id: "structure", title: "Estrutura Base", status: "locked" },
+    { id: "layout", title: "Layout", status: "locked" },
   ];
 }
 

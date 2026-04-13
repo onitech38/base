@@ -1,27 +1,24 @@
 <section class="page page-process-builder">
+    <header class="page-header">
+        <h1>Process Builder</h1>
+        <p>Executa os processos pela ordem até terminares o teu projeto.</p>
+    </header>
 
-  <header class="page-header">
-    <h1>Process Builder</h1>
-    <p>Executa os processos pela ordem até terminares o teu projeto.</p>
-  </header>
+    <div class="page-content">
+        <div id="pb-overview">
+            <ul id="pb-process-list"></ul>
+        </div>
 
-  <div class="page-content">
+        <div id="pb-execution" style="display: none">
+            <h2 id="pb-phase-title"></h2>
+            <ul id="pb-task-list"></ul>
+            <button id="pb-primary-cta">Guardar e continuar</button>
+        </div>
 
-    <div id="pb-overview">
-      <ul id="pb-process-list"></ul>
+        <div id="pb-export" style="display: none">
+            <h2>Projeto concluído 🎉</h2>
+            <p>Terminaste todas as etapas.</p>
+            <button onclick="openPreview()">Pré‑visualizar & Exportar</button>
+        </div>
     </div>
-
-    <div id="pb-execution" style="display:none;">
-      <h2 id="pb-phase-title"></h2>
-      <ul id="pb-task-list"></ul>
-      <button id="pb-primary-cta">Guardar e continuar</button>
-    </div>
-
-    <div id="pb-export" style="display:none;">
-      <h2>Projeto concluído 🎉</h2>
-      <p>Terminaste todas as etapas.</p>
-      <button onclick="openPreview()">Pré‑visualizar & Exportar</button>
-    </div>
-
-  </div>
 </section>

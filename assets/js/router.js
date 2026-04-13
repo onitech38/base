@@ -3,30 +3,19 @@ import { renderLogin, renderSignup } from "./auth.js";
 
 const app = document.getElementById("app");
 
-/* =====================
-   ROUTES CONFIG
-===================== */
-const PUBLIC_ROUTES = ["welcome", "login", "signup"];
-const AUTH_NO_PROJECT_ROUTES = ["project-select"];
-const AUTH_PROJECT_ROUTES = ["setup", " home", "process-builder"];
+window.pendingPhaseToOpen = null;
 
 /* =====================
-   ROUTER CORE
+   ROUTER
 ===================== */
 async function loadPage() {
   let route = location.hash.replace("#/", "");
   if (!route) route = "welcome";
 
   const { auth } = store.state;
-  const project = store.currentProject;
 
-  /* ---------- STATE A: GUEST ---------- */
+  /* ---------- GUEST ---------- */
   if (auth.status === "guest") {
-    if (!PUBLIC_ROUTES.includes(route)) {
-      return redirect("welcome");
-    }
-
-    // 🔐 AUTH via JS (sem fetch)
     if (route === "login") {
       renderLogin();
       return;
@@ -37,67 +26,49 @@ async function loadPage() {
       return;
     }
 
-    return render(route);
+    return render("welcome");
   }
 
-  /* ---------- STATE B: AUTH, NO PROJECT ---------- */
-  if (auth.status === "authenticated" && !auth.activeProjectId) {
-    if (!AUTH_NO_PROJECT_ROUTES.includes(route)) {
-      return redirect("project-select");
-    }
-
-    return render(route);
+  /* ---------- AUTHENTICATED, NO PROJECT ---------- */
+  if (!store.currentProject) {
+    return render("project-select");
   }
 
-  /* ---------- STATE C: AUTH WITH PROJECT ---------- */
-  if (auth.status === "authenticated" && project) {
-    // setup é sempre obrigatório
-    if (!project.setupCompleted && route !== "setup") {
-      return redirect("setup");
-    }
-
-    // setup já feito → não volta
-    if (project.setupCompleted && route === "setup") {
-      return redirect("home");
-    }
-
-    if (!AUTH_PROJECT_ROUTES.includes(route)) {
-      return redirect("home");
-    }
-
-    return render(route);
-  }
-
-  // fallback seguro
-  redirect("welcome");
+  /* ---------- AUTHENTICATED WITH PROJECT ---------- */
+  return render(route);
 }
 
 /* =====================
-   RENDER (HTML PAGES)
+   RENDER
 ===================== */
 async function render(route) {
   const res = await fetch(`pages/${route}.html`);
   app.innerHTML = await res.text();
 
-  // hooks por página
-  if (route === "home" && window.renderHomeDashboard) {
-    window.renderHomeDashboard();
+  if (route === "setup") {
+    window.renderSetup && window.renderSetup();
   }
 
-  if (route === "process-builder" && window.processBuilder) {
-    window.processBuilder.loadPhases?.();
+  if (route === "home") {
+    if (window.renderHome && store.currentProject) {
+      window.renderHome();
+    }
+  }
+
+  if (route === "process-builder") {
+    window.renderProcessBuilder && window.renderProcessBuilder();
+  }
+
+  if (route === "structure-base") {
+    window.renderStructureBase && window.renderStructureBase();
+  }
+
+  if (route === "layout") {
+    window.renderLayout && window.renderLayout();
   }
 }
 
-/* =====================
-   UTILS
-===================== */
-function redirect(route) {
-  location.hash = `#/${route}`;
-}
-
-/* =====================
-   LISTENERS
-===================== */
+// ✅ GARANTIR NAV ATUALIZADO COM ESTADO REAL
+window.updateNav && window.updateNav();
 window.addEventListener("hashchange", loadPage);
 window.addEventListener("DOMContentLoaded", loadPage);

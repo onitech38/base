@@ -14,58 +14,38 @@
     <body>
         <header>
             <nav id="main-nav" class="nav">
-
-              <div class="nav-slot nav-left">
-                <button
-                  id="nav-home"
-                  data-page="home"
-                  style="display:none;"
-                ></button>
-              </div>
-            
-              <div class="nav-slot nav-center">
-                <span class="nav-logo">LOGO</span>
-              </div>
-            
-              <div class="nav-slot nav-right">
-                <button
-                  id="nav-process"
-                  data-page="process-builder"
-                  style="display:none;"
-                >
-                  Process Builder
-                </button>
-            
-                <button
-                  id="nav-logout"
-                  data-page="logout"
-                  style="display:none;"
-                >
-                  Log out
-                </button>
-              </div>
-            
-            </nav>
-
-
-
-            <!-- Estado do projeto -->
-            <div id="project-status">Setup</div>
-
-            <!-- Etapas -->
-            <div id="project-steps">
-                <span data-step="setup">Setup</span>
-                <span data-step="planning">Planeamento</span>
-                <span data-step="execution">Execução</span>
-            </div>
-
-            <!-- ✅ PROGRESSO GLOBAL (ESTAVA A FALTAR) -->
-            <div id="global-progress">
-                <span id="progress-value">0%</span>
-                <div class="progress-bar">
-                    <div class="progress-fill" id="progress-fill"></div>
+                <div class="nav-slot nav-left">
+                    <button
+                        id="nav-home"
+                        data-page="home"
+                        style="display: none"
+                    >
+                        <!-- nome entra via JS -->
+                    </button>
                 </div>
-            </div>
+
+                <div class="nav-slot nav-center">
+                    <span class="nav-logo">LOGO</span>
+                </div>
+
+                <div class="nav-slot nav-right">
+                    <button
+                        id="nav-process"
+                        data-page="process-builder"
+                        style="display: none"
+                    >
+                        Process Builder
+                    </button>
+
+                    <button
+                        id="nav-logout"
+                        data-page="logout"
+                        style="display: none"
+                    >
+                        Log out
+                    </button>
+                </div>
+            </nav>
         </header>
 
         <!-- Aqui o router carrega as páginas -->

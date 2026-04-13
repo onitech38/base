@@ -1,11 +1,23 @@
-<section class="page page-home">
-  <header class="page-header">
-    <h1>Visão geral do projeto</h1>
-    <p>
-      Acompanha o progresso do teu projeto, revê o que já foi feito e vê o que
-      falta concluir antes da exportação.
-    </p>
-  </header>
+<section class="page page-home" data-page="home">
+    <header class="page-header">
+        <h1>VISÃO GERAL DO PROJETO</h1>
+        <p>Aqui podes acompanhar o progresso e executar as tarefas planeadas</p>
+    </header>
 
-  <div class="page-content" id="home-dashboard"></div>
+    <div class="home-layout">
+        <!-- COLUNA ESQUERDA -->
+        <aside class="home-meta">
+            <div id="home-project-meta"></div>
+
+            <div class="home-progress">
+                <span id="home-progress-value">0%</span>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="home-progress-fill"></div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- FASES -->
+        <div class="home-phases" id="home-phases"></div>
+    </div>
 </section>
