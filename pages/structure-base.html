@@ -1,0 +1,135 @@
+<section class="page page-structure-base" data-page="structure-base">
+    <header class="page-header">
+        <h1>Estrutura Base</h1>
+        <p>
+            Nesta fase vais definir a base lógica do projeto.
+            <strong>Não é design</strong>, não é branding, não é layout. É
+            garantir que o projeto faz sentido antes de ganhar forma.
+        </p>
+    </header>
+
+    <div class="structure-content">
+        <!-- GUIA GLOBAL -->
+        <section class="structure-intro">
+            <p>
+                💡 Pensa nisto como um mapa. Aqui decides
+                <strong>o que existe</strong>, <strong>como se liga</strong> e
+                <strong>que regras não se quebram</strong>.
+            </p>
+            <p>
+                Se alguma pergunta parecer estranha, não é porque não sabes — é
+                porque o projeto ainda está a ganhar forma.
+            </p>
+        </section>
+
+        <!-- ARQUITETURA (DESBLOQUEADO) -->
+        <section class="structure-block" data-block="architecture">
+            <h2>Como este projeto funciona</h2>
+            <p class="structure-help">
+                Define o comportamento geral do projeto. Não é implementação
+                técnica, é intenção.
+            </p>
+
+            <label>
+                <strong>Como este projeto deve funcionar tecnicamente?</strong>
+                <span class="field-help">
+                    Ex.: aplicação numa só página, várias páginas, ainda por
+                    decidir.
+                </span>
+                <input
+                    id="arch-type"
+                    placeholder="Ex: aplicação numa só página, várias páginas"
+                />
+            </label>
+
+            <label>
+                <strong>Como preferes organizar o projeto internamente?</strong>
+                <span class="field-help">
+                    Não é código. É forma de pensar.
+                </span>
+                <input
+                    id="arch-approach"
+                    placeholder="Ex: modular, por objetivo"
+                />
+            </label>
+
+            <label>
+                <strong>Notas importantes (opcional)</strong>
+                <textarea id="arch-notes"></textarea>
+            </label>
+        </section>
+
+        <!-- PÁGINAS (LOCKED) -->
+        <section class="structure-block is-hidden" data-block="pages">
+            <h2>Que “lugares” existem no projeto</h2>
+            <p class="structure-help">
+                Uma página é um lugar funcional. Não é design — responde apenas
+                se existe ou não.
+            </p>
+
+            <div class="structure-pages">
+                <input
+                    id="page-name"
+                    placeholder="Ex: Home (uma página de cada vez)"
+                />
+                <button id="add-page">Adicionar lugar / página</button>
+            </div>
+
+            <ul id="pages-list"></ul>
+        </section>
+
+        <!-- NAVEGAÇÃO (LOCKED) -->
+        <section class="structure-block is-hidden" data-block="navigation">
+            <h2>Como as pessoas se movem</h2>
+            <p class="structure-help">
+                Define os caminhos entre os lugares do projeto.
+            </p>
+
+            <label>
+                <strong>Padrão de navegação</strong>
+                <input
+                    id="nav-pattern"
+                    placeholder="Ex: menu principal, etapas"
+                />
+            </label>
+
+            <label>
+                <strong>Hierarquia</strong>
+                <input
+                    id="nav-hierarchy"
+                    placeholder="Ex: tudo ao mesmo nível, aninhado"
+                />
+            </label>
+
+            <label>
+                <strong>Notas (opcional)</strong>
+                <textarea id="nav-notes"></textarea>
+            </label>
+        </section>
+
+        <!-- FUNDAÇÃO (LOCKED) -->
+        <section class="structure-block is-hidden" data-block="foundation">
+            <h2>Regras que não se quebram</h2>
+            <p class="structure-help">
+                Limites e princípios que orientam o projeto.
+            </p>
+
+            <label>
+                <strong>Princípios / mindset</strong>
+                <textarea id="foundation-mindset"></textarea>
+            </label>
+
+            <label>
+                <strong>Restrições técnicas</strong>
+                <textarea id="foundation-constraints"></textarea>
+            </label>
+
+            <label>
+                <strong>Assunções</strong>
+                <textarea id="foundation-assumptions"></textarea>
+            </label>
+        </section>
+    </div>
+</section>
+
+<footer class="phase-actions"></footer>

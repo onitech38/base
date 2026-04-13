@@ -1,0 +1,178 @@
+<section class="page page-layout" data-page="layout">
+    <header class="page-header">
+        <h1>Estrutura de Layout</h1>
+        <p>
+            Nesta fase defines
+            <strong>como a informação se organiza no espaço</strong>.
+            <br />
+            Não escolhes cores, não defines marca, não fazes design final. O
+            layout é uma resposta direta à estrutura que já foi decidida.
+        </p>
+    </header>
+
+    <div class="layout-content">
+        <!-- GUIA GLOBAL -->
+        <section class="layout-intro">
+            <p>
+                💡 Pensa no layout como um tabuleiro. Aqui decides
+                <strong>onde as coisas vivem</strong>, não
+                <strong>como parecem</strong>.
+            </p>
+            <p>
+                Tudo o que definires aqui vai servir de base para o Branding,
+                Acessibilidade e SEO.
+            </p>
+        </section>
+
+        <!-- GRID BASE -->
+        <section class="layout-block" data-block="grid">
+            <h2>Grelha base do layout</h2>
+            <p class="layout-help">
+                A grelha define os limites do conteúdo e garante consistência em
+                todas as páginas do projeto.
+            </p>
+
+            <label>
+                <strong>Tipo de grelha</strong>
+                <span class="field-help">
+                    Ex.: coluna única, múltiplas colunas, layout dividido.
+                </span>
+                <input
+                    id="layout-grid-type"
+                    placeholder="Ex: coluna única, 12 colunas"
+                />
+            </label>
+
+            <label>
+                <strong>Largura máxima do conteúdo</strong>
+                <span class="field-help">
+                    Até onde o conteúdo pode crescer no ecrã.
+                </span>
+                <input id="layout-max-width" placeholder="Ex: 1200px" />
+            </label>
+
+            <label>
+                <strong>Notas (opcional)</strong>
+                <textarea
+                    id="layout-grid-notes"
+                    placeholder="Observações importantes sobre a grelha"
+                ></textarea>
+            </label>
+        </section>
+
+        <!-- LAYOUT DAS PÁGINAS -->
+        <section class="layout-block is-hidden" data-block="pages">
+            <h2>Layout das páginas</h2>
+            <p class="layout-help">
+                Agora aplica a grelha às páginas que definiste existir.
+                <br />
+                Não é design final — é estrutura base.
+            </p>
+
+            <p class="layout-hint">
+                ✅ Cada página usa a mesma grelha, mas pode organizar o conteúdo
+                de forma diferente.
+            </p>
+
+            <div class="layout-pages">
+                <p class="layout-state" id="layout-page-state">
+                    ℹ️ O layout é definido página a página. Escolhe uma página.
+                </p>
+
+                <label>
+                    <strong>Página</strong>
+                    <select id="layout-page-select">
+                        <option value="">— selecionar página —</option>
+                    </select>
+                </label>
+
+                <div id="layout-options" class="layout-options">
+                    <button class="layout-option" data-pattern="single">
+                        <div class="preview"></div>
+                        <strong>Foco central</strong>
+                        <span>Conteúdo principal centrado</span>
+                    </button>
+
+                    <button class="layout-option" data-pattern="sidebar">
+                        <div class="preview"></div>
+                        <strong>Conteúdo + lateral</strong>
+                        <span>Área lateral de apoio</span>
+                    </button>
+
+                    <button class="layout-option" data-pattern="split">
+                        <div class="preview"></div>
+                        <strong>Layout dividido</strong>
+                        <span>Dois blocos principais</span>
+                    </button>
+                </div>
+
+                <button id="layout-apply" disabled>
+                    Aplicar layout à página
+                </button>
+            </div>
+        </section>
+
+        <!-- COMPONENTES GLOBAIS -->
+        <section class="layout-block is-hidden" data-block="globals">
+            <h2>Componentes globais</h2>
+            <p class="layout-help">
+                Componentes globais são partes do layout que se repetem em
+                várias páginas para criar estabilidade.
+            </p>
+
+            <label>
+                <input type="checkbox" id="layout-header" />
+                <strong>Cabeçalho global</strong>
+            </label>
+
+            <label>
+                <input type="checkbox" id="layout-navigation" />
+                <strong>Navegação global</strong>
+            </label>
+
+            <label>
+                <input type="checkbox" id="layout-footer" />
+                <strong>Rodapé</strong>
+            </label>
+
+            <p class="layout-hint">
+                Estes componentes normalmente refletem decisões feitas na
+                Estrutura Base.
+            </p>
+        </section>
+
+        <!-- HIERARQUIA VISUAL -->
+        <section class="layout-block is-hidden" data-block="hierarchy">
+            <h2>Hierarquia visual</h2>
+            <p class="layout-help">
+                Aqui defines o que deve chamar atenção primeiro e o que tem
+                menor prioridade visual.
+            </p>
+
+            <label>
+                <strong>Foco principal</strong>
+                <span class="field-help">
+                    O elemento mais importante numa página.
+                </span>
+                <input
+                    id="layout-primary-focus"
+                    placeholder="Ex: conteúdo principal, ação principal"
+                />
+            </label>
+
+            <label>
+                <strong>Foco secundário</strong>
+                <span class="field-help">
+                    Informação importante, mas de apoio.
+                </span>
+                <input
+                    id="layout-secondary-focus"
+                    placeholder="Ex: ações secundárias, informação contextual"
+                />
+            </label>
+        </section>
+    </div>
+</section>
+
+<!-- Ações da fase -->
+<footer class="phase-actions"></footer>
