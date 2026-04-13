@@ -821,11 +821,96 @@
     /* =====================================================
    BRANDING PAGE
 ===================================================== */
-    .page-branding label {
+    .branding-colors-inputs {
         display: flex;
-        flex-direction: column;
-        gap: 0.25rem;
+        gap: 1rem;
         margin-bottom: 1rem;
-        max-width: 280px;
+    }
+
+    .branding-color-preview {
+        border: 1px solid #ddd;
+        padding: 1rem;
+        border-radius: 6px;
+        margin-bottom: 0.75rem;
+    }
+
+    .preview-header {
+        padding: 0.5rem;
+        margin-bottom: 0.5rem;
+        font-weight: bold;
+    }
+
+    .preview-button {
+        padding: 0.5rem 1rem;
+        margin-bottom: 0.5rem;
+        border: none;
+        cursor: pointer;
+    }
+
+    .preview-link {
+        display: inline-block;
+        margin-bottom: 0.5rem;
+    }
+
+    .preview-card {
+        padding: 0.75rem;
+        background: #f5f5f5;
+        border-radius: 4px;
+    }
+
+    .branding-typography-options {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .branding-type-option {
+        padding: 0.4rem 0.75rem;
+        border: 1px solid #ccc;
+        background: #fafafa;
+        border-radius: 6px;
+        cursor: pointer;
+        opacity: 0.7;
+    }
+
+    .branding-type-option.active {
+        border-color: #000;
+        background: #eee;
+        opacity: 1;
+    }
+
+    .branding-typography-preview {
+        border: 1px solid #ddd;
+        padding: 1rem;
+        border-radius: 6px;
+        margin-bottom: 0.75rem;
+    }
+
+    .branding-typography-preview h1 {
+        margin: 0 0 0.25rem;
+    }
+
+    .branding-typography-preview h2 {
+        margin: 0 0 0.75rem;
+        font-size: 1rem;
+        opacity: 0.7;
+    }
+
+    .branding-typography-preview p {
+        margin: 0;
+        line-height: 1.6;
+    }
+
+    /* Variedades simples */
+    .typography-neutral {
+        font-family: system-ui, sans-serif;
+    }
+
+    .typography-modern {
+        font-family: "Inter", system-ui, sans-serif;
+    }
+
+    .typography-editorial {
+        font-family: "Georgia", serif;
     }
 }

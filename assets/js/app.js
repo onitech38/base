@@ -508,65 +508,158 @@ window.renderBranding = function () {
   const branding = store.currentProject.branding;
   if (!branding) return;
 
-  // helper local
+  /* helper local */
   const set = (id, v = "") => {
     const el = document.getElementById(id);
     if (el) el.value = v;
   };
 
-  // hidratar campos existentes
+  /* hidratar campos guardados */
   set("branding-primary-color", branding.colors.primary);
   set("branding-secondary-color", branding.colors.secondary);
 
+  /* mensagem final se já concluído */
+  if (branding.completed) {
+    const state = document.getElementById("branding-state");
+    if (state) {
+      state.textContent =
+        "✅ Branding concluído. Podes avançar para a próxima fase.";
+    }
+  }
+
+  /* UX local da fase */
   renderBrandingUX();
+
+  /* ações globais da fase */
   renderBrandingActions();
+
+  /* progressão visual */
   updateVisibility("branding", brandingRules);
 };
 
 function renderBrandingUX() {
+  const branding = store.currentProject.branding;
+
   const state = document.getElementById("branding-state");
-  const applyBtn = document.getElementById("branding-apply");
+  const applyToneBtn = document.getElementById("branding-apply");
   const toneRadios = document.querySelectorAll(".branding-tone");
 
-  if (!state || !applyBtn || !toneRadios.length) return;
+  const primaryInput = document.getElementById("branding-primary-color");
+  const secondaryInput = document.getElementById("branding-secondary-color");
+  const applyColorsBtn = document.getElementById("branding-colors-apply");
+  const preview = document.getElementById("branding-color-preview");
 
-  applyBtn.disabled = true;
+  const typeOptions = document.querySelectorAll(".branding-type-option");
+  const typePreview = document.getElementById("branding-typography-preview");
+  const typeApplyBtn = document.getElementById("branding-type-apply");
+  const typeState = document.getElementById("branding-type-state");
 
-  /* --- estado inicial --- */
-  if (!store.currentProject.branding.tone) {
-    state.textContent = "ℹ️ Começa por definir o tom base do projeto.";
-  } else {
-    state.textContent = `✅ Tom definido: "${store.currentProject.branding.tone}"`;
+  /* =====================
+     SE JÁ ESTÁ CONCLUÍDO
+  ===================== */
+  if (branding.completed) return;
 
-    const radio = document.querySelector(
-      `.branding-tone[value="${store.currentProject.branding.tone}"]`,
-    );
+  /* =====================
+     TOM (IDENTIDADE BASE)
+  ===================== */
+  if (state && applyToneBtn && toneRadios.length) {
+    applyToneBtn.disabled = true;
 
-    if (radio) {
-      radio.checked = true;
+    if (!branding.tone) {
+      state.textContent = "ℹ️ Começa por definir o tom base do projeto.";
+    } else {
+      state.textContent = `✅ Tom definido: "${branding.tone}"`;
+      const radio = document.querySelector(
+        `.branding-tone[value="${branding.tone}"]`,
+      );
+      if (radio) radio.checked = true;
     }
+
+    toneRadios.forEach((radio) => {
+      radio.onchange = () => {
+        applyToneBtn.disabled = false;
+      };
+    });
+
+    applyToneBtn.onclick = () => {
+      const selected = document.querySelector(".branding-tone:checked");
+      if (!selected) return;
+
+      branding.tone = selected.value;
+      store.save();
+
+      state.textContent = `✅ Tom "${selected.value}" aplicado ao projeto`;
+      applyToneBtn.disabled = true;
+
+      updateVisibility("branding", brandingRules);
+    };
   }
 
-  /* --- mudar tom (não guarda) --- */
-  toneRadios.forEach((radio) => {
-    radio.onchange = () => {
-      applyBtn.disabled = false;
+  /* =====================
+     CORES (PREVIEW)
+  ===================== */
+  if (primaryInput && secondaryInput && preview && applyColorsBtn) {
+    const updatePreview = () => {
+      const primary = primaryInput.value;
+      const secondary = secondaryInput.value;
+
+      preview.querySelector(".preview-header").style.background = secondary;
+      preview.querySelector(".preview-button").style.background = primary;
+      preview.querySelector(".preview-link").style.color = primary;
+      preview.querySelector(".preview-card").style.background = secondary;
+
+      applyColorsBtn.disabled = !primary || !secondary;
     };
-  });
 
-  /* --- aplicar tom (guarda mesmo) --- */
-  applyBtn.onclick = () => {
-    const selected = document.querySelector(".branding-tone:checked");
-    if (!selected) return;
+    primaryInput.oninput = updatePreview;
+    secondaryInput.oninput = updatePreview;
 
-    store.currentProject.branding.tone = selected.value;
-    store.save();
+    applyColorsBtn.onclick = () => {
+      branding.colors.primary = primaryInput.value;
+      branding.colors.secondary = secondaryInput.value;
+      store.save();
 
-    state.textContent = `✅ Tom "${selected.value}" aplicado ao projeto`;
-    applyBtn.disabled = true;
+      if (state) state.textContent = "✅ Cores aplicadas ao projeto";
 
-    updateVisibility("branding", brandingRules);
-  };
+      updateVisibility("branding", brandingRules);
+    };
+  }
+
+  /* =====================
+     TIPOGRAFIA (PREVIEW)
+  ===================== */
+  if (typeOptions.length && typePreview && typeApplyBtn && typeState) {
+    let selectedType = null;
+    typeApplyBtn.disabled = true;
+
+    typeOptions.forEach((btn) => {
+      btn.onclick = () => {
+        typeOptions.forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+
+        selectedType = btn.dataset.type;
+        typePreview.className = `branding-typography-preview typography-${selectedType}`;
+
+        typeApplyBtn.disabled = false;
+        typeState.textContent =
+          "🔍 Pré‑visualização do estilo tipográfico selecionado";
+      };
+    });
+
+    typeApplyBtn.onclick = () => {
+      if (!selectedType) return;
+
+      branding.typography = selectedType;
+      store.save();
+      store.checkAutoCompleteBranding();
+
+      typeState.textContent = `✅ Tipografia "${selectedType}" aplicada ao projeto`;
+
+      typeApplyBtn.disabled = true;
+
+      updateVisibility("branding", brandingRules);
+    };
+  }
 }
 
 function renderBrandingActions() {

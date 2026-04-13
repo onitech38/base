@@ -114,6 +114,16 @@ const store = {
         completed: false,
       },
 
+      branding: {
+        tone: "",
+        colors: {
+          primary: "",
+          secondary: "",
+        },
+        typography: "",
+        completed: false,
+      },
+
       baseStructure: {
         architecture: {
           type: "",
@@ -182,6 +192,15 @@ const store = {
     if (allDone && !bs.completed) {
       bs.completed = true;
       this.completePhase("structure");
+    }
+  },
+
+  checkAutoCompleteBranding() {
+    const b = this.currentProject.branding;
+
+    if (b.tone && b.colors.primary && b.colors.secondary && b.typography) {
+      this.completePhase("branding");
+      b.completed = true;
     }
   },
 
@@ -342,6 +361,8 @@ function createPhases() {
     { id: "setup", title: "Setup", status: "active" },
     { id: "structure", title: "Estrutura Base", status: "locked" },
     { id: "layout", title: "Layout", status: "locked" },
+    { id: "branding", title: "Branding", status: "locked" },
+    { id: "accessibility", title: "Acessibilidade", status: "locked" },
   ];
 }
 
