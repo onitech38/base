@@ -227,7 +227,6 @@ window.renderSetup = function () {
   }
 
   const project = store.currentProject;
-
   if (!project) {
     // segurança extrema (não devia acontecer)
     location.hash = "#/login-plus";
@@ -266,28 +265,6 @@ window.renderSetup = function () {
     // ✅ depois do setup → HOME
     location.hash = "#/home";
   };
-};
-
-const submitBtn = document.getElementById("setup-submit");
-if (!submitBtn) return;
-
-submitBtn.onclick = () => {
-  const name = document.getElementById("setup-name")?.value.trim();
-  const type = document.getElementById("setup-type")?.value;
-  const goal = document.getElementById("setup-goal")?.value.trim();
-
-  if (!name) {
-    alert("O projeto precisa de um nome.");
-    return;
-  }
-
-  store.completeSetup({
-    name,
-    productType: type,
-    goal,
-  });
-
-  location.hash = "#/home";
 };
 
 /* ============================================================
