@@ -6,6 +6,21 @@ window.store = store;
 window.pendingPhaseToOpen = null;
 
 /* ============================================================
+    WELCOME
+============================================================ */
+
+document.addEventListener("click", (e) => {
+  if (e.target.id === "welcome-login") {
+    location.hash = "#/login";
+    return;
+  }
+  if (e.target.id === "welcome-signup") {
+    location.hash = "#/signup";
+    return;
+  }
+});
+
+/* ============================================================
    GENERIC UI HELPERS (ÚNICOS)
 ============================================================ */
 function showBlock(prefix, blockName) {
@@ -117,9 +132,179 @@ window.updateNav = updateNav;
 window.addEventListener("store-updated", updateNav);
 
 /* ============================================================
+   LOGIN+
+============================================================ */
+window.renderLoginPlus = function () {
+  const user = store.currentUser;
+  if (!user) {
+    location.hash = "#/welcome";
+    return;
+  }
+
+  document.getElementById("login-plus-username").textContent = user.firstName;
+
+  const container = document.getElementById("project-links");
+  container.innerHTML = "";
+
+  // ✅ PROJETOS EXISTENTES
+  user.projectIds.forEach((projectId) => {
+    const project = store.state.projects[projectId];
+    if (!project) return;
+
+    const completed = project.process.phases.filter(
+      (p) => p.status === "completed",
+    ).length;
+
+    const total = project.process.phases.length;
+    const percent = Math.round((completed / total) * 100);
+
+    const el = document.createElement("div");
+    el.className = "project-link";
+    el.innerHTML = `
+      <span>${project.name || "Projeto sem nome"}</span>
+      <span class="progress">${percent}%</span>
+    `;
+
+    el.onclick = () => {
+      store.state.auth.activeProjectId = projectId;
+      store.save();
+
+      location.hash = project.setupCompleted ? "#/home" : "#/setup";
+    };
+
+    container.appendChild(el);
+  });
+
+  // ✅ NOVO PROJETO
+  if (user.projectIds.length < 2) {
+    const create = document.createElement("div");
+    create.className = "project-link new";
+    create.innerHTML = `
+      <span>Novo projeto?</span>
+      <span class="progress">+</span>
+    `;
+
+    create.onclick = () => {
+      store.createProject();
+      location.hash = "#/setup";
+    };
+
+    container.appendChild(create);
+  }
+  bindLoginPlusEvents();
+};
+
+function bindLoginPlusEvents() {
+  document.getElementById("logout").onclick = () => {
+    store.logout();
+    location.hash = "#/welcome";
+  };
+
+  document.getElementById("create-project").onclick = () => {
+    const input = document.getElementById("new-project-name");
+    const name = input.value.trim();
+
+    if (!name) {
+      alert("Dá um nome ao projeto");
+      return;
+    }
+
+    store.createProject();
+    store.currentProject.name = name;
+    store.save();
+
+    location.hash = "#/setup";
+  };
+}
+
+/* ============================================================
+   SETUP (FASE 1)
+============================================================ */
+window.renderSetup = function () {
+  // ✅ GARANTIR QUE EXISTE PROJETO (uma única vez)
+  if (!store.currentProject) {
+    store.createProject();
+  }
+
+  const project = store.currentProject;
+
+  if (!project) {
+    // segurança extrema (não devia acontecer)
+    location.hash = "#/login-plus";
+    return;
+  }
+
+  // hidratar campos se existirem
+  const set = (id, value = "") => {
+    const el = document.getElementById(id);
+    if (el) el.value = value;
+  };
+
+  set("setup-name", project.name);
+  set("setup-type", project.productType);
+  set("setup-goal", project.goal);
+
+  const submitBtn = document.getElementById("setup-submit");
+  if (!submitBtn) return;
+
+  submitBtn.onclick = () => {
+    const name = document.getElementById("setup-name")?.value.trim();
+    const type = document.getElementById("setup-type")?.value;
+    const goal = document.getElementById("setup-goal")?.value.trim();
+
+    if (!name) {
+      alert("O projeto precisa de um nome.");
+      return;
+    }
+
+    store.completeSetup({
+      name,
+      productType: type,
+      goal,
+    });
+
+    // ✅ depois do setup → HOME
+    location.hash = "#/home";
+  };
+};
+
+const submitBtn = document.getElementById("setup-submit");
+if (!submitBtn) return;
+
+submitBtn.onclick = () => {
+  const name = document.getElementById("setup-name")?.value.trim();
+  const type = document.getElementById("setup-type")?.value;
+  const goal = document.getElementById("setup-goal")?.value.trim();
+
+  if (!name) {
+    alert("O projeto precisa de um nome.");
+    return;
+  }
+
+  store.completeSetup({
+    name,
+    productType: type,
+    goal,
+  });
+
+  location.hash = "#/home";
+};
+
+/* ============================================================
    HOME
 ============================================================ */
+
 window.renderHome = function () {
+  const project = store.currentProject;
+  const user = store.currentUser;
+
+  if (!project || !project.setupCompleted) {
+    // segurança extra (não devia acontecer)
+    location.hash = "#/login-plus";
+    return;
+  }
+
+  renderHomeMeta(project);
   renderHomeProgress();
   renderHomePhases();
 };

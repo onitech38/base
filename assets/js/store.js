@@ -160,6 +160,7 @@ const store = {
 
     Object.assign(p, data);
     p.setupCompleted = true;
+    this.completePhase("setup"); // 🔑
     this.save();
   },
 

@@ -196,6 +196,56 @@
         border: var(--border-size) var(--clr-4);
     }
 
+    /* LOGIN + */
+    .login-plus {
+        max-width: 720px;
+        margin: 0 auto;
+        text-align: center;
+    }
+
+    .project-links {
+        margin-top: 3rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+    }
+
+    .project-link {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        padding: 0.75rem 0;
+        border-bottom: 1px solid #999;
+
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+
+        cursor: pointer;
+    }
+
+    .project-link span {
+        opacity: 0.85;
+    }
+
+    .project-link .progress {
+        font-weight: 600;
+    }
+
+    .project-link.new {
+        opacity: 0.6;
+    }
+
+    .project-link:hover {
+        opacity: 1;
+    }
+
+    .project-note {
+        margin-top: 2rem;
+        font-size: 0.75rem;
+        opacity: 0.5;
+    }
     /* =====================================================
        HOME – VISÃO GERAL DO PROJETO
     ===================================================== */

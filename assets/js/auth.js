@@ -89,24 +89,8 @@ function bindLoginEvents() {
       return;
     }
 
-    // ✅ DECISÃO DE FLUXO APÓS LOGIN
-    const user = store.currentUser;
-
-    if (user.projectIds.length === 0) {
-      // nunca criou projeto
-      location.hash = "#/project-select";
-    } else if (user.projectIds.length === 1) {
-      // tem apenas um projeto → continuar
-      store.selectProject(user.projectIds[0]);
-
-      const project = store.currentProject;
-      location.hash = project.setupCompleted ? "#/process-builder" : "#/setup";
-    } else {
-      // mais que um projeto → escolher
-      // 🔴 FORÇAR O ROUTER A REAGIR AO NOVO ESTADO
-      location.hash = "#/project-select";
-    }
-    window.dispatchEvent(new HashChangeEvent("hashchange"));
+    // ✅ APÓS LOGIN → LOGIN+
+    location.hash = "#/login-plus";
   });
 
   document.getElementById("go-signup").onclick = () => {
@@ -135,12 +119,8 @@ function bindSignupEvents() {
 
     store.signUp({ firstName, lastName, password });
 
-    // 🔴 FORÇAR O ROUTER A REAGIR AO NOVO ESTADO
-    location.hash = "#/project-select";
-    window.dispatchEvent(new HashChangeEvent("hashchange"));
-
-    // ✅ SAÍDA IMEDIATA DO ESTADO GUEST
-    location.hash = "#/project-select";
+    // ✅ APÓS SIGNUP → SETUP
+    location.hash = "#/setup";
   });
 
   document.getElementById("go-login").onclick = () => {

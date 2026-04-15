@@ -21,6 +21,11 @@ async function loadPage() {
       return;
     }
 
+    if (route === "login-plus") {
+      renderPage("login-plus");
+      return;
+    }
+
     if (route === "signup") {
       renderSignup();
       return;
@@ -29,9 +34,10 @@ async function loadPage() {
     return render("welcome");
   }
 
-  /* ---------- AUTHENTICATED, NO PROJECT ---------- */
-  if (!store.currentProject) {
-    return render("project-select");
+  // exemplo de guard correto
+  if (route === "home" && !store.currentProject) {
+    location.hash = "#/login+";
+    return;
   }
 
   /* ---------- AUTHENTICATED WITH PROJECT ---------- */
@@ -42,17 +48,68 @@ async function loadPage() {
    RENDER
 ===================== */
 async function render(route) {
+  // fallback
+  route = route || "welcome";
+
+  /* =====================
+     ROUTE GUARDS (ANTES DO FETCH)
+  ===================== */
+
+  // HOME
+  if (route === "home") {
+    if (store.state.auth.status !== "authenticated") {
+      location.hash = "#/welcome";
+      return;
+    }
+
+    if (!store.currentProject) {
+      location.hash = "#/login-plus";
+      return;
+    }
+
+    if (!store.currentProject.setupCompleted) {
+      location.hash = "#/setup";
+      return;
+    }
+  }
+
+  // LOGIN+
+  if (route === "login-plus") {
+    if (store.state.auth.status !== "authenticated") {
+      location.hash = "#/welcome";
+      return;
+    }
+  }
+
+  /* =====================
+     FETCH HTML (SÓ AGORA)
+  ===================== */
+
   const res = await fetch(`pages/${route}.html`);
+  if (!res.ok) {
+    app.innerHTML = "<p>Página não encontrada</p>";
+    return;
+  }
+
   app.innerHTML = await res.text();
+
+  /* =====================
+     CALL PAGE LOGIC
+  ===================== */
 
   if (route === "setup") {
     window.renderSetup && window.renderSetup();
+    return;
   }
 
   if (route === "home") {
-    if (window.renderHome && store.currentProject) {
-      window.renderHome();
-    }
+    window.renderHome && window.renderHome();
+    return;
+  }
+
+  if (route === "login-plus") {
+    window.renderLoginPlus && window.renderLoginPlus();
+    return;
   }
 
   if (route === "process-builder") {
@@ -65,6 +122,10 @@ async function render(route) {
 
   if (route === "layout") {
     window.renderLayout && window.renderLayout();
+  }
+
+  if (route === "branding") {
+    window.renderBranding && window.renderBranding();
   }
 }
 
