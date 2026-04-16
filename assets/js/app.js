@@ -712,6 +712,7 @@ function renderLayoutActions() {
 /* ============================================================
    BRANDING (FASE 4) — VERSÃO FINAL ESTÁVEL
 ============================================================ */
+let brandingPreviewOpen = false;
 
 window.renderBranding = function () {
   const branding = store.currentProject.branding;
@@ -723,51 +724,38 @@ window.renderBranding = function () {
   updateVisibility("branding", brandingRules);
 };
 
+/* == UX PRINCIPAL == */
 function renderBrandingUX() {
   const branding = store.currentProject.branding;
-
-  const preview = document.getElementById("branding-preview-canvas");
   const state = document.getElementById("branding-state");
 
-  /* =====================
-     TOM
-  ===================== */
-  const toneRadios = document.querySelectorAll(".branding-tone");
-
-  toneRadios.forEach((radio) => {
+  /* ---------- TOM ---------- */
+  document.querySelectorAll(".branding-tone").forEach((radio) => {
     radio.checked = radio.value === branding.tone;
 
     radio.onchange = () => {
       branding.tone = radio.value;
       store.save();
       store.checkAutoCompleteBranding();
+      applyBrandingToPreview();
 
       if (state) {
         state.textContent = `✅ Tom definido: "${radio.value}"`;
       }
-
-      applyBrandingToPreview();
     };
   });
 
-  /* =====================
-     CORES (IMEDIATO)
-  ===================== */
+  /* ---------- CORES (IMEDIATO) ---------- */
   const primaryInput = document.getElementById("branding-primary-color");
   const secondaryInput = document.getElementById("branding-secondary-color");
 
   if (primaryInput && secondaryInput) {
-    if (branding.colors.primary) {
-      primaryInput.value = branding.colors.primary;
-    }
-    if (branding.colors.secondary) {
-      secondaryInput.value = branding.colors.secondary;
-    }
+    primaryInput.value = branding.colors.primary || "#222222";
+    secondaryInput.value = branding.colors.secondary || "#999999";
 
     const applyColors = () => {
       branding.colors.primary = primaryInput.value;
       branding.colors.secondary = secondaryInput.value;
-
       store.save();
       store.checkAutoCompleteBranding();
       applyBrandingToPreview();
@@ -777,47 +765,34 @@ function renderBrandingUX() {
     secondaryInput.oninput = applyColors;
   }
 
-  /* =====================
-     TIPOGRAFIA
-  ===================== */
-  const typeOptions = document.querySelectorAll(".branding-type-option");
-
-  typeOptions.forEach((btn) => {
+  /* ---------- TIPOGRAFIA ---------- */
+  document.querySelectorAll(".branding-type-option").forEach((btn) => {
     btn.classList.toggle("active", btn.dataset.type === branding.typography);
 
     btn.onclick = () => {
       branding.typography = btn.dataset.type;
       store.save();
       store.checkAutoCompleteBranding();
-
       applyBrandingToPreview();
     };
   });
 
-  /* =====================
-     MODO VISUAL
-  ===================== */
-  const visualRadios = document.querySelectorAll(
-    'input[name="branding-visual-mode"]',
-  );
+  /* ---------- MODO VISUAL ---------- */
+  document
+    .querySelectorAll('input[name="branding-visual-mode"]')
+    .forEach((radio) => {
+      radio.checked = radio.value === branding.visualMode;
 
-  visualRadios.forEach((radio) => {
-    radio.checked = radio.value === branding.visualMode;
+      radio.onchange = () => {
+        branding.visualMode = radio.value;
+        store.save();
+        store.checkAutoCompleteBranding();
+        applyBrandingToPreview();
+      };
+    });
 
-    radio.onchange = () => {
-      branding.visualMode = radio.value;
-      store.save();
-      store.checkAutoCompleteBranding();
-      applyBrandingToPreview();
-    };
-  });
-
-  /* =====================
-     WCAG (INTENÇÃO)
-  ===================== */
-  const wcagRadios = document.querySelectorAll('input[name="branding-wcag"]');
-
-  wcagRadios.forEach((radio) => {
+  /* ---------- WCAG (INTENÇÃO) ---------- */
+  document.querySelectorAll('input[name="branding-wcag"]').forEach((radio) => {
     radio.checked = radio.value === branding.wcagTarget;
 
     radio.onchange = () => {
@@ -826,30 +801,77 @@ function renderBrandingUX() {
       store.checkAutoCompleteBranding();
     };
   });
+
+  /* ---------- FULLSCREEN BUTTON ---------- */
+  const previewBtn = document.getElementById("preview-expand");
+
+  if (previewBtn) {
+    previewBtn.textContent = brandingPreviewOpen
+      ? "VOLTAR"
+      : "VER ECRÃ INTEIRO";
+
+    previewBtn.onclick = () => {
+      brandingPreviewOpen ? closeBrandingPreview() : openBrandingPreview();
+    };
+  }
+
+  /* ---------- ESC ---------- */
+  document.onkeydown = (e) => {
+    if (e.key === "Escape" && brandingPreviewOpen) {
+      closeBrandingPreview();
+    }
+  };
 }
 
+/* == PREVIEW APLICA BRANDING == */
 function applyBrandingToPreview() {
   const branding = store.currentProject.branding;
   const preview = document.getElementById("branding-preview-canvas");
   if (!preview) return;
 
-  /* CORES */
+  /* cores */
   preview.style.setProperty("--primary", branding.colors.primary || "#222");
   preview.style.setProperty("--secondary", branding.colors.secondary || "#999");
 
-  /* TIPOGRAFIA */
+  /* tipografia */
   preview.classList.remove("type-neutral", "type-modern", "type-editorial");
   if (branding.typography) {
     preview.classList.add(`type-${branding.typography}`);
   }
 
-  /* MODO VISUAL */
+  /* modo */
   preview.classList.remove("mode-light", "mode-dark");
   preview.classList.add(
     branding.visualMode === "dark" ? "mode-dark" : "mode-light",
   );
 }
 
+/* == FULLSCREEN CONTROLS == */
+function openBrandingPreview() {
+  const preview = document.getElementById("branding-preview");
+  const btn = document.getElementById("preview-expand");
+  if (!preview || !btn) return;
+
+  brandingPreviewOpen = true;
+  preview.classList.add("is-fullscreen");
+  document.body.classList.add("preview-open");
+
+  btn.textContent = "VOLTAR";
+}
+
+function closeBrandingPreview() {
+  const preview = document.getElementById("branding-preview");
+  const btn = document.getElementById("preview-expand");
+  if (!preview || !btn) return;
+
+  brandingPreviewOpen = false;
+  preview.classList.remove("is-fullscreen");
+  document.body.classList.remove("preview-open");
+
+  btn.textContent = "VER ECRÃ INTEIRO";
+}
+
+/* == AÇÕES DA FASE == */
 function renderBrandingActions() {
   renderPhaseActions({
     phaseId: "branding",
