@@ -199,9 +199,16 @@ const store = {
   checkAutoCompleteBranding() {
     const b = this.currentProject.branding;
 
-    if (b.tone && b.colors.primary && b.colors.secondary && b.typography) {
-      this.completePhase("branding");
+    if (
+      b.tone &&
+      b.colors.primary &&
+      b.colors.secondary &&
+      b.typography &&
+      b.visualMode &&
+      b.wcagTarget
+    ) {
       b.completed = true;
+      this.completePhase("branding");
     }
   },
 
@@ -332,11 +339,36 @@ const store = {
     ];
   },
 
+  get brandingTasks() {
+    const b = this.currentProject?.branding;
+    if (!b) return [];
+
+    return [
+      {
+        label: "Definir tom do projeto",
+        done: !!b.tone,
+      },
+      {
+        label: "Definir paleta de cores base",
+        done: !!b.colors.primary && !!b.colors.secondary,
+      },
+      {
+        label: "Definir tipografia base",
+        done: !!b.typography,
+      },
+      {
+        label: "Definir modo visual e intenção WCAG",
+        done: !!b.visualMode && !!b.wcagTarget,
+      },
+    ];
+  },
+  //TODAS AS FASES - RENDERIZAÇÃO DA LISTA DE TAREFAS
   get phaseTasks() {
     return {
       setup: this.setupTasks,
       structure: this.structureTasks,
       layout: this.layoutTasks,
+      branding: this.brandingTasks,
     };
   },
 

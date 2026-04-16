@@ -107,6 +107,9 @@ function updateNav() {
   const project = store.currentProject;
 
   const navHome = document.getElementById("nav-home");
+  const navUsername = document.getElementById("nav-username");
+  const navProgress = document.getElementById("nav-progress");
+
   const navProcess = document.getElementById("nav-process");
   const navLogout = document.getElementById("nav-logout");
   if (!navHome || !navProcess || !navLogout) return;
@@ -114,11 +117,20 @@ function updateNav() {
   const isAuth = store.state.auth.status === "authenticated";
   const hasProject = !!project;
 
-  navHome.style.display = isAuth && hasProject ? "inline-block" : "none";
+  navHome.style.display = isAuth ? "inline-flex" : "none";
   navProcess.style.display = hasProject ? "inline-block" : "none";
   navLogout.style.display = isAuth ? "inline-block" : "none";
 
-  if (user) navHome.textContent = `${user.firstName} ${user.lastName}`;
+  // ✅ nome do user (sem destruir o DOM)
+  if (user && navUsername) {
+    navUsername.textContent = user.firstName;
+  }
+
+  // ✅ percentagem do projeto
+  if (navProgress) {
+    const percent = getProjectProgressPercent();
+    navProgress.textContent = percent !== null ? `${percent}%` : "";
+  }
 
   navHome.onclick = () => (location.hash = "#/home");
   navProcess.onclick = () => (location.hash = "#/process-builder");
@@ -129,7 +141,20 @@ function updateNav() {
 }
 
 window.updateNav = updateNav;
+
 window.addEventListener("store-updated", updateNav);
+
+function getProjectProgressPercent() {
+  const project = store.currentProject;
+  if (!project) return null;
+
+  const phases = project.process.phases;
+  if (!phases || phases.length === 0) return 0;
+
+  const completed = phases.filter((p) => p.status === "completed").length;
+
+  return Math.round((completed / phases.length) * 100);
+}
 
 /* ============================================================
    LOGIN+
@@ -270,7 +295,6 @@ window.renderSetup = function () {
 /* ============================================================
    HOME
 ============================================================ */
-
 window.renderHome = function () {
   const project = store.currentProject;
   const user = store.currentUser;
@@ -296,6 +320,22 @@ function renderHomeProgress() {
 
   if (value) value.textContent = `${percent}%`;
   if (fill) fill.style.width = `${percent}%`;
+}
+
+function renderHomeMeta(project) {
+  const el = document.getElementById("home-project-meta");
+  if (!el) return;
+
+  el.innerHTML = `
+    <p class="meta-label">Nome do projeto</p>
+    <p class="meta-value">${project.name || "—"}</p>
+
+    <p class="meta-label">Tipo de projeto</p>
+    <p class="meta-value">${project.productType || "—"}</p>
+
+    <p class="meta-label">Objetivo principal</p>
+    <p class="meta-value">${project.goal || "—"}</p>
+  `;
 }
 
 function renderHomePhases() {
@@ -327,18 +367,20 @@ function renderHomePhases() {
       ${tasksHtml}
     `;
 
-    if (phase.status !== "locked") {
-      el.onclick = () => {
-        location.hash =
-          phase.id === "setup"
-            ? "#/setup"
-            : phase.id === "structure"
-              ? "#/structure-base"
-              : phase.id === "layout"
-                ? "#/layout"
-                : "#/home";
-      };
-    }
+    el.onclick = () => {
+      location.hash =
+        phase.id === "setup"
+          ? "#/setup"
+          : phase.id === "structure"
+            ? "#/structure-base"
+            : phase.id === "layout"
+              ? "#/layout"
+              : phase.id === "branding"
+                ? "#/branding"
+                : phase.id === "accessibility"
+                  ? "#/accessibility"
+                  : "#/home";
+    };
 
     container.appendChild(el);
   });
@@ -393,7 +435,11 @@ window.renderProcessBuilder = function () {
               ? "#/structure-base"
               : phase.id === "layout"
                 ? "#/layout"
-                : "#/process-builder";
+                : phase.id === "branding"
+                  ? "#/branding"
+                  : phase.id === "accessibility"
+                    ? "#/accessibility"
+                    : "#/process-builder";
       };
     }
 
@@ -670,17 +716,16 @@ window.renderBranding = function () {
   const branding = store.currentProject.branding;
   if (!branding) return;
 
-  /* helper local */
+  /* hidratar campos simples */
   const set = (id, v = "") => {
     const el = document.getElementById(id);
     if (el) el.value = v;
   };
 
-  /* hidratar campos guardados */
   set("branding-primary-color", branding.colors.primary);
   set("branding-secondary-color", branding.colors.secondary);
 
-  /* mensagem final se já concluído */
+  /* mensagem final */
   if (branding.completed) {
     const state = document.getElementById("branding-state");
     if (state) {
@@ -689,8 +734,11 @@ window.renderBranding = function () {
     }
   }
 
-  /* UX local da fase */
+  /* UX (inputs → estado → preview visual) */
   renderBrandingUX();
+
+  /* ✅ PREVIEW fullscreen / exit */
+  bindBrandingPreviewControls();
 
   /* ações globais da fase */
   renderBrandingActions();
@@ -739,22 +787,15 @@ function renderBrandingUX() {
 
     toneRadios.forEach((radio) => {
       radio.onchange = () => {
-        applyToneBtn.disabled = false;
+        branding.tone = radio.value;
+        store.save();
+
+        store.checkAutoCompleteBranding(); // ✅ ADICIONAR
+
+        state.textContent = `✅ Tom definido: "${radio.value}"`;
+        updateVisibility("branding", brandingRules);
       };
     });
-
-    applyToneBtn.onclick = () => {
-      const selected = document.querySelector(".branding-tone:checked");
-      if (!selected) return;
-
-      branding.tone = selected.value;
-      store.save();
-
-      state.textContent = `✅ Tom "${selected.value}" aplicado ao projeto`;
-      applyToneBtn.disabled = true;
-
-      updateVisibility("branding", brandingRules);
-    };
   }
 
   /* =====================
@@ -781,10 +822,23 @@ function renderBrandingUX() {
       branding.colors.secondary = secondaryInput.value;
       store.save();
 
-      if (state) state.textContent = "✅ Cores aplicadas ao projeto";
+      store.checkAutoCompleteBranding(); // ✅ ADICIONAR
 
+      if (state) state.textContent = "✅ Cores aplicadas ao projeto";
       updateVisibility("branding", brandingRules);
     };
+  }
+
+  // ✅ aplicar cores guardadas ao preview ao entrar
+  if (branding.colors.primary && branding.colors.secondary) {
+    preview.querySelector(".preview-header").style.background =
+      branding.colors.secondary;
+    preview.querySelector(".preview-button").style.background =
+      branding.colors.primary;
+    preview.querySelector(".preview-link").style.color =
+      branding.colors.primary;
+    preview.querySelector(".preview-card").style.background =
+      branding.colors.secondary;
   }
 
   /* =====================
@@ -822,6 +876,69 @@ function renderBrandingUX() {
       updateVisibility("branding", brandingRules);
     };
   }
+
+  /* =====================
+     MODO VISUAL + WCAG
+  ===================== */
+  const visualRadios = document.querySelectorAll(
+    'input[name="branding-visual-mode"]',
+  );
+  const wcagRadios = document.querySelectorAll('input[name="branding-wcag"]');
+
+  // hidratar estado guardado
+  visualRadios.forEach((r) => {
+    r.checked = r.value === branding.visualMode;
+  });
+
+  wcagRadios.forEach((r) => {
+    r.checked = r.value === branding.wcagTarget;
+  });
+
+  // guardar decisões
+  visualRadios.forEach((radio) => {
+    radio.onchange = () => {
+      branding.visualMode = radio.value;
+      store.save();
+
+      store.checkAutoCompleteBranding(); // ✅ ADICIONAR
+    };
+  });
+
+  wcagRadios.forEach((radio) => {
+    radio.onchange = () => {
+      branding.wcagTarget = radio.value;
+      store.save();
+
+      store.checkAutoCompleteBranding(); // ✅ ADICIONAR
+    };
+  });
+}
+
+function toggleBrandingPreviewFullscreen(open) {
+  const preview = document.getElementById("branding-preview");
+  if (!preview) return;
+
+  preview.classList.toggle("is-fullscreen", open);
+  document.body.classList.toggle("preview-open", open);
+}
+
+function bindBrandingPreviewControls() {
+  const openBtn = document.getElementById("preview-expand");
+  const closeBtn = document.getElementById("preview-collapse");
+
+  if (openBtn) {
+    openBtn.onclick = () => toggleBrandingPreviewFullscreen(true);
+  }
+
+  if (closeBtn) {
+    closeBtn.onclick = () => toggleBrandingPreviewFullscreen(false);
+  }
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      toggleBrandingPreviewFullscreen(false);
+    }
+  });
 }
 
 function renderBrandingActions() {
@@ -829,7 +946,7 @@ function renderBrandingActions() {
     phaseId: "branding",
     isCompleted: store.currentProject.branding.completed,
     onSave: () => {
-      store.checkAutoCompleteBranding();
+      store.checkAutoCompleteBranding(); // ✅ FECHO AQUI
       store.save();
     },
     onContinueRoute: "#/accessibility",

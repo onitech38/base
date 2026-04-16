@@ -18,6 +18,17 @@
         border-bottom: 1px solid rgba(0, 0, 0, 0.1);
     }
 
+    #nav-home {
+        display: flex;
+        gap: 0.75rem;
+        align-items: center;
+    }
+
+    .nav-progress {
+        font-size: 0.75rem;
+        opacity: 0.7;
+    }
+
     .nav-slot {
         display: flex;
         align-items: center;
@@ -343,29 +354,38 @@
     }
 
     .home-layout {
-        margin-top: 40px;
         display: flex;
-        gap: 4rem; /* igual ao espaçamento do Figma */
+        gap: 3rem;
         align-items: flex-start;
     }
 
+    /* BLOCO CONTEXTUAL */
     .home-meta {
-        width: 240px;
-        font-size: 0.9rem;
-        line-height: 1.6;
-        color: #c9a86a; /* tom dourado do Figma */
+        max-width: 240px;
+        opacity: 0.85;
     }
 
-    .home-meta p {
-        margin: 0 0 6px;
+    .home-meta .meta-label {
+        font-size: 0.7rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        margin-top: 1rem;
+        color: #999;
+    }
+
+    .home-meta .meta-value {
+        font-size: 0.9rem;
+        margin-top: 0.25rem;
+    }
+
+    /* PROGRESSO */
+    .home-progress {
+        margin-top: 2rem;
     }
 
     .home-progress span {
-        display: block;
-        margin-top: 0.75rem;
-        margin-bottom: 0.5rem;
-        font-weight: 500;
-        font-size: 0.85rem;
+        font-size: 0.75rem;
+        font-weight: 600;
     }
 
     .phase-card {
@@ -962,5 +982,52 @@
 
     .typography-editorial {
         font-family: "Georgia", serif;
+    }
+
+    .branding-layout {
+        display: grid;
+        grid-template-columns: 1fr 420px;
+        gap: 2.5rem;
+        align-items: start;
+    }
+
+    .branding-controls {
+        overflow-y: auto;
+    }
+
+    .branding-preview {
+        position: sticky;
+        top: 5rem;
+        height: calc(100vh - 6rem);
+        background: #fff;
+        border-left: 1px solid #eee;
+    }
+
+    .branding-preview.is-fullscreen {
+        position: fixed;
+        inset: 0;
+        z-index: 999;
+        background: #fff;
+        padding: 3rem;
+    }
+
+    body.preview-open {
+        overflow: hidden;
+    }
+
+    #branding-preview-canvas {
+        background: #fff;
+        border: 1px solid #eee;
+        padding: 1.5rem;
+    }
+
+    .branding-preview.expanded {
+        width: 600px;
+    }
+
+    .preview-frame {
+        --color-primary: #000;
+        --color-secondary: #999;
+        font-family: var(--font-primary);
     }
 }

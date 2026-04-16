@@ -1,121 +1,214 @@
 <section class="page page-branding" data-page="branding">
-    <header class="page-header">
-        <h1>Branding & Identidade</h1>
-        <p>
-            Aqui defines como o projeto se apresenta visualmente. O layout já
-            foi decidido.
-        </p>
-    </header>
+    <div class="branding-layout">
+        <!-- COLUNA ESQUERDA: TAREFAS -->
+        <div class="branding-controls">
+            <header class="page-header">
+                <h1>Branding & Identidade</h1>
+                <p>
+                    Aqui defines como o projeto se apresenta visualmente. O
+                    layout já foi decidido.
+                </p>
+            </header>
 
-    <!-- ESTADO GLOBAL -->
-    <p id="branding-state" class="branding-state">
-        ℹ️ Começa por definir o tom base do projeto.
-    </p>
-
-    <!-- IDENTIDADE BASE -->
-    <section class="branding-block" data-block="identity">
-        <h2>Identidade base</h2>
-        <p>
-            Define o tom geral do projeto. Isto orienta todas as decisões
-            visuais seguintes.
-        </p>
-
-        <label>
-            <input
-                type="radio"
-                name="branding-tone"
-                class="branding-tone"
-                value="neutro"
-            />
-            Neutro
-        </label>
-
-        <label>
-            <input
-                type="radio"
-                name="branding-tone"
-                class="branding-tone"
-                value="profissional"
-            />
-            Profissional
-        </label>
-
-        <label> </label>
-    </section>
-
-    <!-- CORES -->
-    <section class="branding-block is-hidden" data-block="colors">
-        <h2>Cores do projeto</h2>
-        <p>
-            Estas cores definem a identidade visual base e reforçam a hierarquia
-            do layout.
-        </p>
-
-        <div class="branding-colors-inputs">
-            <label>
-                Cor principal
-                <input type="color" id="branding-primary-color" />
-            </label>
-
-            <label>
-                Cor secundária
-                <input type="color" id="branding-secondary-color" />
-            </label>
-        </div>
-
-        <div class="branding-color-preview" id="branding-color-preview">
-            <div class="preview-header">Header</div>
-            <button class="preview-button">Botão principal</button>
-            <a href="#" class="preview-link">Link</a>
-            <div class="preview-card">Área secundária</div>
-        </div>
-
-        <button id="branding-colors-apply" disabled>
-            Aplicar cores ao projeto
-        </button>
-    </section>
-
-    <!-- TIPOGRAFIA -->
-    <section class="branding-block is-hidden" data-block="type">
-        <h2>Tipografia do projeto</h2>
-        <p>
-            Define como os textos se apresentam e se hierarquizam. Isto
-            influencia leitura, tom e clareza.
-        </p>
-
-        <p id="branding-type-state" class="branding-state">
-            ℹ️ Escolhe um estilo tipográfico para veres o exemplo.
-        </p>
-
-        <div class="branding-typography-options">
-            <button class="branding-type-option" data-type="neutral">
-                Simples e neutra
-            </button>
-
-            <button class="branding-type-option" data-type="modern">
-                Moderna e técnica
-            </button>
-
-            <button class="branding-type-option" data-type="editorial">
-                Clássica e editorial
-            </button>
-        </div>
-
-        <div
-            class="branding-typography-preview"
-            id="branding-typography-preview"
-        >
-            <h1>Título da página</h1>
-            <h2>Subtítulo opcional</h2>
-            <p>
-                Este é um parágrafo de exemplo para perceberes ritmo, contraste
-                e conforto de leitura.
+            <!-- ESTADO GLOBAL -->
+            <p id="branding-state" class="branding-state">
+                ℹ️ Começa por definir o tom base do projeto.
             </p>
+
+            <!-- IDENTIDADE BASE -->
+            <section class="branding-block" data-block="identity">
+                <h2>Identidade base</h2>
+                <p>
+                    Define o tom geral do projeto. Isto orienta todas as
+                    decisões visuais seguintes.
+                </p>
+
+                <label>
+                    <input
+                        type="radio"
+                        name="branding-tone"
+                        class="branding-tone"
+                        value="neutro"
+                    />
+                    Neutro
+                </label>
+
+                <label>
+                    <input
+                        type="radio"
+                        name="branding-tone"
+                        class="branding-tone"
+                        value="profissional"
+                    />
+                    Profissional
+                </label>
+
+                <label> </label>
+            </section>
+
+            <!-- CORES -->
+            <section class="branding-block is-hidden" data-block="colors">
+                <h2>Cores do projeto</h2>
+                <p>
+                    Estas cores definem a identidade visual base e reforçam a
+                    hierarquia do layout.
+                </p>
+
+                <div class="branding-colors-inputs">
+                    <label>
+                        Cor principal
+                        <input type="color" id="branding-primary-color" />
+                    </label>
+
+                    <label>
+                        Cor secundária
+                        <input type="color" id="branding-secondary-color" />
+                    </label>
+                </div>
+
+                <div class="branding-color-preview" id="branding-color-preview">
+                    <div class="preview-header">Header</div>
+                    <button class="preview-button">Botão principal</button>
+                    <a href="#" class="preview-link">Link</a>
+                    <div class="preview-card">Área secundária</div>
+                </div>
+
+                <button id="branding-colors-apply" disabled>
+                    Aplicar cores ao projeto
+                </button>
+            </section>
+
+            <!-- TIPOGRAFIA -->
+            <section class="branding-block is-hidden" data-block="type">
+                <h2>Tipografia do projeto</h2>
+                <p>
+                    Define como os textos se apresentam e se hierarquizam. Isto
+                    influencia leitura, tom e clareza.
+                </p>
+
+                <p id="branding-type-state" class="branding-state">
+                    ℹ️ Escolhe um estilo tipográfico para veres o exemplo.
+                </p>
+
+                <div class="branding-typography-options">
+                    <button class="branding-type-option" data-type="neutral">
+                        Simples e neutra
+                    </button>
+
+                    <button class="branding-type-option" data-type="modern">
+                        Moderna e técnica
+                    </button>
+
+                    <button class="branding-type-option" data-type="editorial">
+                        Clássica e editorial
+                    </button>
+                </div>
+
+                <div
+                    class="branding-typography-preview"
+                    id="branding-typography-preview"
+                >
+                    <h1>Título da página</h1>
+                    <h2>Subtítulo opcional</h2>
+                    <p>
+                        Este é um parágrafo de exemplo para perceberes ritmo,
+                        contraste e conforto de leitura.
+                    </p>
+                </div>
+
+                <button id="branding-type-apply" disabled>
+                    Aplicar tipografia ao projeto
+                </button>
+            </section>
+
+            <!-- Modo visual & acessibilidade -->
+            <section class="branding-block" data-block="accessibility-intent">
+                <h2>Modo visual & acessibilidade</h2>
+
+                <p class="helper-text">
+                    Define o ambiente visual base e a intenção de
+                    acessibilidade. Estas escolhas orientam decisões futuras,
+                    mas não validam o projeto.
+                </p>
+
+                <!-- MODO VISUAL -->
+                <div class="branding-group">
+                    <h3>Modo visual base</h3>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="branding-visual-mode"
+                            value="light"
+                        />
+                        Light
+                    </label>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="branding-visual-mode"
+                            value="dark"
+                        />
+                        Dark
+                    </label>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="branding-visual-mode"
+                            value="auto"
+                        />
+                        Automático (segue sistema)
+                    </label>
+                </div>
+
+                <!-- WCAG -->
+                <div class="branding-group">
+                    <h3>Intenção de acessibilidade (WCAG)</h3>
+
+                    <label>
+                        <input type="radio" name="branding-wcag" value="none" />
+                        Sem requisitos formais
+                    </label>
+
+                    <label>
+                        <input type="radio" name="branding-wcag" value="AA" />
+                        WCAG AA (recomendado)
+                    </label>
+
+                    <label>
+                        <input type="radio" name="branding-wcag" value="AAA" />
+                        WCAG AAA
+                    </label>
+                </div>
+            </section>
+
+            <!-- AÇÕES DA FASE -->
+            <div class="phase-actions"></div>
         </div>
 
-        <button id="branding-type-apply" disabled>
-            Aplicar tipografia ao projeto
-        </button>
-    </section>
-    ``
+        <!-- COLUNA DIREITA: PREVIEW -->
+        <aside class="branding-preview" id="branding-preview">
+            <div class="preview-frame">
+                <header class="preview-header">LOGO</header>
+
+                <main class="preview-content">
+                    <h1>Título da página</h1>
+                    <p>
+                        Este é um parágrafo de exemplo para perceber ritmo,
+                        contraste e conforto de leitura.
+                    </p>
+
+                    <button class="preview-btn primary">Botão principal</button>
+
+                    <button class="preview-btn secondary">
+                        Botão secundário
+                    </button>
+                </main>
+            </div>
+
+            <button id="preview-expand">VER ECRÃ INTEIRO</button>
+        </aside>
+    </div>
 </section>
