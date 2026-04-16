@@ -1026,8 +1026,142 @@
     }
 
     .preview-frame {
-        --color-primary: #000;
-        --color-secondary: #999;
-        font-family: var(--font-primary);
+        --primary: #222;
+        --secondary: #666;
+        --bg: #fff;
+
+        background: var(--bg);
+        color: #111;
+        padding: 1.5rem;
+        border: 1px solid #eee;
+    }
+
+    .preview-header {
+        background: var(--secondary);
+        color: #fff;
+        padding: 0.75rem;
+    }
+
+    .preview-btn.primary {
+        background: var(--primary);
+        color: #fff;
+    }
+
+    .preview-btn.secondary {
+        background: transparent;
+        border: 1px solid var(--primary);
+        color: var(--primary);
+    }
+
+    .preview-card {
+        background: var(--secondary);
+        color: #fff;
+        padding: 1rem;
+        margin-top: 1rem;
+    }
+
+    .type-neutral {
+        font-family: system-ui, sans-serif;
+    }
+    .type-modern {
+        font-family: Inter, sans-serif;
+    }
+    .type-editorial {
+        font-family: Georgia, serif;
+    }
+
+    .preview-frame.dark {
+        --bg: #111;
+        color: #eee;
+    }
+    /* CORES */
+    #branding-preview-canvas {
+        --primary: #222;
+        --secondary: #666;
+        background: #fff;
+        color: #111;
+    }
+
+    /* TIPOGRAFIA */
+    .type-neutral {
+        font-family: system-ui, sans-serif;
+    }
+
+    .type-modern {
+        font-family: Inter, sans-serif;
+    }
+
+    .type-editorial {
+        font-family: Georgia, serif;
+    }
+
+    /* MODO VISUAL */
+    .mode-dark {
+        background: #111;
+        color: #eee;
+    }
+
+    .mode-light {
+        background: #fff;
+        color: #111;
+    }
+
+    /* USO DAS VARIÁVEIS */
+    .preview-header {
+        background: var(--secondary);
+    }
+
+    .preview-btn.primary {
+        background: var(--primary);
+        color: #fff;
+    }
+
+    .preview-btn.secondary {
+        border: 1px solid var(--primary);
+        color: var(--primary);
+    }
+
+    #branding-preview-canvas {
+        --primary: #222;
+        --secondary: #999;
+        background: #fff;
+        color: #111;
+    }
+
+    /* cores */
+    .preview-header {
+        background: var(--secondary);
+    }
+    .preview-btn.primary {
+        background: var(--primary);
+        color: #fff;
+    }
+    .preview-btn.secondary {
+        border: 1px solid var(--primary);
+        color: var(--primary);
+    }
+    .preview-card {
+        background: var(--secondary);
+    }
+
+    /* tipografia */
+    .type-neutral {
+        font-family: system-ui, sans-serif;
+    }
+    .type-modern {
+        font-family: Inter, sans-serif;
+    }
+    .type-editorial {
+        font-family: Georgia, serif;
+    }
+
+    /* modo */
+    .mode-dark {
+        background: #111;
+        color: #eee;
+    }
+    .mode-light {
+        background: #fff;
+        color: #111;
     }
 }

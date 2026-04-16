@@ -710,245 +710,160 @@ function renderLayoutActions() {
 }
 
 /* ============================================================
-   BRANDING (FASE 4)
+   BRANDING (FASE 4) — VERSÃO FINAL ESTÁVEL
 ============================================================ */
+
 window.renderBranding = function () {
   const branding = store.currentProject.branding;
   if (!branding) return;
 
-  /* hidratar campos simples */
-  const set = (id, v = "") => {
-    const el = document.getElementById(id);
-    if (el) el.value = v;
-  };
-
-  set("branding-primary-color", branding.colors.primary);
-  set("branding-secondary-color", branding.colors.secondary);
-
-  /* mensagem final */
-  if (branding.completed) {
-    const state = document.getElementById("branding-state");
-    if (state) {
-      state.textContent =
-        "✅ Branding concluído. Podes avançar para a próxima fase.";
-    }
-  }
-
-  /* UX (inputs → estado → preview visual) */
   renderBrandingUX();
-
-  /* ✅ PREVIEW fullscreen / exit */
-  bindBrandingPreviewControls();
-
-  /* ações globais da fase */
+  applyBrandingToPreview();
   renderBrandingActions();
-
-  /* progressão visual */
   updateVisibility("branding", brandingRules);
 };
 
 function renderBrandingUX() {
   const branding = store.currentProject.branding;
 
+  const preview = document.getElementById("branding-preview-canvas");
   const state = document.getElementById("branding-state");
-  const applyToneBtn = document.getElementById("branding-apply");
+
+  /* =====================
+     TOM
+  ===================== */
   const toneRadios = document.querySelectorAll(".branding-tone");
 
-  const primaryInput = document.getElementById("branding-primary-color");
-  const secondaryInput = document.getElementById("branding-secondary-color");
-  const applyColorsBtn = document.getElementById("branding-colors-apply");
-  const preview = document.getElementById("branding-color-preview");
+  toneRadios.forEach((radio) => {
+    radio.checked = radio.value === branding.tone;
 
-  const typeOptions = document.querySelectorAll(".branding-type-option");
-  const typePreview = document.getElementById("branding-typography-preview");
-  const typeApplyBtn = document.getElementById("branding-type-apply");
-  const typeState = document.getElementById("branding-type-state");
-
-  /* =====================
-     SE JÁ ESTÁ CONCLUÍDO
-  ===================== */
-  if (branding.completed) return;
-
-  /* =====================
-     TOM (IDENTIDADE BASE)
-  ===================== */
-  if (state && applyToneBtn && toneRadios.length) {
-    applyToneBtn.disabled = true;
-
-    if (!branding.tone) {
-      state.textContent = "ℹ️ Começa por definir o tom base do projeto.";
-    } else {
-      state.textContent = `✅ Tom definido: "${branding.tone}"`;
-      const radio = document.querySelector(
-        `.branding-tone[value="${branding.tone}"]`,
-      );
-      if (radio) radio.checked = true;
-    }
-
-    toneRadios.forEach((radio) => {
-      radio.onchange = () => {
-        branding.tone = radio.value;
-        store.save();
-
-        store.checkAutoCompleteBranding(); // ✅ ADICIONAR
-
-        state.textContent = `✅ Tom definido: "${radio.value}"`;
-        updateVisibility("branding", brandingRules);
-      };
-    });
-  }
-
-  /* =====================
-     CORES (PREVIEW)
-  ===================== */
-  if (primaryInput && secondaryInput && preview && applyColorsBtn) {
-    const updatePreview = () => {
-      const primary = primaryInput.value;
-      const secondary = secondaryInput.value;
-
-      preview.querySelector(".preview-header").style.background = secondary;
-      preview.querySelector(".preview-button").style.background = primary;
-      preview.querySelector(".preview-link").style.color = primary;
-      preview.querySelector(".preview-card").style.background = secondary;
-
-      applyColorsBtn.disabled = !primary || !secondary;
-    };
-
-    primaryInput.oninput = updatePreview;
-    secondaryInput.oninput = updatePreview;
-
-    applyColorsBtn.onclick = () => {
-      branding.colors.primary = primaryInput.value;
-      branding.colors.secondary = secondaryInput.value;
-      store.save();
-
-      store.checkAutoCompleteBranding(); // ✅ ADICIONAR
-
-      if (state) state.textContent = "✅ Cores aplicadas ao projeto";
-      updateVisibility("branding", brandingRules);
-    };
-  }
-
-  // ✅ aplicar cores guardadas ao preview ao entrar
-  if (branding.colors.primary && branding.colors.secondary) {
-    preview.querySelector(".preview-header").style.background =
-      branding.colors.secondary;
-    preview.querySelector(".preview-button").style.background =
-      branding.colors.primary;
-    preview.querySelector(".preview-link").style.color =
-      branding.colors.primary;
-    preview.querySelector(".preview-card").style.background =
-      branding.colors.secondary;
-  }
-
-  /* =====================
-     TIPOGRAFIA (PREVIEW)
-  ===================== */
-  if (typeOptions.length && typePreview && typeApplyBtn && typeState) {
-    let selectedType = null;
-    typeApplyBtn.disabled = true;
-
-    typeOptions.forEach((btn) => {
-      btn.onclick = () => {
-        typeOptions.forEach((b) => b.classList.remove("active"));
-        btn.classList.add("active");
-
-        selectedType = btn.dataset.type;
-        typePreview.className = `branding-typography-preview typography-${selectedType}`;
-
-        typeApplyBtn.disabled = false;
-        typeState.textContent =
-          "🔍 Pré‑visualização do estilo tipográfico selecionado";
-      };
-    });
-
-    typeApplyBtn.onclick = () => {
-      if (!selectedType) return;
-
-      branding.typography = selectedType;
+    radio.onchange = () => {
+      branding.tone = radio.value;
       store.save();
       store.checkAutoCompleteBranding();
 
-      typeState.textContent = `✅ Tipografia "${selectedType}" aplicada ao projeto`;
+      if (state) {
+        state.textContent = `✅ Tom definido: "${radio.value}"`;
+      }
 
-      typeApplyBtn.disabled = true;
-
-      updateVisibility("branding", brandingRules);
+      applyBrandingToPreview();
     };
+  });
+
+  /* =====================
+     CORES (IMEDIATO)
+  ===================== */
+  const primaryInput = document.getElementById("branding-primary-color");
+  const secondaryInput = document.getElementById("branding-secondary-color");
+
+  if (primaryInput && secondaryInput) {
+    if (branding.colors.primary) {
+      primaryInput.value = branding.colors.primary;
+    }
+    if (branding.colors.secondary) {
+      secondaryInput.value = branding.colors.secondary;
+    }
+
+    const applyColors = () => {
+      branding.colors.primary = primaryInput.value;
+      branding.colors.secondary = secondaryInput.value;
+
+      store.save();
+      store.checkAutoCompleteBranding();
+      applyBrandingToPreview();
+    };
+
+    primaryInput.oninput = applyColors;
+    secondaryInput.oninput = applyColors;
   }
 
   /* =====================
-     MODO VISUAL + WCAG
+     TIPOGRAFIA
+  ===================== */
+  const typeOptions = document.querySelectorAll(".branding-type-option");
+
+  typeOptions.forEach((btn) => {
+    btn.classList.toggle("active", btn.dataset.type === branding.typography);
+
+    btn.onclick = () => {
+      branding.typography = btn.dataset.type;
+      store.save();
+      store.checkAutoCompleteBranding();
+
+      applyBrandingToPreview();
+    };
+  });
+
+  /* =====================
+     MODO VISUAL
   ===================== */
   const visualRadios = document.querySelectorAll(
     'input[name="branding-visual-mode"]',
   );
-  const wcagRadios = document.querySelectorAll('input[name="branding-wcag"]');
 
-  // hidratar estado guardado
-  visualRadios.forEach((r) => {
-    r.checked = r.value === branding.visualMode;
-  });
-
-  wcagRadios.forEach((r) => {
-    r.checked = r.value === branding.wcagTarget;
-  });
-
-  // guardar decisões
   visualRadios.forEach((radio) => {
+    radio.checked = radio.value === branding.visualMode;
+
     radio.onchange = () => {
       branding.visualMode = radio.value;
       store.save();
-
-      store.checkAutoCompleteBranding(); // ✅ ADICIONAR
+      store.checkAutoCompleteBranding();
+      applyBrandingToPreview();
     };
   });
 
+  /* =====================
+     WCAG (INTENÇÃO)
+  ===================== */
+  const wcagRadios = document.querySelectorAll('input[name="branding-wcag"]');
+
   wcagRadios.forEach((radio) => {
+    radio.checked = radio.value === branding.wcagTarget;
+
     radio.onchange = () => {
       branding.wcagTarget = radio.value;
       store.save();
-
-      store.checkAutoCompleteBranding(); // ✅ ADICIONAR
+      store.checkAutoCompleteBranding();
     };
   });
 }
 
-function toggleBrandingPreviewFullscreen(open) {
-  const preview = document.getElementById("branding-preview");
+function applyBrandingToPreview() {
+  const branding = store.currentProject.branding;
+  const preview = document.getElementById("branding-preview-canvas");
   if (!preview) return;
 
-  preview.classList.toggle("is-fullscreen", open);
-  document.body.classList.toggle("preview-open", open);
-}
+  /* CORES */
+  preview.style.setProperty("--primary", branding.colors.primary || "#222");
+  preview.style.setProperty("--secondary", branding.colors.secondary || "#999");
 
-function bindBrandingPreviewControls() {
-  const openBtn = document.getElementById("preview-expand");
-  const closeBtn = document.getElementById("preview-collapse");
-
-  if (openBtn) {
-    openBtn.onclick = () => toggleBrandingPreviewFullscreen(true);
+  /* TIPOGRAFIA */
+  preview.classList.remove("type-neutral", "type-modern", "type-editorial");
+  if (branding.typography) {
+    preview.classList.add(`type-${branding.typography}`);
   }
 
-  if (closeBtn) {
-    closeBtn.onclick = () => toggleBrandingPreviewFullscreen(false);
-  }
-
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") {
-      toggleBrandingPreviewFullscreen(false);
-    }
-  });
+  /* MODO VISUAL */
+  preview.classList.remove("mode-light", "mode-dark");
+  preview.classList.add(
+    branding.visualMode === "dark" ? "mode-dark" : "mode-light",
+  );
 }
 
 function renderBrandingActions() {
   renderPhaseActions({
     phaseId: "branding",
     isCompleted: store.currentProject.branding.completed,
+
     onSave: () => {
-      store.checkAutoCompleteBranding(); // ✅ FECHO AQUI
+      store.checkAutoCompleteBranding();
       store.save();
+
+      if (!store.currentProject.branding.completed) {
+        alert("⚠️ Completa todas as tarefas de Branding antes de avançar.");
+      }
     },
+
     onContinueRoute: "#/accessibility",
   });
 }
