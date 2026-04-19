@@ -114,15 +114,39 @@ const store = {
         completed: false,
       },
 
-      branding: {
-        tone: "",
-        colors: {
+      branding: { wcagTarget: "", completed: false },
+
+      accessibility: {
+        contrast: {
+          text: "",
           primary: "",
           secondary: "",
         },
-        typography: "",
+        typography: {
+          readable: null,
+        },
+        focus: {
+          visible: false,
+          linksDistinct: false,
+          hoverOnly: false,
+        },
+        keyboard: {
+          order: false,
+          traps: false,
+        },
+        nonText: {
+          strategyDefined: false,
+        },
         completed: false,
       },
+
+      tone: "",
+      colors: {
+        primary: "",
+        secondary: "",
+      },
+      typography: "",
+      visualMode: "",
 
       baseStructure: {
         architecture: {
@@ -212,6 +236,23 @@ const store = {
     }
   },
 
+  checkAutoCompleteAccessibility() {
+    const a = this.currentProject.accessibility;
+
+    if (
+      a.contrast.text &&
+      a.contrast.primary &&
+      a.contrast.secondary &&
+      a.typography.readable !== null &&
+      a.keyboard.order &&
+      a.keyboard.traps &&
+      a.nonText.strategyDefined
+    ) {
+      a.completed = true;
+      this.completePhase("accessibility");
+    }
+  },
+
   /* =====================
      BASE STRUCTURE
   ===================== */
@@ -249,7 +290,66 @@ const store = {
   },
 
   get currentProject() {
-    return this.state.projects[this.state.auth.activeProjectId] || null;
+    const p = this.state.projects[this.state.auth.activeProjectId] || null;
+    if (!p) return null;
+
+    /* =====================
+       MIGRAÇÃO DEFENSIVA
+    ===================== */
+
+    // BRANDING
+    if (!p.branding) {
+      p.branding = {
+        tone: "",
+        colors: { primary: "", secondary: "" },
+        typography: "",
+        visualMode: "",
+        wcagTarget: "",
+        completed: false,
+      };
+    } else {
+      if (!p.branding.colors) {
+        p.branding.colors = { primary: "", secondary: "" };
+      }
+      if (!("visualMode" in p.branding)) {
+        p.branding.visualMode = "";
+      }
+      if (!("wcagTarget" in p.branding)) {
+        p.branding.wcagTarget = "";
+      }
+    }
+
+    // ACESSIBILIDADE
+    if (!p.accessibility) {
+      p.accessibility = {
+        contrast: {
+          text: "",
+          primary: "",
+          secondary: "",
+        },
+        typography: {
+          readable: null,
+        },
+        focus: {
+          visible: false,
+          linksDistinct: false,
+          hoverOnly: false,
+        },
+        keyboard: {
+          order: false,
+          traps: false,
+        },
+        nonText: {
+          strategyDefined: false,
+        },
+        completed: false,
+      };
+    }
+
+    // opcional mas recomendado
+    this.save();
+
+    return p;
   },
 
   get phases() {
@@ -362,13 +462,45 @@ const store = {
       },
     ];
   },
+
+  get accessibilityTasks() {
+    const a = this.currentProject?.accessibility;
+    if (!a) return [];
+
+    return [
+      {
+        label: "Contraste de cores",
+        done:
+          !!a.contrast.text && !!a.contrast.primary && !!a.contrast.secondary,
+      },
+      {
+        label: "Legibilidade tipográfica",
+        done: a.typography.readable !== null,
+      },
+      {
+        label: "Estados interativos",
+        done: a.focus.visible && a.focus.linksDistinct,
+      },
+      {
+        label: "Navegação por teclado",
+        done: a.keyboard.order && a.keyboard.traps,
+      },
+      {
+        label: "Conteúdo não textual",
+        done: a.nonText.strategyDefined,
+      },
+    ];
+  },
+
   //TODAS AS FASES - RENDERIZAÇÃO DA LISTA DE TAREFAS
+
   get phaseTasks() {
     return {
       setup: this.setupTasks,
       structure: this.structureTasks,
       layout: this.layoutTasks,
       branding: this.brandingTasks,
+      accessibility: this.accessibilityTasks,
     };
   },
 

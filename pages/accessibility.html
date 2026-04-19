@@ -1,0 +1,187 @@
+<section class="page page-accessibility" data-page="accessibility">
+    <div class="accessibility-layout">
+        <!-- =====================
+         COLUNA ESQUERDA: TAREFAS
+    ====================== -->
+        <div class="accessibility-controls">
+            <header class="page-header">
+                <h1>Acessibilidade</h1>
+                <p>
+                    Aqui verificas se as decisões visuais do projeto são
+                    utilizáveis, legíveis e acessíveis para mais pessoas.
+                </p>
+            </header>
+
+            <!-- ESTADO GLOBAL -->
+            <p id="accessibility-state" class="accessibility-state">
+                ℹ️ Avalia cada ponto com base no preview ao lado.
+            </p>
+
+            <!-- =====================
+           1. CONTRASTE DE CORES
+      ====================== -->
+            <section class="accessibility-block" data-block="contrast">
+                <h2>Contraste de cores</h2>
+                <p>
+                    Verifica se o contraste entre texto, botões e fundos é
+                    suficiente para leitura confortável.
+                </p>
+
+                <div class="accessibility-check">
+                    <span>Texto principal</span>
+                    <label
+                        ><input
+                            type="radio"
+                            name="contrast-text"
+                            value="pass"
+                        />
+                        ✅ Cumpre</label
+                    >
+                    <label
+                        ><input
+                            type="radio"
+                            name="contrast-text"
+                            value="warn"
+                        />
+                        ⚠️ Ajustar</label
+                    >
+                </div>
+
+                <div class="accessibility-check">
+                    <span>Botão primário</span>
+                    <label
+                        ><input
+                            type="radio"
+                            name="contrast-primary"
+                            value="pass"
+                        />
+                        ✅ Cumpre</label
+                    >
+                    <label
+                        ><input
+                            type="radio"
+                            name="contrast-primary"
+                            value="warn"
+                        />
+                        ⚠️ Ajustar</label
+                    >
+                </div>
+
+                <div class="accessibility-check">
+                    <span>Botão secundário</span>
+                    <label
+                        ><input
+                            type="radio"
+                            name="contrast-secondary"
+                            value="pass"
+                        />
+                        ✅ Cumpre</label
+                    >
+                    <label
+                        ><input
+                            type="radio"
+                            name="contrast-secondary"
+                            value="warn"
+                        />
+                        ⚠️ Ajustar</label
+                    >
+                </div>
+            </section>
+
+            <!-- =====================
+           2. LEGIBILIDADE TIPOGRÁFICA
+      ====================== -->
+            <section class="accessibility-block" data-block="typography">
+                <h2>Legibilidade do texto</h2>
+                <p>
+                    Avalia se o tamanho, espaçamento e comprimento das linhas
+                    são confortáveis para leitura contínua.
+                </p>
+
+                <label>
+                    <input type="radio" name="text-legibility" value="good" />
+                    ✅ Texto confortável para leitura
+                </label>
+
+                <label>
+                    <input type="radio" name="text-legibility" value="poor" />
+                    ⚠️ Texto pequeno ou difícil de ler
+                </label>
+            </section>
+
+            <!-- =====================
+           3. ESTADOS INTERATIVOS
+      ====================== -->
+            <section class="accessibility-block" data-block="interaction">
+                <h2>Estados interativos</h2>
+                <p>
+                    Confirma se os elementos interativos são reconhecíveis e
+                    acessíveis.
+                </p>
+
+                <label>
+                    <input type="checkbox" name="focus-visible" />
+                    ✅ Foco visível em botões e links
+                </label>
+
+                <label>
+                    <input type="checkbox" name="link-distinct" />
+                    ✅ Links distinguíveis do texto normal
+                </label>
+
+                <label>
+                    <input type="checkbox" name="hover-only" />
+                    ⚠️ Informação depende apenas de hover
+                </label>
+            </section>
+
+            <!-- =====================
+           4. NAVEGAÇÃO POR TECLADO
+      ====================== -->
+            <section class="accessibility-block" data-block="keyboard">
+                <h2>Navegação por teclado</h2>
+                <p>Avalia se o projeto pode ser navegado sem rato.</p>
+
+                <label>
+                    <input type="checkbox" name="keyboard-order" />
+                    ✅ Ordem de foco lógica
+                </label>
+
+                <label>
+                    <input type="checkbox" name="keyboard-traps" />
+                    ✅ Sem armadilhas de foco
+                </label>
+            </section>
+
+            <!-- =====================
+           5. CONTEÚDO NÃO TEXTUAL
+      ====================== -->
+            <section class="accessibility-block" data-block="non-text">
+                <h2>Conteúdo não textual</h2>
+                <p>
+                    Define a abordagem para imagens, ícones e outros elementos
+                    visuais.
+                </p>
+
+                <label>
+                    <input type="checkbox" name="alt-strategy" />
+                    ✅ Estratégia de texto alternativo definida
+                </label>
+            </section>
+
+            <!-- =====================
+           AÇÕES DA FASE
+      ====================== -->
+            <div class="phase-actions"></div>
+        </div>
+
+        <!-- =====================
+         COLUNA DIREITA: PREVIEW
+    ====================== -->
+        <aside class="branding-preview" id="branding-preview">
+            <div class="preview-frame" id="branding-preview-canvas">
+                <header class="preview-header">LOGO</header>
+            </div>
+        </aside>
+    </div>
+</section>
