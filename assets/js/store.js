@@ -114,7 +114,17 @@ const store = {
         completed: false,
       },
 
-      branding: { wcagTarget: "", completed: false },
+      branding: {
+        tone: "",
+        colors: {
+          primary: "",
+          secondary: "",
+        },
+        typography: "",
+        visualMode: "",
+        wcagTarget: "",
+        completed: false,
+      },
 
       accessibility: {
         contrast: {
@@ -139,14 +149,6 @@ const store = {
         },
         completed: false,
       },
-
-      tone: "",
-      colors: {
-        primary: "",
-        secondary: "",
-      },
-      typography: "",
-      visualMode: "",
 
       baseStructure: {
         architecture: {
