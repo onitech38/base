@@ -45,7 +45,10 @@ const store = {
       activeProjectId: null,
     };
 
-    this.save();
+    if (!p.__migrated) {
+      p.__migrated = true;
+      this.save();
+    }
   },
 
   login({ firstName, password }) {
@@ -61,7 +64,11 @@ const store = {
       activeProjectId: null,
     };
 
-    this.save();
+    if (!p.__migrated) {
+      p.__migrated = true;
+      this.save();
+    }
+
     return true;
   },
 
@@ -71,7 +78,11 @@ const store = {
       activeUserId: null,
       activeProjectId: null,
     };
-    this.save();
+
+    if (!p.__migrated) {
+      p.__migrated = true;
+      this.save();
+    }
   },
 
   /* =====================
@@ -177,7 +188,11 @@ const store = {
 
     user.projectIds.push(projectId);
     this.state.auth.activeProjectId = projectId;
-    this.save();
+
+    if (!p.__migrated) {
+      p.__migrated = true;
+      this.save();
+    }
   },
 
   completeSetup(data) {
@@ -187,14 +202,18 @@ const store = {
     Object.assign(p, data);
     p.setupCompleted = true;
     this.completePhase("setup"); // 🔑
-    this.save();
+
+    if (!p.__migrated) {
+      p.__migrated = true;
+      this.save();
+    }
   },
 
   completePhase(id) {
     const phases = this.currentProject?.process.phases;
     if (!phases) return;
 
-    const index = phases.findIndex((p) => p.id === id);
+    const index = phases.findIndex((phase) => phase.id === id);
     if (index === -1) return;
 
     phases[index].status = "completed";
@@ -264,7 +283,11 @@ const store = {
 
     Object.assign(bs[section], data);
     this.checkAutoCompleteStructure();
-    this.save();
+
+    if (!p.__migrated) {
+      p.__migrated = true;
+      this.save();
+    }
   },
 
   addPageToStructure(page) {
@@ -273,7 +296,11 @@ const store = {
 
     pages.push(page);
     this.checkAutoCompleteStructure();
-    this.save();
+
+    if (!p.__migrated) {
+      p.__migrated = true;
+      this.save();
+    }
   },
 
   markBaseStructureCompleted() {
@@ -349,7 +376,11 @@ const store = {
     }
 
     // opcional mas recomendado
-    this.save();
+
+    if (!p.__migrated) {
+      p.__migrated = true;
+      this.save();
+    }
 
     return p;
   },

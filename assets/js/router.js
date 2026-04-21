@@ -16,21 +16,9 @@ async function loadPage() {
 
   /* ---------- GUEST ---------- */
   if (auth.status === "guest") {
-    if (route === "login") {
-      renderLogin();
-      return;
+    if (["login", "signup", "login-plus"].includes(route)) {
+      return render(route);
     }
-
-    if (route === "login-plus") {
-      renderPage("login-plus");
-      return;
-    }
-
-    if (route === "signup") {
-      renderSignup();
-      return;
-    }
-
     return render("welcome");
   }
 
@@ -71,6 +59,15 @@ async function render(route) {
       location.hash = "#/setup";
       return;
     }
+  }
+
+  // LOGIN & SIGNUP
+  if (route === "login") {
+    window.renderLogin && window.renderLogin();
+  }
+
+  if (route === "signup") {
+    window.renderSignup && window.renderSignup();
   }
 
   // LOGIN+
@@ -126,6 +123,10 @@ async function render(route) {
 
   if (route === "branding") {
     window.renderBranding && window.renderBranding();
+  }
+
+  if (route === "accessibility") {
+    window.renderAccessibility && window.renderAccessibility();
   }
 }
 

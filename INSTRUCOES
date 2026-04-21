@@ -122,15 +122,18 @@ SPA sem framework, mas com separação correta de responsabilidades.
       auth.js         ← Renderizar Login / Signup (HTML + eventos)
       supabase.js
     /pages
-      a11y.html
+      acessibility.html
       branding.html
       export.html
       home.html
+      layout.html
+      login.html
+      login-plus.html
       offline.html
       process-builder.html
-      project-select.html
       seo.html
       setup.html
+      signup.html
       structure-base.html
       welcome.html  ← página informativa
   index.html
