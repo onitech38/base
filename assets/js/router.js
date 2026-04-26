@@ -24,7 +24,7 @@ async function loadPage() {
 
   // exemplo de guard correto
   if (route === "home" && !store.currentProject) {
-    location.hash = "#/login+";
+    location.hash = "#/login-plus";
     return;
   }
 
