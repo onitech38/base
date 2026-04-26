@@ -3,73 +3,59 @@ import store from "./store.js";
 const app = document.getElementById("app");
 
 /* =====================
-   RENDER LOGIN
+   LOGIN
 ===================== */
 export function renderLogin() {
-  app.innerHTML = `
-    <h2>Log in</h2>
+  const form = document.querySelector(".page-login .auth-form");
+  if (!form) return;
 
-    <form id="login-form">
-      <label>
-        Primeiro nome
-        <input id="login-firstname" required />
-      </label>
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
 
-      <label>
-        Password
-        <input id="login-password" type="password" required />
-      </label>
+    const name = form.querySelector("input[type='text']").value.trim();
+    const password = form.querySelector("input[type='password']").value;
 
-      <button type="submit">Entrar</button>
-    </form>
+    const success = store.login({ firstName: name, password });
 
-    <p>
-      Ainda não tens conta?
-      <button id="go-signup">Criar conta</button>
-    </p>
-  `;
+    if (!success) {
+      alert("Credenciais inválidas.");
+      return;
+    }
 
-  bindLoginEvents();
+    location.hash = "#/login-plus";
+  });
 }
 
 /* =====================
-   RENDER SIGNUP
+   SIGNUP
 ===================== */
 export function renderSignup() {
-  app.innerHTML = `
-    <h2>Sign up</h2>
+  const form = document.querySelector(".page-signup .auth-form");
+  if (!form) return;
 
-    <form id="signup-form">
-      <label>
-        Primeiro nome
-        <input id="signup-firstname" required />
-      </label>
+  const inputs = form.querySelectorAll("input");
 
-      <label>
-        Último nome
-        <input id="signup-lastname" required />
-      </label>
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
 
-      <label>
-        Password
-        <input id="signup-password" type="password" required />
-      </label>
+    const firstName = inputs[0].value.trim();
+    const lastName = inputs[1].value.trim();
+    const password = inputs[2].value;
+    const confirm = inputs[3].value;
 
-      <label>
-        Confirmar password
-        <input id="signup-password-confirm" type="password" required />
-      </label>
+    if (password.length < 6) {
+      alert("Password deve ter pelo menos 6 caracteres.");
+      return;
+    }
 
-      <button type="submit">Criar conta</button>
-    </form>
+    if (password !== confirm) {
+      alert("As passwords não coincidem.");
+      return;
+    }
 
-    <p>
-      Já tens conta?
-      <button id="go-login">Fazer login</button>
-    </p>
-  `;
-
-  bindSignupEvents();
+    store.signUp({ firstName, lastName, password });
+    location.hash = "#/setup";
+  });
 }
 
 /* =====================

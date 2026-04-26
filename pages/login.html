@@ -1,12 +1,24 @@
 <section class="page page-login">
-    <header class="page-header">
-        <h1>Login</h1>
-        <p>Entra com a tua conta para continuar.</p>
-    </header>
+    <h1>Log in</h1>
 
-    <form id="login-form">
-        <input id="login-firstname" placeholder="Nome" />
-        <input id="login-password" type="password" placeholder="Password" />
+    <p>Entra na tua conta para continuar o planeamento do teu projeto.</p>
+
+    <form class="auth-form">
+        <label>
+            Nome
+            <input type="text" required />
+        </label>
+
+        <label>
+            Password
+            <input type="password" required />
+        </label>
+
         <button type="submit">Entrar</button>
     </form>
+
+    <p class="auth-note">
+        Ainda não tens conta?
+        <a href="#/signup">Criar conta</a>
+    </p>
 </section>

@@ -1,0 +1,42 @@
+@layer layout-page {
+    /* ===============================
+       LAYOUT – FIGMA UI
+    ================================ */
+    .layout-block.is-hidden {
+        display: none;
+    }
+
+    .layout-state {
+        margin: 0.5rem 0;
+        font-size: 0.9rem;
+        color: #666;
+    }
+
+    .layout-options {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.5rem;
+        margin: 0.75rem 0;
+    }
+
+    .layout-option {
+        border: 1px solid #ccc;
+        background: #fafafa;
+        padding: 0.5rem;
+        cursor: pointer;
+        border-radius: 6px;
+        text-align: left;
+        opacity: 0.6;
+    }
+
+    .layout-option.active {
+        border-color: #000;
+        background: #eee;
+        opacity: 1;
+    }
+
+    #layout-apply[disabled] {
+        opacity: 0.4;
+        cursor: not-allowed;
+    }
+}

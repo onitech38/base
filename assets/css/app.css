@@ -1,3 +1,17 @@
+.is-hidden {
+    display: none !important;
+}
+
+body.preview-open {
+    overflow: hidden;
+}
+
+.branding-preview.is-fullscreen {
+    position: fixed;
+    inset: 0;
+    z-index: 999;
+}
+
 /* ================================
    PROCESS BUILDER — UI/UX
    ================================ */
@@ -143,25 +157,25 @@
    EXPORT PREVIEW MODAL
 ===================================================== */
 #export-preview {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.5);
-  z-index: 1000;
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
 }
 
 #export-preview > div {
-  background: #fff;
-  width: 90%;
-  height: 90%;
-  margin: 2rem auto;
-  padding: 1rem;
-  display: flex;
-  flex-direction: column;
-  border-radius: 12px;
+    background: #fff;
+    width: 90%;
+    height: 90%;
+    margin: 2rem auto;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    border-radius: 12px;
 }
 
 #preview-frame {
-  flex: 1;
-  border: 1px solid #ddd;
+    flex: 1;
+    border: 1px solid #ddd;
 }

@@ -1,0 +1,140 @@
+@layer structure-base {
+    /* ===============================
+       ESTRUTURA BASE – FIGMA UI
+    ================================ */
+
+    .structure-page-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.25rem 0;
+    }
+
+    .structure-page-item .remove-page {
+        background: none;
+        border: none;
+        color: #999;
+        cursor: pointer;
+    }
+
+    .structure-page-item .remove-page:hover {
+        color: #c00;
+    }
+
+    .page-structure-base .structure-content {
+        display: flex;
+        flex-direction: column;
+        gap: 3rem;
+    }
+
+    .structure-block.is-hidden {
+        display: none;
+    }
+
+    .structure-block {
+        border-bottom: 1px solid #e5e5e5;
+        padding-bottom: 2rem;
+    }
+
+    .structure-block:last-child {
+        border-bottom: none;
+    }
+
+    .structure-block h2 {
+        font-size: 0.9rem;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        margin-bottom: 1.2rem;
+    }
+
+    .structure-block label {
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
+        font-size: 0.75rem;
+        margin-bottom: 1rem;
+    }
+
+    .structure-block input,
+    .structure-block textarea {
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        padding: 0.45rem 0.6rem;
+        font-size: 0.8rem;
+    }
+
+    .structure-block textarea {
+        resize: vertical;
+        min-height: 70px;
+    }
+
+    .structure-block.is-locked input,
+    .structure-block.is-locked textarea,
+    .structure-block.is-locked button {
+        background-color: #eee;
+        color: #999;
+        border-color: #ccc;
+    }
+
+    .structure-block.is-locked {
+        opacity: 0.35;
+        pointer-events: none;
+        filter: grayscale(1);
+        background-color: #f5f5f5;
+        border-color: #ddd;
+    }
+
+    .structure-block.is-locked::before {
+        content: "🔒 Completa o passo anterior para continuar";
+        display: block;
+        margin-bottom: 0.6rem;
+        font-size: 0.8rem;
+        color: #666;
+    }
+
+    .structure-block.is-locked::after {
+        content: "🔒 Completa o passo anterior para continuar";
+        display: block;
+        margin-top: 0.5rem;
+        font-size: 0.8rem;
+        opacity: 0.7;
+    }
+
+    .structure-block.is-locked *,
+    .structure-block.is-locked input,
+    .structure-block.is-locked textarea,
+    .structure-block.is-locked button {
+        pointer-events: none;
+    }
+
+    .structure-block {
+        transition: opacity 0.3s ease;
+    }
+
+    /* Páginas */
+    .structure-pages {
+        display: flex;
+        gap: 0.6rem;
+        margin-bottom: 0.8rem;
+    }
+
+    #pages-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    #pages-list li {
+        font-size: 0.75rem;
+        padding: 0.35rem 0;
+        border-bottom: 1px dashed #ddd;
+    }
+
+    /* Ações */
+    .structure-actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+}

@@ -1,0 +1,302 @@
+@layer home {
+    .page-home {
+        .home-layout {
+            display: flex;
+            gap: 3rem;
+        }
+
+        .home-meta {
+            max-width: 240px;
+            opacity: 0.85;
+        }
+
+        .phase-group {
+            margin-bottom: 2rem;
+            cursor: pointer;
+
+            &.locked {
+                opacity: 0.35;
+                cursor: not-allowed;
+            }
+        }
+
+        .phase-header {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .phase-tasks {
+            list-style: none;
+
+            li {
+                font-size: 0.75rem;
+
+                &.done {
+                    text-decoration: line-through;
+                }
+            }
+        }
+    }
+
+    /* =====================================================
+       HOME – VISÃO GERAL DO PROJETO
+    ===================================================== */
+    /* ===============================
+       HOME – TYPOGRAPHY (FIGMA)
+    ================================ */
+
+    /* Título principal */
+    .page-home .page-header h1 {
+        font-size: 2.2rem;
+        font-weight: 400;
+        letter-spacing: 0.12em;
+        text-align: center;
+        margin-bottom: 0.75rem;
+    }
+
+    /* Texto introdutório */
+    .page-home .page-header p {
+        font-size: 0.9rem;
+        text-align: center;
+        opacity: 0.8;
+        max-width: 520px;
+        margin: 0 auto;
+    }
+
+    /* COLUNA ESQUERDA – META */
+    .home-meta {
+        width: 240px;
+        font-size: 0.9rem;
+        line-height: 1.7;
+        color: #c9a86a; /* dourado do Figma */
+    }
+
+    .home-meta p {
+        margin: 0 0 6px;
+    }
+
+    /* Percentagem (discreta, não protagonista) */
+    .home-progress span {
+        display: block;
+        margin-top: 0.75rem;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+        font-size: 0.85rem;
+        color: #c9a86a;
+    }
+
+    /* Cards das fases */
+    .phase-card .phase-title {
+        font-size: 0.8rem;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+    }
+
+    /* Subtarefas */
+    .phase-subtasks {
+        list-style: none;
+        padding: 0;
+        margin-top: 12px;
+        font-size: 0.75rem;
+        line-height: 1.5;
+    }
+
+    .phase-subtasks li {
+        margin-bottom: 4px;
+    }
+
+    #home-dashboard {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .home-phase {
+        border: 1px solid #e5e5e5;
+        border-radius: 12px;
+        padding: 1.25rem;
+        background: #fff;
+    }
+
+    .home-phase h3 {
+        margin: 0 0 0.75rem;
+        font-size: 0.9rem;
+    }
+
+    .home-phase ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .home-phase li {
+        font-size: 0.85rem;
+        margin-bottom: 0.25rem;
+    }
+
+    .home-layout {
+        display: flex;
+        gap: 3rem;
+        align-items: flex-start;
+    }
+
+    /* BLOCO CONTEXTUAL */
+    .home-meta {
+        max-width: 240px;
+        opacity: 0.85;
+    }
+
+    .home-meta .meta-label {
+        font-size: 0.7rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        margin-top: 1rem;
+        color: #999;
+    }
+
+    .home-meta .meta-value {
+        font-size: 0.9rem;
+        margin-top: 0.25rem;
+    }
+
+    /* PROGRESSO */
+    .home-progress {
+        margin-top: 2rem;
+    }
+
+    .home-progress span {
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+
+    .phase-card {
+        padding: 20px;
+        border-radius: 12px;
+        border: 1px solid #e5e5e5;
+        background: #fff;
+        transition: all 0.2s ease;
+        cursor: pointer;
+    }
+
+    .phase-card .phase-title {
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    /* ✅ COMPLETED */
+    .phase-card.completed {
+        opacity: 0.45;
+    }
+
+    .phase-card.completed .phase-title {
+        text-decoration: line-through;
+    }
+
+    /* 🔓 ACTIVE */
+    .phase-card.active {
+        border-color: #111;
+        background: #fafafa;
+    }
+
+    .phase-card.active:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+    }
+
+    /* 🔒 LOCKED */
+    .phase-card.locked {
+        opacity: 0.35;
+        cursor: not-allowed;
+        background: #f7f7f7;
+    }
+
+    .phase-card.locked::after {
+        content: "🔒";
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        font-size: 0.8rem;
+    }
+
+    .phase-card.locked:hover::after {
+        content: "Terminar tarefas e fase anterior";
+        top: auto;
+        bottom: -28px;
+        right: auto;
+        left: 0;
+        background: #111;
+        color: #fff;
+        padding: 4px 8px;
+        font-size: 0.7rem;
+        border-radius: 6px;
+        white-space: nowrap;
+    }
+
+    .phase-subtasks {
+        list-style: none;
+        padding: 0;
+        margin-top: 12px;
+        font-size: 0.75rem;
+    }
+
+    .phase-subtasks li {
+        margin-bottom: 4px;
+    }
+    /* ===============================
+       HOME – FIGMA TASK UI
+    ================================ */
+
+    .phase-group {
+        margin-bottom: 2rem;
+        cursor: pointer;
+    }
+
+    .phase-group.locked {
+        opacity: 0.35;
+        cursor: not-allowed;
+    }
+
+    .phase-header {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        margin-bottom: 0.6rem;
+    }
+
+    .phase-header h3 {
+        font-size: 0.85rem;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+    }
+
+    .phase-check {
+        width: 14px;
+        height: 14px;
+        border: 1px solid #999;
+        border-radius: 3px;
+        display: inline-block;
+    }
+
+    .phase-check.checked {
+        background: #111;
+        border-color: #111;
+    }
+
+    .phase-tasks {
+        list-style: none;
+        padding-left: 1.4rem;
+        margin: 0;
+    }
+
+    .phase-tasks li {
+        font-size: 0.75rem;
+        line-height: 1.6;
+        color: #999;
+    }
+
+    .phase-tasks li.done {
+        color: #111;
+        text-decoration: line-through;
+    }
+}

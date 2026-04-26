@@ -1,0 +1,427 @@
+@layer branding {
+    .page-branding {
+        .branding-layout {
+            display: grid;
+            grid-template-columns: 1fr 420px;
+            gap: 2.5rem;
+        }
+
+        .branding-controls {
+            overflow-y: auto;
+        }
+
+        .branding-colors-inputs {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .branding-typography-options {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .branding-type-option {
+            padding: 0.4rem 0.75rem;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            background: #fafafa;
+            cursor: pointer;
+            opacity: 0.7;
+
+            &.active {
+                border-color: #000;
+                background: #eee;
+                opacity: 1;
+            }
+        }
+
+        .branding-preview {
+            #branding-preview-canvas {
+                --primary: #222;
+                --secondary: #999;
+
+                .preview-header {
+                    background: var(--secondary);
+                }
+
+                .preview-btn {
+                    &.primary {
+                        background: var(--primary);
+                        color: #fff;
+                    }
+
+                    &.secondary {
+                        border: 1px solid var(--primary);
+                        color: var(--primary);
+                    }
+                }
+
+                .preview-card {
+                    background: var(--secondary);
+                    color: #fff;
+                }
+            }
+        }
+    }
+    /* =====================================================
+    | BRANDING PAGE
+    ===================================================== */
+    .branding-colors-inputs {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .branding-color-preview {
+        border: 1px solid #ddd;
+        padding: 1rem;
+        border-radius: 6px;
+        margin-bottom: 0.75rem;
+    }
+
+    .preview-header {
+        padding: 0.5rem;
+        margin-bottom: 0.5rem;
+        font-weight: bold;
+    }
+
+    .preview-button {
+        padding: 0.5rem 1rem;
+        margin-bottom: 0.5rem;
+        border: none;
+        cursor: pointer;
+    }
+
+    .preview-link {
+        display: inline-block;
+        margin-bottom: 0.5rem;
+    }
+
+    .preview-card {
+        padding: 0.75rem;
+        background: #f5f5f5;
+        border-radius: 4px;
+    }
+
+    .branding-typography-options {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .branding-type-option {
+        padding: 0.4rem 0.75rem;
+        border: 1px solid #ccc;
+        background: #fafafa;
+        border-radius: 6px;
+        cursor: pointer;
+        opacity: 0.7;
+    }
+
+    .branding-type-option.active {
+        border-color: #000;
+        background: #eee;
+        opacity: 1;
+    }
+
+    .branding-typography-preview {
+        border: 1px solid #ddd;
+        padding: 1rem;
+        border-radius: 6px;
+        margin-bottom: 0.75rem;
+    }
+
+    .branding-typography-preview h1 {
+        margin: 0 0 0.25rem;
+    }
+
+    .branding-typography-preview h2 {
+        margin: 0 0 0.75rem;
+        font-size: 1rem;
+        opacity: 0.7;
+    }
+
+    .branding-typography-preview p {
+        margin: 0;
+        line-height: 1.6;
+    }
+
+    /* Variedades simples */
+    .typography-neutral {
+        font-family: system-ui, sans-serif;
+    }
+
+    .typography-modern {
+        font-family: "Inter", system-ui, sans-serif;
+    }
+
+    .typography-editorial {
+        font-family: "Georgia", serif;
+    }
+
+    .branding-layout {
+        display: grid;
+        grid-template-columns: 1fr 420px;
+        gap: 2.5rem;
+        align-items: start;
+    }
+
+    .branding-controls {
+        overflow-y: auto;
+    }
+
+    .branding-preview {
+        position: sticky;
+        top: 5rem;
+        height: calc(100vh - 6rem);
+        background: #fff;
+        border-left: 1px solid #eee;
+    }
+
+    .branding-preview.is-fullscreen {
+        position: fixed;
+        inset: 0;
+        z-index: 999;
+        background: #fff;
+        padding: 3rem;
+    }
+
+    body.preview-open {
+        overflow: hidden;
+    }
+
+    #branding-preview-canvas {
+        background: #fff;
+        border: 1px solid #eee;
+        padding: 1.5rem;
+    }
+
+    .branding-preview.expanded {
+        width: 600px;
+    }
+
+    .preview-frame {
+        --primary: #222;
+        --secondary: #666;
+        --bg: #fff;
+
+        background: var(--bg);
+        color: #111;
+        padding: 1.5rem;
+        border: 1px solid #eee;
+    }
+
+    .preview-header {
+        background: var(--secondary);
+        color: #fff;
+        padding: 0.75rem;
+    }
+
+    .preview-btn.primary {
+        background: var(--primary);
+        color: #fff;
+    }
+
+    .preview-btn.secondary {
+        background: transparent;
+        border: 1px solid var(--primary);
+        color: var(--primary);
+    }
+
+    .preview-card {
+        background: var(--secondary);
+        color: #fff;
+        padding: 1rem;
+        margin-top: 1rem;
+    }
+
+    .type-neutral {
+        font-family: system-ui, sans-serif;
+    }
+    .type-modern {
+        font-family: Inter, sans-serif;
+    }
+    .type-editorial {
+        font-family: Georgia, serif;
+    }
+
+    .preview-frame.dark {
+        --bg: #111;
+        color: #eee;
+    }
+    /* CORES */
+    #branding-preview-canvas {
+        --primary: #222;
+        --secondary: #666;
+        background: #fff;
+        color: #111;
+    }
+
+    /* TIPOGRAFIA */
+    .type-neutral {
+        font-family: system-ui, sans-serif;
+    }
+
+    .type-modern {
+        font-family: Inter, sans-serif;
+    }
+
+    .type-editorial {
+        font-family: Georgia, serif;
+    }
+
+    /* MODO VISUAL */
+    .mode-dark {
+        background: #111;
+        color: #eee;
+    }
+
+    .mode-light {
+        background: #fff;
+        color: #111;
+    }
+
+    /* USO DAS VARIÁVEIS */
+    .preview-header {
+        background: var(--secondary);
+    }
+
+    .preview-btn.primary {
+        background: var(--primary);
+        color: #fff;
+    }
+
+    .preview-btn.secondary {
+        border: 1px solid var(--primary);
+        color: var(--primary);
+    }
+
+    #branding-preview-canvas {
+        --primary: #222;
+        --secondary: #999;
+        background: #fff;
+        color: #111;
+    }
+
+    /* cores */
+    .preview-header {
+        background: var(--secondary);
+    }
+    .preview-btn.primary {
+        background: var(--primary);
+        color: #fff;
+    }
+    .preview-btn.secondary {
+        border: 1px solid var(--primary);
+        color: var(--primary);
+    }
+    .preview-card {
+        background: var(--secondary);
+    }
+
+    /* tipografia */
+    .type-neutral {
+        font-family: system-ui, sans-serif;
+    }
+    .type-modern {
+        font-family: Inter, sans-serif;
+    }
+    .type-editorial {
+        font-family: Georgia, serif;
+    }
+
+    /* modo */
+    .mode-dark {
+        background: #111;
+        color: #eee;
+    }
+    .mode-light {
+        background: #fff;
+        color: #111;
+    }
+
+    .tone-neutro .preview-frame {
+        letter-spacing: 0.01em;
+    }
+
+    .tone-profissional .preview-frame {
+        letter-spacing: 0.02em;
+    }
+
+    .tone-amigavel .preview-frame {
+        letter-spacing: 0;
+    }
+
+    .preview-btn.primary {
+        padding: 0.6rem 1rem;
+        border-radius: 6px;
+    }
+
+    .preview-btn.secondary {
+        padding: 0.6rem 1rem;
+        opacity: 0.8;
+    }
+    .branding-preview.is-fullscreen {
+        position: fixed;
+        inset: 0;
+        z-index: 999;
+        background: #f5f5f5;
+        padding: 2rem;
+        overflow: auto;
+    }
+
+    .branding-preview.is-fullscreen .preview-frame {
+        max-width: 960px;
+        margin: 0 auto;
+    }
+
+    .branding-preview.is-fullscreen {
+        position: fixed;
+        inset: 0;
+        z-index: 999;
+        background: #f4f4f4;
+        padding: 2rem;
+        overflow: auto;
+    }
+
+    .branding-preview.is-fullscreen .preview-frame {
+        max-width: 960px;
+        margin: 0 auto;
+    }
+
+    .branding-preview.is-fullscreen #preview-expand {
+        opacity: 0.85;
+    }
+
+    /* BASE */
+    .branding-preview {
+        transition:
+            transform 0.25s ease,
+            opacity 0.25s ease;
+    }
+
+    /* CONTEÚDO INTERNO */
+    .branding-preview .preview-frame {
+        transition:
+            transform 0.25s ease,
+            border-radius 0.25s ease,
+            box-shadow 0.25s ease;
+    }
+
+    .branding-preview:not(.is-fullscreen) .preview-frame {
+        transform: scale(1);
+        border-radius: 12px;
+        box-shadow: none;
+    }
+
+    .branding-preview.is-fullscreen .preview-frame {
+        transform: scale(1.02);
+        border-radius: 16px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    .branding-preview.is-fullscreen {
+        background: #f4f4f4;
+        transition: background 0.25s ease;
+    }
+}

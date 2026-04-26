@@ -2,8 +2,10 @@
     button,
     .btn {
         padding: 0.5rem 1rem;
+        min-width: 110px;
         letter-spacing: 0.08rem;
         font-weight: bold;
+        text-align: center;
         text-transform: uppercase;
         background-color: var(--clr-btn-bg-prim) !important;
         color: var(--clr-btn-txt-prim);
@@ -12,7 +14,7 @@
         cursor: pointer;
 
         &:disabled {
-            opacity:0.5;
+            opacity: 0.5;
             cursor: not-allowed;
         }
 

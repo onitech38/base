@@ -28,6 +28,7 @@ const store = {
   /* =====================
      AUTH
   ===================== */
+
   signUp({ firstName, lastName, password }) {
     const userId = crypto.randomUUID();
 
@@ -45,10 +46,7 @@ const store = {
       activeProjectId: null,
     };
 
-    if (!p.__migrated) {
-      p.__migrated = true;
-      this.save();
-    }
+    this.save();
   },
 
   login({ firstName, password }) {
@@ -64,11 +62,7 @@ const store = {
       activeProjectId: null,
     };
 
-    if (!p.__migrated) {
-      p.__migrated = true;
-      this.save();
-    }
-
+    this.save();
     return true;
   },
 
@@ -79,12 +73,8 @@ const store = {
       activeProjectId: null,
     };
 
-    if (!p.__migrated) {
-      p.__migrated = true;
-      this.save();
-    }
+    this.save();
   },
-
   /* =====================
      PROJECT
   ===================== */
@@ -283,24 +273,16 @@ const store = {
 
     Object.assign(bs[section], data);
     this.checkAutoCompleteStructure();
-
-    if (!p.__migrated) {
-      p.__migrated = true;
-      this.save();
-    }
+    this.save();
   },
 
   addPageToStructure(page) {
-    const pages = this.currentProject?.baseStructure.pages;
+    const pages = this.currentProject?.baseStructure?.pages;
     if (!pages) return;
 
     pages.push(page);
     this.checkAutoCompleteStructure();
-
-    if (!p.__migrated) {
-      p.__migrated = true;
-      this.save();
-    }
+    this.save();
   },
 
   markBaseStructureCompleted() {
@@ -526,7 +508,6 @@ const store = {
   },
 
   //TODAS AS FASES - RENDERIZAÇÃO DA LISTA DE TAREFAS
-
   get phaseTasks() {
     return {
       setup: this.setupTasks,

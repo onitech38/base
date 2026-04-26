@@ -1,0 +1,55 @@
+@layer auth {
+    .page-login,
+    .page-signup {
+        min-height: calc(100svh - var(--nav-height, 4rem));
+        display: grid;
+        place-items: center;
+        text-align: center;
+
+        h1 {
+            margin-bottom: 0.75rem;
+        }
+
+        p {
+            max-width: 420px;
+            margin-bottom: 2rem;
+        }
+
+        .auth-form {
+            display: grid;
+            gap: 1rem;
+            width: 100%;
+            max-width: 320px;
+            margin-inline: auto;
+
+            label {
+                display: grid;
+                gap: 0.35rem;
+                font-size: 0.75rem;
+                text-align: left;
+            }
+
+            input {
+                padding: 0.5rem 0.6rem;
+                border-radius: 6px;
+                border: 1px solid #ccc;
+                font-size: 0.85rem;
+            }
+
+            button {
+                margin-top: 1rem;
+            }
+        }
+
+        .auth-note {
+            margin-top: 1.5rem;
+            font-size: 0.75rem;
+            opacity: 0.7;
+            text-align: center;
+
+            a {
+                text-decoration: underline;
+            }
+        }
+    }
+}
