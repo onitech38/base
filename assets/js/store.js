@@ -28,7 +28,6 @@ const store = {
   /* =====================
      AUTH
   ===================== */
-
   signUp({ firstName, lastName, password }) {
     const userId = crypto.randomUUID();
 
@@ -56,10 +55,15 @@ const store = {
 
     if (!user) return false;
 
+    const lastProjectId =
+      Array.isArray(user.projectIds) && user.projectIds.length
+        ? user.projectIds.at(-1)
+        : null;
+
     this.state.auth = {
       status: "authenticated",
       activeUserId: user.id,
-      activeProjectId: null,
+      activeProjectId: lastProjectId,
     };
 
     this.save();
@@ -75,12 +79,19 @@ const store = {
 
     this.save();
   },
+
   /* =====================
      PROJECT
   ===================== */
   createProject() {
     const user = this.currentUser;
     if (!user) return;
+
+    // ❗ LIMITE DE PROJETOS
+    if (user.projectIds.length >= 3) {
+      alert("Atingiste o limite máximo de 3 projetos.");
+      return;
+    }
 
     const projectId = crypto.randomUUID();
 
@@ -93,16 +104,10 @@ const store = {
       goal: "",
       features: {},
       strategy: {},
-
       setupCompleted: false,
-
       layout: {
-        grid: {
-          type: "", // ex: single-column, 12-col, split
-          maxWidth: "", // ex: 1200px
-          notes: "",
-        },
-        pages: {}, // pageId -> layout definition
+        grid: { type: "", maxWidth: "", notes: "" },
+        pages: {},
         globalComponents: {
           header: false,
           footer: false,
@@ -114,55 +119,30 @@ const store = {
         },
         completed: false,
       },
-
       branding: {
         tone: "",
-        colors: {
-          primary: "",
-          secondary: "",
-        },
+        colors: { primary: "", secondary: "" },
         typography: "",
         visualMode: "",
         wcagTarget: "",
         completed: false,
       },
-
       accessibility: {
-        contrast: {
-          text: "",
-          primary: "",
-          secondary: "",
-        },
-        typography: {
-          readable: null,
-        },
+        contrast: { text: "", primary: "", secondary: "" },
+        typography: { readable: null },
         focus: {
           visible: false,
           linksDistinct: false,
           hoverOnly: false,
         },
-        keyboard: {
-          order: false,
-          traps: false,
-        },
-        nonText: {
-          strategyDefined: false,
-        },
+        keyboard: { order: false, traps: false },
+        nonText: { strategyDefined: false },
         completed: false,
       },
-
       baseStructure: {
-        architecture: {
-          type: "",
-          approach: "",
-          notes: "",
-        },
+        architecture: { type: "", approach: "", notes: "" },
         pages: [],
-        navigation: {
-          pattern: "",
-          hierarchy: "",
-          notes: "",
-        },
+        navigation: { pattern: "", hierarchy: "", notes: "" },
         foundation: {
           mindset: "",
           constraints: "",
@@ -170,7 +150,6 @@ const store = {
         },
         completed: false,
       },
-
       process: {
         phases: createPhases(),
       },
@@ -179,10 +158,7 @@ const store = {
     user.projectIds.push(projectId);
     this.state.auth.activeProjectId = projectId;
 
-    if (!p.__migrated) {
-      p.__migrated = true;
-      this.save();
-    }
+    this.save();
   },
 
   completeSetup(data) {
@@ -191,12 +167,9 @@ const store = {
 
     Object.assign(p, data);
     p.setupCompleted = true;
-    this.completePhase("setup"); // 🔑
 
-    if (!p.__migrated) {
-      p.__migrated = true;
-      this.save();
-    }
+    this.completePhase("setup");
+    this.save();
   },
 
   completePhase(id) {

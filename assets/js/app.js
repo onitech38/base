@@ -210,37 +210,45 @@ window.renderLoginPlus = function () {
     `;
 
     create.onclick = () => {
+      const before = store.currentUser.projectIds.length;
+
       store.createProject();
-      location.hash = "#/setup";
+
+      const after = store.currentUser.projectIds.length;
+
+      // ✅ só avança se o projeto foi realmente criado
+      if (after > before) {
+        location.hash = "#/setup";
+      }
     };
 
     container.appendChild(create);
   }
-  bindLoginPlusEvents();
+  // bindLoginPlusEvents();
 };
 
-function bindLoginPlusEvents() {
-  document.getElementById("logout").onclick = () => {
-    store.logout();
-    location.hash = "#/welcome";
-  };
+// function bindLoginPlusEvents() {
+//   document.getElementById("logout").onclick = () => {
+//     store.logout();
+//     location.hash = "#/welcome";
+//   };
 
-  document.getElementById("create-project").onclick = () => {
-    const input = document.getElementById("new-project-name");
-    const name = input.value.trim();
+//   document.getElementById("create-project").onclick = () => {
+//     const input = document.getElementById("new-project-name");
+//     const name = input.value.trim();
 
-    if (!name) {
-      alert("Dá um nome ao projeto");
-      return;
-    }
+//     if (!name) {
+//       alert("Dá um nome ao projeto");
+//       return;
+//     }
 
-    store.createProject();
-    store.currentProject.name = name;
-    store.save();
+//     store.createProject();
+//     store.currentProject.name = name;
+//     store.save();
 
-    location.hash = "#/setup";
-  };
-}
+//     location.hash = "#/setup";
+//   };
+// }
 
 /* ============================================================
    SETUP (FASE 1)

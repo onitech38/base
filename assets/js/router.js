@@ -14,21 +14,51 @@ async function loadPage() {
 
   const { auth } = store.state;
 
-  /* ---------- GUEST ---------- */
+  /* =========================================
+     GUEST
+  ========================================= */
   if (auth.status === "guest") {
-    if (["login", "signup", "login-plus"].includes(route)) {
+    if (["login", "signup"].includes(route)) {
       return render(route);
     }
     return render("welcome");
   }
 
-  // exemplo de guard correto
-  if (route === "home" && !store.currentProject) {
-    location.hash = "#/login-plus";
+  /* =========================================
+     POST-LOGIN (DECISÃO CENTRAL)
+  ========================================= */
+  if (route === "post-login") {
+    // segurança
+    if (auth.status !== "authenticated") {
+      location.hash = "#/welcome";
+      return;
+    }
+
+    const user = store.currentUser;
+    if (!user) {
+      location.hash = "#/welcome";
+      return;
+    }
+
+    // 👉 verificar se existe ALGUM projeto com setup completo
+    const hasCompletedProject = user.projectIds.some((id) => {
+      const project = store.state.projects[id];
+      return project?.setupCompleted === true;
+    });
+
+    if (hasCompletedProject) {
+      location.hash = "#/login-plus";
+      return;
+    }
+
+    // nunca completou setup
+    location.hash = "#/setup";
     return;
   }
 
-  /* ---------- AUTHENTICATED WITH PROJECT ---------- */
+  /* =========================================
+     DEFAULT AUTHENTICATED
+  ========================================= */
   return render(route);
 }
 
@@ -62,13 +92,6 @@ async function render(route) {
   }
 
   // LOGIN & SIGNUP
-  if (route === "login") {
-    window.renderLogin && window.renderLogin();
-  }
-
-  if (route === "signup") {
-    window.renderSignup && window.renderSignup();
-  }
 
   // LOGIN+
   if (route === "login-plus") {
@@ -93,6 +116,15 @@ async function render(route) {
   /* =====================
      CALL PAGE LOGIC
   ===================== */
+  if (route === "login") {
+    window.renderLogin && window.renderLogin();
+    return;
+  }
+
+  if (route === "signup") {
+    window.renderSignup && window.renderSignup();
+    return;
+  }
 
   if (route === "setup") {
     window.renderSetup && window.renderSetup();
